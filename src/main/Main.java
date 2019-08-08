@@ -4,15 +4,11 @@ import data.FilterNumberSequences;
 import data.GenerateNumberSequences;
 import data.MarkovAlg;
 import data.Stats;
-import utils.Const;
-import utils.IO;
 import utils.TxtFileManager;
-import webcrawler.LottoSpider;
 
 public class Main {
-    public static void main(String[] args) {
-        updateYearList();
 
+    public void main(String[] args) {
         String yearFilter = "2000";
 
         TxtFileManager.getInstance().loadData();
@@ -34,17 +30,6 @@ public class Main {
 
         FilterNumberSequences filter = new FilterNumberSequences(stats, markov, generate);
         filter.filterNumberSequences();
-    }
-
-    /**
-     * Updates the current year with the latest lotto drawings.
-     * Makes use of a {@link LottoSpider} and {@link webcrawler.LottoSpiderLeg}.
-     */
-    private static void updateYearList() {
-        LottoSpider spider = new LottoSpider();
-        spider.loadFile();
-        spider.search();
-        IO.saveFile(Const.getCurrentYearTxtFilePath(), spider.getFileContentsAsString());
     }
 
 }
