@@ -35,8 +35,8 @@ class TotoWebCrawler(contents: List<String>) {
                 println("ERROR! HTML Document is empty")
                 shouldContinueCrawling = false
             } else {
-                // gets the individual numbers as a list of elements
-                //val numbers: Elements = document.select("span[class*=ball-white]")
+                // Gets the individual numbers as a list of elements
+                // Alternative css query: "span[class*=ball-white]"
                 val numbers: Elements = document.select("div.tir_numbers > div.row > div.col-sm-6.text-right.nopadding > span.ball-white")
                 if (numbers.isEmpty()) {
                     println("ERROR! Didn't select any elements")
@@ -59,10 +59,9 @@ class TotoWebCrawler(contents: List<String>) {
     private fun readPage(url: String): Document? {
         try {
             val connection = Jsoup.connect(url).userAgent(USER_AGENT)
-            val document = connection.maxBodySize(MAX_BODY_SIZE).get()
             if (connection.response().statusCode() == 200) {
                 println("Success! Received web page at $url")
-                return document
+                return connection.maxBodySize(MAX_BODY_SIZE).get()
             }
             if (!connection.response().contentType().contains("text/html")) {
                 println("ERROR! Retrieved something other than HTML at $url")
@@ -70,6 +69,7 @@ class TotoWebCrawler(contents: List<String>) {
             }
         } catch (ioe: IOException) {
             println("ERROR! HTTP request was not successful at $url")
+            println(ioe.message)
             return null
         }
         return null
