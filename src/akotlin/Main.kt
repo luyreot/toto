@@ -1,7 +1,6 @@
 package akotlin
 
-import akotlin.utils.getCurrentYearTxtFilePath
-import akotlin.utils.getTxtFileContents
+import akotlin.utils.*
 import akotlin.webcrawler.TotoWebCrawler
 
 class Main {
@@ -9,12 +8,26 @@ class Main {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            updateYearDrawings()
+//            updateYearDrawings()
+            loadDrawingsForYears("2018", "2019")
+
+            println()
         }
 
-        fun updateYearDrawings() {
-            TotoWebCrawler(getTxtFileContents(getCurrentYearTxtFilePath())).crawl()
+        private fun updateYearDrawings() =
+                TotoWebCrawler(getTxtFileContents(getCurrentYearTxtFilePath())).crawl()
+
+        private fun loadDrawingsForYears(vararg years: String) = years.forEach { year ->
+            TotoService.drawingsMap[year] =
+                    convertStringListToDrawingsList(
+                            year,
+                            getTxtFileContents(
+                                    getYearTxtFilePath(year)
+                            )
+                    )
+
         }
+
     }
 
 }
