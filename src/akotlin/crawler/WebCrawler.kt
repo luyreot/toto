@@ -1,4 +1,4 @@
-package akotlin.webcrawler
+package akotlin.crawler
 
 import akotlin.extensions.appendDrawingString
 import akotlin.extensions.appendDrawingsStringList
@@ -9,7 +9,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 import java.io.IOException
 
-class TotoWebCrawler(contents: List<String>) {
+class WebCrawler(contents: List<String>) {
 
     companion object {
         // A fake USER_AGENT so the web server thinks the robot is a normal web browser.

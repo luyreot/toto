@@ -1,7 +1,8 @@
-package akotlin
+package akotlin.main
 
+import akotlin.service.DataService
 import akotlin.utils.*
-import akotlin.webcrawler.TotoWebCrawler
+import akotlin.crawler.WebCrawler
 
 class Main {
 
@@ -15,10 +16,10 @@ class Main {
         }
 
         private fun updateYearDrawings() =
-                TotoWebCrawler(getTxtFileContents(getCurrentYearTxtFilePath())).crawl()
+                WebCrawler(getTxtFileContents(getCurrentYearTxtFilePath())).crawl()
 
         private fun loadDrawingsForYears(vararg years: String) = years.forEach { year ->
-            TotoService.drawingsMap[year] =
+            DataService.drawingsMap[year] =
                     convertStringListToDrawingsList(
                             year,
                             getTxtFileContents(
