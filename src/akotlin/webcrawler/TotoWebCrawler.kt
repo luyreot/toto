@@ -1,7 +1,7 @@
 package akotlin.webcrawler
 
-import akotlin.extensions.appendDrawing
-import akotlin.extensions.appendDrawingsList
+import akotlin.extensions.appendDrawingString
+import akotlin.extensions.appendDrawingsStringList
 import akotlin.utils.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -21,7 +21,7 @@ class TotoWebCrawler(contents: List<String>) {
     private var drawingCount: Int = contents.size
 
     init {
-        contentBuilder.appendDrawingsList(contents)
+        contentBuilder.appendDrawingsStringList(contents)
         println("INFO: Current drawings count for $CURRENT_YEAR - $drawingCount")
     }
 
@@ -43,7 +43,7 @@ class TotoWebCrawler(contents: List<String>) {
                     shouldContinueCrawling = false
                 } else {
                     val drawing = numbers.text().replace(" ", ",")
-                    contentBuilder.appendDrawing(drawing)
+                    contentBuilder.appendDrawingString(drawing)
                     didAddNewDrawing = true
                 }
             }
