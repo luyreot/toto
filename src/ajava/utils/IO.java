@@ -1,12 +1,6 @@
-package utils;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+package ajava.utils;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A IO (read/write) class that gets, lists, reads from and writes to txt and json files.
@@ -14,7 +8,7 @@ import java.util.List;
 public final class IO
 {
     /**
-     * Saves data to a specific path and as a specific format.
+     * Saves ajava.data to a specific path and as a specific format.
      *
      * @param pathAndName The path, filename and extension of the file
      * @param content     The contents of the file

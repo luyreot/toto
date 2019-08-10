@@ -1,11 +1,11 @@
-package utils;
+package ajava.utils;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 /**
- * A final singleton class for random checks over the collected data. Eg. if a certain combination/drawing exists, etc.
+ * A final singleton class for random checks over the collected ajava.data. Eg. if a certain combination/drawing exists, etc.
  */
 public final class RandomChecks
 {
@@ -17,7 +17,7 @@ public final class RandomChecks
     }
 
     /**
-     * Checks and prints to the console if a certain number combination/drawings exists withing collected data.
+     * Checks and prints to the console if a certain number combination/drawings exists withing collected ajava.data.
      * Must provide a year filter for which years the check should be done.
      *
      * @param arr

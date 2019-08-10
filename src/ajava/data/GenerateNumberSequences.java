@@ -1,6 +1,6 @@
-package data;
+package ajava.data;
 
-import utils.Utils;
+import ajava.utils.Utils;
 
 import java.util.*;
 

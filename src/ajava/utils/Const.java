@@ -1,4 +1,4 @@
-package utils;
+package ajava.utils;
 
 public final class Const
 {

@@ -1,4 +1,4 @@
-package utils;
+package ajava.utils;
 
 import java.awt.*;
 import java.util.*;
@@ -179,7 +179,7 @@ public final class Utils
     }
 
     /**
-     * Loops through the loaded lotto data and returns a list of int arrays with drawings for all years since the provided year filter.
+     * Loops through the loaded lotto ajava.data and returns a list of int arrays with drawings for all years since the provided year filter.
      *
      * @param yearFilter
      * @return The list with the color patterns

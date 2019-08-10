@@ -1,13 +1,13 @@
-package data;
+package ajava.data;
 
-import utils.MySort;
-import utils.TxtFileManager;
-import utils.Utils;
+import ajava.utils.MySort;
+import ajava.utils.TxtFileManager;
+import ajava.utils.Utils;
 
 import java.util.*;
 
 /**
- * Class implementing the Markov algorithm for generating text based on already trained text chains form a data set.
+ * Class implementing the Markov algorithm for generating text based on already trained text chains form a ajava.data set.
  */
 public class MarkovAlg
 {
@@ -77,7 +77,7 @@ public class MarkovAlg
     /**
      * Processes a pattern for a particular chain (color, high/low, odd/even).
      * The previous pattern will be null only the very first time this method is called for a particular pattern chain.
-     * It is null because the pattern of the very first drawing in the data set sequences is the current one being processed.
+     * It is null because the pattern of the very first drawing in the ajava.data set sequences is the current one being processed.
      * After the initial call the previous pattern is used to make the set of 2 (previous + current).
      * That's why the method returns the last/current pattern that was processed.
      *

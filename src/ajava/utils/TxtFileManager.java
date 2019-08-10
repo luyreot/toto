@@ -1,4 +1,4 @@
-package utils;
+package ajava.utils;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * A final singleton class used for loading the lotto data from txt files.
+ * A final singleton class used for loading the lotto ajava.data from txt files.
  */
 public final class TxtFileManager
 {
@@ -48,7 +48,7 @@ public final class TxtFileManager
     }
 
     /**
-     * Loads/Reads all txt files and stores the data in the tree map. Skips any non-file objects, or system files.
+     * Loads/Reads all txt files and stores the ajava.data in the tree map. Skips any non-file objects, or system files.
      */
     public void loadData()
     {
@@ -98,7 +98,7 @@ public final class TxtFileManager
     }
 
     /**
-     * Converts the loaded data to a list of string, going from the lowest to highest year. Also skips any years that don't satisfy the year filter.
+     * Converts the loaded ajava.data to a list of string, going from the lowest to highest year. Also skips any years that don't satisfy the year filter.
      */
     public void convertMappedDataToList(String yearFilter)
     {
@@ -112,11 +112,11 @@ public final class TxtFileManager
     }
 
     // ==========================================================================================
-    // Saving Drawing data for specific years, or all years
+    // Saving Drawing ajava.data for specific years, or all years
     // ==========================================================================================
 
     /**
-     * Saves the data for every year in a JSON formatted file.
+     * Saves the ajava.data for every year in a JSON formatted file.
      */
     public void saveAllDataAsJSON()
     {
@@ -127,9 +127,9 @@ public final class TxtFileManager
     }
 
     /**
-     * Saves the data for all years past a certain one in a JSON formatted file.
+     * Saves the ajava.data for all years past a certain one in a JSON formatted file.
      *
-     * @param year The initial year for which the data should be saved
+     * @param year The initial year for which the ajava.data should be saved
      */
     public void saveForYearsAsJSON(String year)
     {
@@ -145,7 +145,7 @@ public final class TxtFileManager
     /**
      * Adds a whole year of drawing to a JSON object and returns that object.
      *
-     * @param jObj     The JSON object where the data will be saved.
+     * @param jObj     The JSON object where the ajava.data will be saved.
      * @param year     The year/key
      * @param drawings The list of int arrays representing that year's drawings
      * @return The updated JSON object

@@ -1,10 +1,10 @@
-package data;
+package ajava.data;
 
-import models.NumberPattern;
-import models.StringPattern;
-import utils.MySort;
-import utils.TxtFileManager;
-import utils.Utils;
+import ajava.models.NumberPattern;
+import ajava.models.StringPattern;
+import ajava.utils.MySort;
+import ajava.utils.TxtFileManager;
+import ajava.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ public class Stats
 
     public Stats(String yearFilter)
     {
-        // if the year filter is all / less than the first year when there is collected data
+        // if the year filter is all / less than the first year when there is collected ajava.data
         this.yearFilter = (yearFilter.equals("all") || yearFilter.compareTo("1958") < 0) ? "1958" : yearFilter;
         this.drawingCounter = 0;
         this.numberPatterns = new HashMap<>();
@@ -35,7 +35,7 @@ public class Stats
     }
 
     /**
-     * Generates the statistical data on how often a number/pattern has occurred in the collected lotto data.
+     * Generates the statistical ajava.data on how often a number/pattern has occurred in the collected lotto ajava.data.
      * The {@link #drawingCounter} variables is used for counting the sequential numerical order of each drawing.
      */
     public void generate()
@@ -103,7 +103,7 @@ public class Stats
     }
 
     /**
-     * Checks the generated statistical data for irregularities of the calculated frequencies for each type of pattern.
+     * Checks the generated statistical ajava.data for irregularities of the calculated frequencies for each type of pattern.
      */
     public void checkPatternsTimesOccurredFrequenciesRelation()
     {

@@ -1,4 +1,4 @@
-package models;
+package ajava.models;
 
 import org.jetbrains.annotations.NotNull;
 

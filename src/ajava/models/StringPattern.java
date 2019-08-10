@@ -1,4 +1,4 @@
-package models;
+package ajava.models;
 
 /**
  * SuperPattern Sub-Class for storing a string pattern and its stats.

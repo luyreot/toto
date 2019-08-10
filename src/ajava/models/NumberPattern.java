@@ -1,4 +1,4 @@
-package models;
+package ajava.models;
 
 /**
  * SuperPattern Sub-Class for storing a number and its stats. (1-49)

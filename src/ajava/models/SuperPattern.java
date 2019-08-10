@@ -1,7 +1,7 @@
-package models;
+package ajava.models;
 
 import org.jetbrains.annotations.NotNull;
-import utils.MySort;
+import ajava.utils.MySort;
 
 import java.util.HashMap;
 import java.util.Map;

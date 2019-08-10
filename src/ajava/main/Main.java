@@ -1,10 +1,10 @@
-package main;
+package ajava.main;
 
-import data.FilterNumberSequences;
-import data.GenerateNumberSequences;
-import data.MarkovAlg;
-import data.Stats;
-import utils.TxtFileManager;
+import ajava.data.FilterNumberSequences;
+import ajava.data.GenerateNumberSequences;
+import ajava.data.MarkovAlg;
+import ajava.data.Stats;
+import ajava.utils.TxtFileManager;
 
 public class Main {
 

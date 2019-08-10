@@ -1,7 +1,7 @@
-package data;
+package ajava.data;
 
-import utils.MySort;
-import utils.Utils;
+import ajava.utils.MySort;
+import ajava.utils.Utils;
 
 import java.util.HashMap;
 import java.util.Map;
