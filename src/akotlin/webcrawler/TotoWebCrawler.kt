@@ -3,6 +3,7 @@ package akotlin.webcrawler
 import akotlin.extensions.appendDrawingString
 import akotlin.extensions.appendDrawingsStringList
 import akotlin.utils.*
+import org.jsoup.Connection
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
@@ -57,11 +58,13 @@ class TotoWebCrawler(contents: List<String>) {
     }
 
     private fun readPage(url: String): Document? {
+        lateinit var connection: Connection
         try {
-            val connection = Jsoup.connect(url).userAgent(USER_AGENT)
-            if (connection.response().statusCode() == 200) {
-                println("Success! Received web page at $url")
-                return connection.maxBodySize(MAX_BODY_SIZE).get()
+            connection = Jsoup.connect(url).userAgent(USER_AGENT)
+            val statusCode = connection.response().statusCode()
+            if (statusCode != 200) {
+                println("ERROR! Response status code for $url - $statusCode")
+                return null
             }
             if (!connection.response().contentType().contains("text/html")) {
                 println("ERROR! Retrieved something other than HTML at $url")
@@ -72,7 +75,8 @@ class TotoWebCrawler(contents: List<String>) {
             println(ioe.message)
             return null
         }
-        return null
+        println("SUCCESS! Received web page at $url")
+        return connection.maxBodySize(MAX_BODY_SIZE).get()
     }
 
 }
