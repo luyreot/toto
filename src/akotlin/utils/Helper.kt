@@ -2,7 +2,7 @@ package akotlin.utils
 
 import akotlin.model.Drawing
 
-fun convertStringListToDrawingsList(year: String, drawings: List<String>): List<Drawing> {
+fun getDrawingsFromFileContents(year: String, drawings: List<String>): List<Drawing> {
     val objectList = mutableListOf<Drawing>()
     drawings.forEachIndexed { index, drawing ->
         objectList.add(

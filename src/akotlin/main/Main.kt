@@ -1,8 +1,8 @@
 package akotlin.main
 
+import akotlin.crawler.WebCrawler
 import akotlin.service.DataService
 import akotlin.utils.*
-import akotlin.crawler.WebCrawler
 
 class Main {
 
@@ -10,17 +10,25 @@ class Main {
         @JvmStatic
         fun main(args: Array<String>) {
 //            updateYearDrawings()
-            loadDrawingsForYears("2018", "2019")
+            loadAllDrawings()
+//            loadDrawingsForYears("2018", "2019")
 
             println()
         }
 
-        private fun updateYearDrawings() =
-                WebCrawler(getTxtFileContents(getCurrentYearTxtFilePath())).crawl()
+        private fun updateYearDrawings() = WebCrawler(getTxtFileContents(getCurrentYearTxtFilePath())).crawl()
+
+        private fun loadAllDrawings() = listFileNamesInInPath(PATH_TXT_FOLDER).forEach { file ->
+            DataService.drawingsMap[file.name] =
+                    getDrawingsFromFileContents(
+                            file.name,
+                            getTxtFileContents(file)
+                    )
+        }
 
         private fun loadDrawingsForYears(vararg years: String) = years.forEach { year ->
             DataService.drawingsMap[year] =
-                    convertStringListToDrawingsList(
+                    getDrawingsFromFileContents(
                             year,
                             getTxtFileContents(
                                     getYearTxtFilePath(year)
