@@ -1,9 +1,10 @@
 package akotlin.service
 
 import akotlin.model.Drawing
+import java.util.*
 
 object DataService {
 
-    val drawingsMap = hashMapOf<String, List<Drawing>>()
+    var drawingsMap = TreeMap<String, List<Drawing>>()
 
 }
