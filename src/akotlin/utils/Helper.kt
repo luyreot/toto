@@ -1,6 +1,9 @@
 package akotlin.utils
 
+import akotlin.crawler.WebCrawler
 import akotlin.model.Drawing
+
+fun updateYearDrawings() = WebCrawler(getTxtFileContents(getCurrentYearTxtFilePath())).crawl()
 
 fun getDrawingsFromFileContents(year: String, drawings: List<String>): List<Drawing> {
     val objectList = mutableListOf<Drawing>()

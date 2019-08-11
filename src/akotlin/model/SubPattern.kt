@@ -6,7 +6,7 @@ abstract class SubPattern : Pattern() {
 
     abstract var lastFrequencyIndex: Int
 
-    abstract val frequencyMap: TreeMap<Int, FrequencyPattern>
+    val frequencyMap: TreeMap<Int, FrequencyPattern> = TreeMap()
 
     fun addFrequency(newFrequencyIndex: Int) {
         if (newFrequencyIndex < lastFrequencyIndex) return
