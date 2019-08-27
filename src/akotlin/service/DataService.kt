@@ -32,7 +32,7 @@ object DataService {
     }
 
     fun calculatePatterns() {
-        val drawings = drawingsMap.values.stream().flatMap { it.stream() }.toList()
+        val drawings = drawingsMap.values.stream().flatMap { drawingList -> drawingList.stream() }.toList()
         val totalDrawingsCount = drawings.count()
 
         drawings.forEachIndexed { drawingIndex, drawing ->
