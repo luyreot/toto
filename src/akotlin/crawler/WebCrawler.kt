@@ -62,21 +62,23 @@ class WebCrawler(contents: List<String>) {
         try {
             connection = Jsoup.connect(url).userAgent(USER_AGENT)
             val statusCode = connection.response().statusCode()
-            if (statusCode != 200) {
+            if (statusCode != 0 && statusCode != 200) {
                 println("ERROR! Response status code for $url - $statusCode")
                 return null
             }
+            /* Crawler doesn't return a contentType
             if (!connection.response().contentType().contains("text/html")) {
                 println("ERROR! Retrieved something other than HTML at $url")
                 return null
             }
+             */
+            println("SUCCESS! Received web page at $url")
+            return connection.maxBodySize(MAX_BODY_SIZE).get()
         } catch (ioe: IOException) {
             println("ERROR! HTTP request was not successful at $url")
             println(ioe.message)
             return null
         }
-        println("SUCCESS! Received web page at $url")
-        return connection.maxBodySize(MAX_BODY_SIZE).get()
     }
 
 }
