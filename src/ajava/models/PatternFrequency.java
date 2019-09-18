@@ -1,7 +1,5 @@
 package ajava.models;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * A class which holds information about a single frequency, also difference in spots, between two occurrences of a pattern.
  */
@@ -53,7 +51,7 @@ public class PatternFrequency implements Comparable
      * @return
      */
     @Override
-    public int compareTo(@NotNull Object o)
+    public int compareTo(Object o)
     {
         return Double.compare(probability, ((PatternFrequency) o).getProbability());
     }

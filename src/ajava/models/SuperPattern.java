@@ -1,6 +1,5 @@
 package ajava.models;
 
-import org.jetbrains.annotations.NotNull;
 import ajava.utils.MySort;
 
 import java.util.HashMap;
@@ -135,7 +134,7 @@ public class SuperPattern implements Comparable
      * @return
      */
     @Override
-    public int compareTo(@NotNull Object o)
+    public int compareTo(Object o)
     {
         return Double.compare(probability, ((SuperPattern) o).getProbability());
     }
