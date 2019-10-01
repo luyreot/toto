@@ -29,10 +29,7 @@ object DataService {
     }
 
     fun loadAllDrawings() = listFileNamesInInPath(PATH_TXT_FOLDER).forEach { file ->
-        allDrawings[file.name] = getDrawingsFromFileContents(
-                file.name,
-                getTxtFileContents(file)
-        )
+        allDrawings[file.name] = getDrawingsFromFileContents(file.name, getTxtFileContents(file))
     }
 
     fun generatePatterns() {
@@ -44,7 +41,7 @@ object DataService {
         val oddEvens = HashMap<String, ArrayPattern>()
 
         drawings.forEachIndexed { drawingIndex, drawing ->
-            drawing.numbers.forEachIndexed { numberIndex, number ->
+            drawing.numbers.forEachIndexed { _, number ->
                 // Fill the number patterns map
                 processNumberPattern(numbers, number, drawingIndex)
             }
@@ -66,33 +63,40 @@ object DataService {
         //Calculate probabilities of the high-low patterns
         calculateArrayPatternProbabilities(oddEvens, totalDrawingsCount)
 
-        numberPatterns = sortNumberPatternMap(numbers)
-        colorPatterns = sortArrayPatternMap(colors)
-        lowHighPatterns = sortArrayPatternMap(lowHighs)
-        oddEvenPatterns = sortArrayPatternMap(oddEvens)
+        // Sort pattern maps
+        numberPatterns = numbers.toList().sortedBy { (_, value) -> value }.toMap()
+        colorPatterns = colors.toList().sortedBy { (_, value) -> value }.toMap()
+        lowHighPatterns = lowHighs.toList().sortedBy { (_, value) -> value }.toMap()
+        oddEvenPatterns = oddEvens.toList().sortedBy { (_, value) -> value }.toMap()
+
+        // Sort patterns' frequency maps
+        numberPatterns.forEach { (_, pattern) -> pattern.sortFrequencies() }
+        colorPatterns.forEach { (_, pattern) -> pattern.sortFrequencies() }
+        lowHighPatterns.forEach { (_, pattern) -> pattern.sortFrequencies() }
+        oddEvenPatterns.forEach { (_, pattern) -> pattern.sortFrequencies() }
     }
 
-    private fun processNumberPattern(map: HashMap<Int, NumberPattern>, number: Int, drawingIndex: Int) =
-            if (map.containsKey(number)) {
-                map[number]!!.incrementTimesOccurred()
-                map[number]!!.addFrequency(drawingIndex)
-            } else {
-                map[number] = NumberPattern(number, drawingIndex)
-            }
+    private fun processNumberPattern(map: HashMap<Int, NumberPattern>, number: Int, drawingIndex: Int) {
+        if (map.containsKey(number)) {
+            map[number]!!.incrementTimesOccurred()
+            map[number]!!.addFrequency(drawingIndex)
+        } else {
+            map[number] = NumberPattern(number, drawingIndex)
+        }
+    }
 
-    private fun calculateNumberPatternProbabilities(map: HashMap<Int, NumberPattern>, totalDrawingsCount: Int) =
-            map.forEach { (number, numberPattern) ->
-                numberPattern.calculateProbability(totalDrawingsCount)
-                val frequenciesTotalCount = numberPattern.frequencyMap.values.stream()
-                        .map { it.timesOccurred }
-                        .reduce(0, Int::plus)
+    private fun calculateNumberPatternProbabilities(map: HashMap<Int, NumberPattern>, totalDrawingsCount: Int) = map.forEach { (number, numberPattern) ->
+        numberPattern.calculateProbability(totalDrawingsCount)
+        val frequenciesTotalCount = numberPattern.frequencies.values.stream()
+                .map { it.timesOccurred }
+                .reduce(0, Int::plus)
 
-                if (numberPattern.timesOccurred == frequenciesTotalCount + 1) {
-                    numberPattern.frequencyMap.forEach { (frequency, frequencyPattern) ->
-                        frequencyPattern.calculateProbability(frequenciesTotalCount)
-                    }
-                }
+        if (numberPattern.timesOccurred == frequenciesTotalCount + 1) {
+            numberPattern.frequencies.forEach { (_, frequencyPattern) ->
+                frequencyPattern.calculateProbability(frequenciesTotalCount)
             }
+        }
+    }
 
     private fun processArrayPattern(map: HashMap<String, ArrayPattern>, mapValue: IntArray, drawingIndex: Int) {
         val mapKey = convertIntArrayToString(mapValue)
@@ -104,24 +108,17 @@ object DataService {
         }
     }
 
-    private fun calculateArrayPatternProbabilities(map: HashMap<String, ArrayPattern>, totalDrawingsCount: Int) =
-            map.forEach { (key, pattern) ->
-                pattern.calculateProbability(totalDrawingsCount)
-                val frequenciesTotalCount = pattern.frequencyMap.values.stream()
-                        .map { it.timesOccurred }
-                        .reduce(0, Int::plus)
+    private fun calculateArrayPatternProbabilities(map: HashMap<String, ArrayPattern>, totalDrawingsCount: Int) = map.forEach { (key, pattern) ->
+        pattern.calculateProbability(totalDrawingsCount)
+        val frequenciesTotalCount = pattern.frequencies.values.stream()
+                .map { it.timesOccurred }
+                .reduce(0, Int::plus)
 
-                if (pattern.timesOccurred == frequenciesTotalCount + 1) {
-                    pattern.frequencyMap.forEach { (frequency, frequencyPattern) ->
-                        frequencyPattern.calculateProbability(frequenciesTotalCount)
-                    }
-                }
+        if (pattern.timesOccurred == frequenciesTotalCount + 1) {
+            pattern.frequencies.forEach { (_, frequencyPattern) ->
+                frequencyPattern.calculateProbability(frequenciesTotalCount)
             }
-
-    private fun sortNumberPatternMap(map: HashMap<Int, NumberPattern>): Map<Int, NumberPattern> =
-            map.toList().sortedBy { (key, value) -> value }.toMap()
-
-    private fun sortArrayPatternMap(map: HashMap<String, ArrayPattern>): Map<String, ArrayPattern> =
-            map.toList().sortedBy { (key, value) -> value }.toMap()
+        }
+    }
 
 }

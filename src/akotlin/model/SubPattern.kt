@@ -1,22 +1,24 @@
 package akotlin.model
 
-import java.util.*
-
 abstract class SubPattern : Pattern() {
 
     abstract var lastFrequencyIndex: Int
 
-    val frequencyMap: TreeMap<Int, FrequencyPattern> = TreeMap()
+    var frequencies = mutableMapOf<Int, FrequencyPattern>()
 
     fun addFrequency(newFrequencyIndex: Int) {
         if (newFrequencyIndex < lastFrequencyIndex) return
         val key = newFrequencyIndex - lastFrequencyIndex
-        if (frequencyMap.containsKey(key)) {
-            frequencyMap[key]!!.incrementTimesOccurred()
+        if (frequencies.containsKey(key)) {
+            frequencies[key]!!.incrementTimesOccurred()
         } else {
-            frequencyMap[key] = FrequencyPattern(key)
+            frequencies[key] = FrequencyPattern(key)
             lastFrequencyIndex = newFrequencyIndex
         }
+    }
+
+    fun sortFrequencies() {
+        frequencies = frequencies.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
     }
 
 }
