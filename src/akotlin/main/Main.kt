@@ -1,6 +1,9 @@
 package akotlin.main
 
-import akotlin.service.Patterns
+import akotlin.algorithm.Markov
+import akotlin.algorithm.Patterns
+import akotlin.utils.loadAllDrawings
+import akotlin.utils.loadDrawingsForYears
 
 class Main {
 
@@ -9,12 +12,12 @@ class Main {
         fun main(args: Array<String>) {
 //            updateYearDrawings()
 
-//            DataService.loadAllDrawings()
-//            DataService.loadDrawingsForYears("2017", "2018", "2019")
+            loadAllDrawings()
+//            loadDrawingsForYears("2017", "2018", "2019")
+//            loadDrawingsForYears("2019")
 
-            Patterns.loadDrawingsForYears("2019")
             Patterns.generatePatterns()
-
+            Markov.train()
 
             println()
         }
