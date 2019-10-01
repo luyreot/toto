@@ -8,7 +8,7 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.streams.toList
 
-object DataService {
+object Patterns {
 
     // Using a TreeMap to sort the drawings per year.
     // The drawings themselves are sorted by the date the were released on.

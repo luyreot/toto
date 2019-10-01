@@ -1,6 +1,6 @@
 package akotlin.main
 
-import akotlin.service.DataService
+import akotlin.service.Patterns
 
 class Main {
 
@@ -12,11 +12,9 @@ class Main {
 //            DataService.loadAllDrawings()
 //            DataService.loadDrawingsForYears("2017", "2018", "2019")
 
-            DataService.loadDrawingsForYears("2019")
-            DataService.generatePatterns()
+            Patterns.loadDrawingsForYears("2019")
+            Patterns.generatePatterns()
 
-//            val arr = intArrayOf(1, 4, 15, 33, 44, 45)
-//            val cArr = arr.map { number -> number / 10 }.toIntArray()
 
             println()
         }
