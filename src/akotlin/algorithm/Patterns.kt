@@ -1,36 +1,16 @@
-package akotlin.service
+package akotlin.algorithm
 
 import akotlin.model.ArrayPattern
-import akotlin.model.Drawing
 import akotlin.model.NumberPattern
 import akotlin.utils.*
-import java.util.*
-import kotlin.collections.HashMap
 import kotlin.streams.toList
 
 object Patterns {
-
-    // Using a TreeMap to sort the drawings per year.
-    // The drawings themselves are sorted by the date the were released on.
-    val allDrawings = TreeMap<String, List<Drawing>>()
 
     lateinit var numberPatterns: Map<Int, NumberPattern>
     lateinit var colorPatterns: Map<String, ArrayPattern>
     lateinit var lowHighPatterns: Map<String, ArrayPattern>
     lateinit var oddEvenPatterns: Map<String, ArrayPattern>
-
-    fun loadDrawingsForYears(vararg years: String) = years.forEach { year ->
-        allDrawings[year] = getDrawingsFromFileContents(
-                year,
-                getTxtFileContents(
-                        getYearTxtFilePath(year)
-                )
-        )
-    }
-
-    fun loadAllDrawings() = listFileNamesInInPath(PATH_TXT_FOLDER).forEach { file ->
-        allDrawings[file.name] = getDrawingsFromFileContents(file.name, getTxtFileContents(file))
-    }
 
     fun generatePatterns() {
         val drawings = allDrawings.values.stream().flatMap { drawingList -> drawingList.stream() }.toList()
