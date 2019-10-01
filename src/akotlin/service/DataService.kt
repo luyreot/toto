@@ -1,7 +1,7 @@
 package akotlin.service
 
+import akotlin.model.ArrayPattern
 import akotlin.model.Drawing
-import akotlin.model.IntArrayPattern
 import akotlin.model.NumberPattern
 import akotlin.utils.*
 import java.util.*
@@ -15,9 +15,9 @@ object DataService {
 
     // TODO maybe store the patterns in a HashMap so they are ordered by date
     val numberPatternsMap = TreeMap<Int, NumberPattern>()
-    val colorPatternsMap = TreeMap<String, IntArrayPattern>()
-    val lowHighPatternsMap = TreeMap<String, IntArrayPattern>()
-    val oddEvenPatternsMap = TreeMap<String, IntArrayPattern>()
+    val colorPatternsMap = TreeMap<String, ArrayPattern>()
+    val lowHighPatternsMap = TreeMap<String, ArrayPattern>()
+    val oddEvenPatternsMap = TreeMap<String, ArrayPattern>()
 
     fun loadDrawingsForYears(vararg years: String) = years.forEach { year ->
         drawingsMap[year] = getDrawingsFromFileContents(
@@ -44,67 +44,71 @@ object DataService {
         drawings.forEachIndexed { drawingIndex, drawing ->
             drawing.numbers.forEachIndexed { numberIndex, number ->
                 // Fill the number patterns map
-                if (numberPatternsMap.containsKey(number)) {
-                    numberPatternsMap[number]!!.incrementTimesOccurred()
-                    numberPatternsMap[number]!!.addFrequency(drawingIndex)
-                } else {
-                    numberPatternsMap[number] = NumberPattern(number, drawingIndex)
-                }
+                processNumberPattern(numberPatternsMap, number, drawingIndex)
             }
 
             // Fill the color patterns map
-            processPattern(colorPatternsMap, convertDrawingArrayToColorPatternArray(drawing.numbers), drawingIndex)
+            processArrayPattern(colorPatternsMap, convertDrawingArrayToColorPatternArray(drawing.numbers), drawingIndex)
             // Fill the odd-even patterns map
-            processPattern(lowHighPatternsMap, convertDrawingArrayToLowHighPatternArray(drawing.numbers), drawingIndex)
+            processArrayPattern(lowHighPatternsMap, convertDrawingArrayToLowHighPatternArray(drawing.numbers), drawingIndex)
             // Fill the high-low patterns map
-            processPattern(oddEvenPatternsMap, convertDrawingArrayToOddEvenPatternArray(drawing.numbers), drawingIndex)
+            processArrayPattern(oddEvenPatternsMap, convertDrawingArrayToOddEvenPatternArray(drawing.numbers), drawingIndex)
         }
 
         // Calculate probabilities of the number patterns
-        numberPatternsMap.forEach { (number, numberPattern) ->
-            numberPattern.calculateProbability(totalDrawingsCount)
-            val frequenciesTotalCount = numberPattern.frequencyMap.values.stream()
-                    .map { it.timesOccurred }
-                    .reduce(0, Int::plus)
-
-            if (numberPattern.timesOccurred == frequenciesTotalCount + 1) {
-                numberPattern.frequencyMap.forEach { (frequency, frequencyPattern) ->
-                    frequencyPattern.calculateProbability(frequenciesTotalCount)
-                }
-            }
-        }
-
+        calculateNumberPatternProbabilities(numberPatternsMap, totalDrawingsCount)
         // Calculate probabilities of the color patterns
-        calculatePatternProbabilities(colorPatternsMap, totalDrawingsCount)
+        calculateArrayPatternProbabilities(colorPatternsMap, totalDrawingsCount)
         // Calculate probabilities of the odd-even patterns
-        calculatePatternProbabilities(lowHighPatternsMap, totalDrawingsCount)
+        calculateArrayPatternProbabilities(lowHighPatternsMap, totalDrawingsCount)
         //Calculate probabilities of the high-low patterns
-        calculatePatternProbabilities(oddEvenPatternsMap, totalDrawingsCount)
+        calculateArrayPatternProbabilities(oddEvenPatternsMap, totalDrawingsCount)
     }
 
-    private fun processPattern(map: TreeMap<String, IntArrayPattern>, mapValue: IntArray, drawingIndex: Int) {
+    private fun processNumberPattern(map: TreeMap<Int, NumberPattern>, number: Int, drawingIndex: Int) =
+            if (map.containsKey(number)) {
+                map[number]!!.incrementTimesOccurred()
+                map[number]!!.addFrequency(drawingIndex)
+            } else {
+                map[number] = NumberPattern(number, drawingIndex)
+            }
+
+    private fun calculateNumberPatternProbabilities(map: TreeMap<Int, NumberPattern>, totalDrawingsCount: Int) =
+            map.forEach { (number, numberPattern) ->
+                numberPattern.calculateProbability(totalDrawingsCount)
+                val frequenciesTotalCount = numberPattern.frequencyMap.values.stream()
+                        .map { it.timesOccurred }
+                        .reduce(0, Int::plus)
+
+                if (numberPattern.timesOccurred == frequenciesTotalCount + 1) {
+                    numberPattern.frequencyMap.forEach { (frequency, frequencyPattern) ->
+                        frequencyPattern.calculateProbability(frequenciesTotalCount)
+                    }
+                }
+            }
+
+    private fun processArrayPattern(map: TreeMap<String, ArrayPattern>, mapValue: IntArray, drawingIndex: Int) {
         val mapKey = convertIntArrayToString(mapValue)
         if (map.containsKey(mapKey)) {
             map[mapKey]!!.incrementTimesOccurred()
             map[mapKey]!!.addFrequency(drawingIndex)
         } else {
-            map[mapKey] = IntArrayPattern(mapValue, drawingIndex)
+            map[mapKey] = ArrayPattern(mapValue, drawingIndex)
         }
     }
 
-    private fun calculatePatternProbabilities(map: TreeMap<String, IntArrayPattern>, totalDrawingsCount: Int) {
-        map.forEach { (key, pattern) ->
-            pattern.calculateProbability(totalDrawingsCount)
-            val frequenciesTotalCount = pattern.frequencyMap.values.stream()
-                    .map { it.timesOccurred }
-                    .reduce(0, Int::plus)
+    private fun calculateArrayPatternProbabilities(map: TreeMap<String, ArrayPattern>, totalDrawingsCount: Int) =
+            map.forEach { (key, pattern) ->
+                pattern.calculateProbability(totalDrawingsCount)
+                val frequenciesTotalCount = pattern.frequencyMap.values.stream()
+                        .map { it.timesOccurred }
+                        .reduce(0, Int::plus)
 
-            if (pattern.timesOccurred == frequenciesTotalCount + 1) {
-                pattern.frequencyMap.forEach { (frequency, frequencyPattern) ->
-                    frequencyPattern.calculateProbability(frequenciesTotalCount)
+                if (pattern.timesOccurred == frequenciesTotalCount + 1) {
+                    pattern.frequencyMap.forEach { (frequency, frequencyPattern) ->
+                        frequencyPattern.calculateProbability(frequenciesTotalCount)
+                    }
                 }
             }
-        }
-    }
 
 }

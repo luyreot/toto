@@ -6,13 +6,13 @@ package akotlin.model
  * 0 - <= 25, 1 - > 25 (Low / High Pattern),
  * 0 - odd, 1 - even (Odd / Even Pattern).
  */
-data class IntArrayPattern(val numbers: IntArray, override var lastFrequencyIndex: Int) : SubPattern() {
+data class ArrayPattern(val numbers: IntArray, override var lastFrequencyIndex: Int) : SubPattern() {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as IntArrayPattern
+        other as ArrayPattern
 
         return numbers.contentEquals(other.numbers)
     }
