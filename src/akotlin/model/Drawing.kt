@@ -1,10 +1,6 @@
 package akotlin.model
 
-data class Drawing(
-        val year: String,
-        val issue: Int,
-        val numbers: IntArray
-) {
+data class Drawing(val year: String, val issue: Int, val numbers: IntArray) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -21,7 +17,7 @@ data class Drawing(
     override fun hashCode(): Int {
         var result = 1
         result = result xor year.hashCode()
-        result = result xor issue
+        result = result xor issue.hashCode()
         result = result xor numbers.contentHashCode()
         return result
     }

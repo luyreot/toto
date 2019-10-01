@@ -12,7 +12,7 @@ abstract class SubPattern : Pattern() {
         if (newFrequencyIndex < lastFrequencyIndex) return
         val key = newFrequencyIndex - lastFrequencyIndex
         if (frequencyMap.containsKey(key)) {
-            frequencyMap[key]?.incrementTimesOccurred()
+            frequencyMap[key]!!.incrementTimesOccurred()
         } else {
             frequencyMap[key] = FrequencyPattern(key)
             lastFrequencyIndex = newFrequencyIndex
