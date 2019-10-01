@@ -5,22 +5,22 @@ import akotlin.model.Drawing
 import akotlin.model.NumberPattern
 import akotlin.utils.*
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.streams.toList
 
 object DataService {
 
     // Using a TreeMap to sort the drawings per year.
     // The drawings themselves are sorted by the date the were released on.
-    val drawingsMap = TreeMap<String, List<Drawing>>()
+    val allDrawings = TreeMap<String, List<Drawing>>()
 
-    // TODO maybe store the patterns in a HashMap so they are ordered by date
-    val numberPatternsMap = TreeMap<Int, NumberPattern>()
-    val colorPatternsMap = TreeMap<String, ArrayPattern>()
-    val lowHighPatternsMap = TreeMap<String, ArrayPattern>()
-    val oddEvenPatternsMap = TreeMap<String, ArrayPattern>()
+    lateinit var numberPatterns: Map<Int, NumberPattern>
+    lateinit var colorPatterns: Map<String, ArrayPattern>
+    lateinit var lowHighPatterns: Map<String, ArrayPattern>
+    lateinit var oddEvenPatterns: Map<String, ArrayPattern>
 
     fun loadDrawingsForYears(vararg years: String) = years.forEach { year ->
-        drawingsMap[year] = getDrawingsFromFileContents(
+        allDrawings[year] = getDrawingsFromFileContents(
                 year,
                 getTxtFileContents(
                         getYearTxtFilePath(year)
@@ -29,43 +29,50 @@ object DataService {
     }
 
     fun loadAllDrawings() = listFileNamesInInPath(PATH_TXT_FOLDER).forEach { file ->
-        drawingsMap[file.name] = getDrawingsFromFileContents(
+        allDrawings[file.name] = getDrawingsFromFileContents(
                 file.name,
                 getTxtFileContents(file)
         )
     }
 
     fun generatePatterns() {
-        val drawings = drawingsMap.values.stream().flatMap { drawingList -> drawingList.stream() }.toList()
+        val drawings = allDrawings.values.stream().flatMap { drawingList -> drawingList.stream() }.toList()
         val totalDrawingsCount = drawings.count()
-        var mapKey: String
-        var mapValue: IntArray
+        val numbers = HashMap<Int, NumberPattern>()
+        val colors = HashMap<String, ArrayPattern>()
+        val lowHighs = HashMap<String, ArrayPattern>()
+        val oddEvens = HashMap<String, ArrayPattern>()
 
         drawings.forEachIndexed { drawingIndex, drawing ->
             drawing.numbers.forEachIndexed { numberIndex, number ->
                 // Fill the number patterns map
-                processNumberPattern(numberPatternsMap, number, drawingIndex)
+                processNumberPattern(numbers, number, drawingIndex)
             }
 
             // Fill the color patterns map
-            processArrayPattern(colorPatternsMap, convertDrawingArrayToColorPatternArray(drawing.numbers), drawingIndex)
+            processArrayPattern(colors, convertDrawingArrayToColorPatternArray(drawing.numbers), drawingIndex)
             // Fill the odd-even patterns map
-            processArrayPattern(lowHighPatternsMap, convertDrawingArrayToLowHighPatternArray(drawing.numbers), drawingIndex)
+            processArrayPattern(lowHighs, convertDrawingArrayToLowHighPatternArray(drawing.numbers), drawingIndex)
             // Fill the high-low patterns map
-            processArrayPattern(oddEvenPatternsMap, convertDrawingArrayToOddEvenPatternArray(drawing.numbers), drawingIndex)
+            processArrayPattern(oddEvens, convertDrawingArrayToOddEvenPatternArray(drawing.numbers), drawingIndex)
         }
 
         // Calculate probabilities of the number patterns
-        calculateNumberPatternProbabilities(numberPatternsMap, totalDrawingsCount)
+        calculateNumberPatternProbabilities(numbers, totalDrawingsCount)
         // Calculate probabilities of the color patterns
-        calculateArrayPatternProbabilities(colorPatternsMap, totalDrawingsCount)
+        calculateArrayPatternProbabilities(colors, totalDrawingsCount)
         // Calculate probabilities of the odd-even patterns
-        calculateArrayPatternProbabilities(lowHighPatternsMap, totalDrawingsCount)
+        calculateArrayPatternProbabilities(lowHighs, totalDrawingsCount)
         //Calculate probabilities of the high-low patterns
-        calculateArrayPatternProbabilities(oddEvenPatternsMap, totalDrawingsCount)
+        calculateArrayPatternProbabilities(oddEvens, totalDrawingsCount)
+
+        numberPatterns = sortNumberPatternMap(numbers)
+        colorPatterns = sortArrayPatternMap(colors)
+        lowHighPatterns = sortArrayPatternMap(lowHighs)
+        oddEvenPatterns = sortArrayPatternMap(oddEvens)
     }
 
-    private fun processNumberPattern(map: TreeMap<Int, NumberPattern>, number: Int, drawingIndex: Int) =
+    private fun processNumberPattern(map: HashMap<Int, NumberPattern>, number: Int, drawingIndex: Int) =
             if (map.containsKey(number)) {
                 map[number]!!.incrementTimesOccurred()
                 map[number]!!.addFrequency(drawingIndex)
@@ -73,7 +80,7 @@ object DataService {
                 map[number] = NumberPattern(number, drawingIndex)
             }
 
-    private fun calculateNumberPatternProbabilities(map: TreeMap<Int, NumberPattern>, totalDrawingsCount: Int) =
+    private fun calculateNumberPatternProbabilities(map: HashMap<Int, NumberPattern>, totalDrawingsCount: Int) =
             map.forEach { (number, numberPattern) ->
                 numberPattern.calculateProbability(totalDrawingsCount)
                 val frequenciesTotalCount = numberPattern.frequencyMap.values.stream()
@@ -87,7 +94,7 @@ object DataService {
                 }
             }
 
-    private fun processArrayPattern(map: TreeMap<String, ArrayPattern>, mapValue: IntArray, drawingIndex: Int) {
+    private fun processArrayPattern(map: HashMap<String, ArrayPattern>, mapValue: IntArray, drawingIndex: Int) {
         val mapKey = convertIntArrayToString(mapValue)
         if (map.containsKey(mapKey)) {
             map[mapKey]!!.incrementTimesOccurred()
@@ -97,7 +104,7 @@ object DataService {
         }
     }
 
-    private fun calculateArrayPatternProbabilities(map: TreeMap<String, ArrayPattern>, totalDrawingsCount: Int) =
+    private fun calculateArrayPatternProbabilities(map: HashMap<String, ArrayPattern>, totalDrawingsCount: Int) =
             map.forEach { (key, pattern) ->
                 pattern.calculateProbability(totalDrawingsCount)
                 val frequenciesTotalCount = pattern.frequencyMap.values.stream()
@@ -110,5 +117,11 @@ object DataService {
                     }
                 }
             }
+
+    private fun sortNumberPatternMap(map: HashMap<Int, NumberPattern>): Map<Int, NumberPattern> =
+            map.toList().sortedBy { (key, value) -> value }.toMap()
+
+    private fun sortArrayPatternMap(map: HashMap<String, ArrayPattern>): Map<String, ArrayPattern> =
+            map.toList().sortedBy { (key, value) -> value }.toMap()
 
 }
