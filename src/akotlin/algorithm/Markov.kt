@@ -4,30 +4,30 @@ import akotlin.utils.*
 
 object Markov {
 
-    val numberCurrentDrawingChain = HashMap<Int, MutableMap<Int, Int>>()
-    val numberPreviousDrawingChain = HashMap<Int, MutableMap<Int, Int>>()
-    val colorChain = HashMap<String, MutableMap<String, Int>>()
-    val lowHighChain = HashMap<String, MutableMap<String, Int>>()
-    val oddEvenChain = HashMap<String, MutableMap<String, Int>>()
+    val numberCurrentDrawingChains = HashMap<Int, MutableMap<Int, Int>>()
+    val numberPreviousDrawingChains = HashMap<Int, MutableMap<Int, Int>>()
+    val colorChains = HashMap<String, MutableMap<String, Int>>()
+    val lowHighChains = HashMap<String, MutableMap<String, Int>>()
+    val oddEvenChains = HashMap<String, MutableMap<String, Int>>()
 
     fun train() {
         drawingsList.forEachIndexed { drawingIndex, drawing ->
-            processNumberChain(numberCurrentDrawingChain, drawing.numbers)
+            processNumberChain(numberCurrentDrawingChains, drawing.numbers)
 
             if (drawingIndex > 1) {
-                processNumberChain(numberPreviousDrawingChain, drawingsList[drawingIndex - 1].numbers, drawing.numbers)
+                processNumberChain(numberPreviousDrawingChains, drawingsList[drawingIndex - 1].numbers, drawing.numbers)
                 processArrayChain(
-                        colorChain,
+                        colorChains,
                         convertIntArrayToString(convertDrawingArrayToColorPatternArray(drawingsList[drawingIndex - 1].numbers)),
                         convertIntArrayToString(convertDrawingArrayToColorPatternArray(drawing.numbers))
                 )
                 processArrayChain(
-                        lowHighChain,
+                        lowHighChains,
                         convertIntArrayToString(convertDrawingArrayToLowHighPatternArray(drawingsList[drawingIndex - 1].numbers)),
                         convertIntArrayToString(convertDrawingArrayToLowHighPatternArray(drawing.numbers))
                 )
                 processArrayChain(
-                        oddEvenChain,
+                        oddEvenChains,
                         convertIntArrayToString(convertDrawingArrayToOddEvenPatternArray(drawingsList[drawingIndex - 1].numbers)),
                         convertIntArrayToString(convertDrawingArrayToOddEvenPatternArray(drawing.numbers))
                 )
@@ -36,20 +36,20 @@ object Markov {
     }
 
     fun sortChains() {
-        numberCurrentDrawingChain.forEach { (key, value) ->
-            numberCurrentDrawingChain[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
+        numberCurrentDrawingChains.forEach { (key, value) ->
+            numberCurrentDrawingChains[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
         }
-        numberPreviousDrawingChain.forEach { (key, value) ->
-            numberPreviousDrawingChain[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
+        numberPreviousDrawingChains.forEach { (key, value) ->
+            numberPreviousDrawingChains[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
         }
-        colorChain.forEach { (key, value) ->
-            colorChain[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
+        colorChains.forEach { (key, value) ->
+            colorChains[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
         }
-        lowHighChain.forEach { (key, value) ->
-            lowHighChain[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
+        lowHighChains.forEach { (key, value) ->
+            lowHighChains[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
         }
-        oddEvenChain.forEach { (key, value) ->
-            oddEvenChain[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
+        oddEvenChains.forEach { (key, value) ->
+            oddEvenChains[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
         }
     }
 
