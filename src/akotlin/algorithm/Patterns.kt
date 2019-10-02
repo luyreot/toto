@@ -3,7 +3,6 @@ package akotlin.algorithm
 import akotlin.model.ArrayPattern
 import akotlin.model.NumberPattern
 import akotlin.utils.*
-import kotlin.streams.toList
 
 object Patterns {
 
@@ -13,14 +12,12 @@ object Patterns {
     lateinit var oddEvenPatterns: Map<String, ArrayPattern>
 
     fun generatePatterns() {
-        val drawings = allDrawings.values.stream().flatMap { drawingList -> drawingList.stream() }.toList()
-        val totalDrawingsCount = drawings.count()
         val numbers = HashMap<Int, NumberPattern>()
         val colors = HashMap<String, ArrayPattern>()
         val lowHighs = HashMap<String, ArrayPattern>()
         val oddEvens = HashMap<String, ArrayPattern>()
 
-        drawings.forEachIndexed { drawingIndex, drawing ->
+        drawingsList.forEachIndexed { drawingIndex, drawing ->
             drawing.numbers.forEachIndexed { _, number ->
                 // Fill the number patterns map
                 processNumberPattern(numbers, number, drawingIndex)
@@ -93,7 +90,7 @@ object Patterns {
         val frequenciesTotalCount = pattern.frequencies.values.stream()
                 .map { it.timesOccurred }
                 .reduce(0, Int::plus)
-
+        // The frequency count represents how many spaces are between each timeOccurred
         if (pattern.timesOccurred == frequenciesTotalCount + 1) {
             pattern.frequencies.forEach { (_, frequencyPattern) ->
                 frequencyPattern.calculateProbability(frequenciesTotalCount)

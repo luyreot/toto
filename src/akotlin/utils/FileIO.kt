@@ -3,22 +3,29 @@ package akotlin.utils
 import akotlin.model.Drawing
 import java.io.File
 import java.util.*
+import kotlin.streams.toList
 
 // Using a TreeMap to sort the drawings per year.
 // The drawings themselves are sorted by the date the were released on.
-val allDrawings = TreeMap<String, List<Drawing>>()
+val drawingsMap = TreeMap<String, List<Drawing>>()
+val drawingsList = mutableListOf<Drawing>()
+var totalDrawingsCount: Int = 0
 
 fun loadDrawingsForYears(vararg years: String) = years.forEach { year ->
-    allDrawings[year] = getDrawingsFromFileContents(
+    drawingsMap[year] = getDrawingsFromFileContents(
             year,
             getTxtFileContents(
                     getYearTxtFilePath(year)
             )
     )
+    drawingsList.addAll(drawingsMap.values.stream().flatMap { drawingList -> drawingList.stream() }.toList())
+    totalDrawingsCount = drawingsList.count()
 }
 
 fun loadAllDrawings() = listFileNamesInInPath(PATH_TXT_FOLDER).forEach { file ->
-    allDrawings[file.name] = getDrawingsFromFileContents(file.name, getTxtFileContents(file))
+    drawingsMap[file.name] = getDrawingsFromFileContents(file.name, getTxtFileContents(file))
+    drawingsList.addAll(drawingsMap.values.stream().flatMap { drawingList -> drawingList.stream() }.toList())
+    totalDrawingsCount = drawingsList.count()
 }
 
 fun getCurrentYearTxtFilePath(): String = PATH_TXT_FOLDER.plus(CURRENT_YEAR)

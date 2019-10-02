@@ -1,7 +1,6 @@
 package akotlin.algorithm
 
 import akotlin.utils.*
-import kotlin.streams.toList
 
 object Markov {
 
@@ -12,26 +11,24 @@ object Markov {
     val oddEvenChain = HashMap<String, HashMap<String, Int>>()
 
     fun train() {
-        val drawings = allDrawings.values.stream().flatMap { drawingList -> drawingList.stream() }.toList()
-
-        drawings.forEachIndexed { drawingIndex, drawing ->
+        drawingsList.forEachIndexed { drawingIndex, drawing ->
             processNumberChain(numberCurrentDrawingChain, drawing.numbers)
 
             if (drawingIndex > 1) {
-                processNumberChain(numberPreviousDrawingChain, drawings[drawingIndex - 1].numbers, drawing.numbers)
+                processNumberChain(numberPreviousDrawingChain, drawingsList[drawingIndex - 1].numbers, drawing.numbers)
                 processArrayChain(
                         colorChain,
-                        convertIntArrayToString(convertDrawingArrayToColorPatternArray(drawings[drawingIndex - 1].numbers)),
+                        convertIntArrayToString(convertDrawingArrayToColorPatternArray(drawingsList[drawingIndex - 1].numbers)),
                         convertIntArrayToString(convertDrawingArrayToColorPatternArray(drawing.numbers))
                 )
                 processArrayChain(
                         lowHighChain,
-                        convertIntArrayToString(convertDrawingArrayToLowHighPatternArray(drawings[drawingIndex - 1].numbers)),
+                        convertIntArrayToString(convertDrawingArrayToLowHighPatternArray(drawingsList[drawingIndex - 1].numbers)),
                         convertIntArrayToString(convertDrawingArrayToLowHighPatternArray(drawing.numbers))
                 )
                 processArrayChain(
                         oddEvenChain,
-                        convertIntArrayToString(convertDrawingArrayToOddEvenPatternArray(drawings[drawingIndex - 1].numbers)),
+                        convertIntArrayToString(convertDrawingArrayToOddEvenPatternArray(drawingsList[drawingIndex - 1].numbers)),
                         convertIntArrayToString(convertDrawingArrayToOddEvenPatternArray(drawing.numbers))
                 )
             }
@@ -58,8 +55,8 @@ object Markov {
     }
 
     private fun processNumberChain(chain: HashMap<Int, HashMap<Int, Int>>, prevDrawing: IntArray, currDrawing: IntArray) {
-        prevDrawing.forEachIndexed { prevIndex, prevNumber ->
-            currDrawing.forEachIndexed { currIndex, currNumber ->
+        prevDrawing.forEach { prevNumber ->
+            currDrawing.forEach { currNumber ->
                 if (chain.containsKey(prevNumber)) {
                     if (chain[prevNumber]!!.containsKey(currNumber)) {
                         chain[prevNumber]!![currNumber] = chain[prevNumber]!![currNumber]!!.inc()
