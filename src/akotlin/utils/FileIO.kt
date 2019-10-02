@@ -9,7 +9,6 @@ import kotlin.streams.toList
 // The drawings themselves are sorted by the date the were released on.
 val drawingsMap = TreeMap<String, List<Drawing>>()
 val drawingsList = mutableListOf<Drawing>()
-var totalDrawingsCount: Int = 0
 
 fun loadDrawingsForYears(vararg years: String) = years.forEach { year ->
     drawingsMap[year] = getDrawingsFromFileContents(
@@ -19,13 +18,11 @@ fun loadDrawingsForYears(vararg years: String) = years.forEach { year ->
             )
     )
     drawingsList.addAll(drawingsMap.values.stream().flatMap { drawingList -> drawingList.stream() }.toList())
-    totalDrawingsCount = drawingsList.count()
 }
 
 fun loadAllDrawings() = listFileNamesInInPath(PATH_TXT_FOLDER).forEach { file ->
     drawingsMap[file.name] = getDrawingsFromFileContents(file.name, getTxtFileContents(file))
     drawingsList.addAll(drawingsMap.values.stream().flatMap { drawingList -> drawingList.stream() }.toList())
-    totalDrawingsCount = drawingsList.count()
 }
 
 fun getCurrentYearTxtFilePath(): String = PATH_TXT_FOLDER.plus(CURRENT_YEAR)

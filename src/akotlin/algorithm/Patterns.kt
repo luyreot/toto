@@ -12,6 +12,7 @@ object Patterns {
     lateinit var oddEvenPatterns: Map<String, ArrayPattern>
 
     fun generatePatterns() {
+        val totalDrawingsCount = drawingsList.count()
         val numbers = HashMap<Int, NumberPattern>()
         val colors = HashMap<String, ArrayPattern>()
         val lowHighs = HashMap<String, ArrayPattern>()
