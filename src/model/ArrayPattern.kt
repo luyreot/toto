@@ -1,4 +1,4 @@
-package akotlin.model
+package model
 
 /**
  * A int array pattern representation of a drawing (1, 4, 15, 33, 44, 45), where

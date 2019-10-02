@@ -1,6 +1,6 @@
-package akotlin.utils
+package utils
 
-import akotlin.model.Drawing
+import model.Drawing
 import java.io.File
 import java.util.*
 

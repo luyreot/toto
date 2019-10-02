@@ -1,7 +1,7 @@
-package akotlin.utils
+package utils
 
-import akotlin.crawler.WebCrawler
-import akotlin.model.Drawing
+import crawler.WebCrawler
+import model.Drawing
 
 fun updateYearDrawings() = WebCrawler(getTxtFileContents(getCurrentYearTxtFilePath())).crawl()
 

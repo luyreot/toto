@@ -1,10 +1,10 @@
-package akotlin.main
+package main
 
-import akotlin.algorithm.Gen
-import akotlin.algorithm.Markov
-import akotlin.algorithm.Patterns
-import akotlin.utils.drawingsList
-import akotlin.utils.loadDrawingsForYears
+import algorithm.Gen
+import algorithm.Markov
+import algorithm.Patterns
+import utils.drawingsList
+import utils.loadDrawingsForYears
 
 class Main {
 

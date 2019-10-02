@@ -1,4 +1,4 @@
-package akotlin.extensions
+package extensions
 
 fun StringBuilder.appendDrawingsStringList(list: List<String>) = list.forEach { append(it.plus("\n")) }
 

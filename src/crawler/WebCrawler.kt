@@ -1,8 +1,8 @@
-package akotlin.crawler
+package crawler
 
-import akotlin.extensions.appendDrawingString
-import akotlin.extensions.appendDrawingsStringList
-import akotlin.utils.*
+import extensions.appendDrawingString
+import extensions.appendDrawingsStringList
+import utils.*
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

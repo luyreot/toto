@@ -1,4 +1,4 @@
-package akotlin.model
+package model
 
 data class Drawing(val year: String, val issue: Int, val numbers: IntArray) {
 

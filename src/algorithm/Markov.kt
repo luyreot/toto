@@ -1,6 +1,6 @@
-package akotlin.algorithm
+package algorithm
 
-import akotlin.utils.*
+import utils.*
 
 object Markov {
 

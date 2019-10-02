@@ -1,4 +1,4 @@
-package akotlin.utils
+package utils
 
 const val PAGE_BASE_URL: String = "http://www.toto.bg/results/6x49/"
 const val CURRENT_YEAR: String = "2019"

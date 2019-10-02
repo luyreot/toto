@@ -1,4 +1,4 @@
-package akotlin.model
+package model
 
 abstract class SubPattern : Pattern() {
 

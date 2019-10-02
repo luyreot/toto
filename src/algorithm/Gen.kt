@@ -1,7 +1,7 @@
-package akotlin.algorithm
+package algorithm
 
-import akotlin.model.Drawing
-import akotlin.utils.*
+import model.Drawing
+import utils.*
 
 object Gen {
 

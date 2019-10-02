@@ -1,8 +1,8 @@
-package akotlin.algorithm
+package algorithm
 
-import akotlin.model.ArrayPattern
-import akotlin.model.NumberPattern
-import akotlin.utils.*
+import model.ArrayPattern
+import model.NumberPattern
+import utils.*
 
 object Patterns {
 
