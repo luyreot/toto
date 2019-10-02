@@ -40,11 +40,18 @@ object Patterns {
         //Calculate probabilities of the high-low patterns
         calculateArrayPatternProbabilities(oddEvens, totalDrawingsCount)
 
+        numberPatterns = numbers
+        colorPatterns = colors
+        lowHighPatterns = lowHighs
+        oddEvenPatterns = oddEvens
+    }
+
+    fun sortPatterns() {
         // Sort pattern maps
-        numberPatterns = numbers.toList().sortedBy { (_, value) -> value }.toMap()
-        colorPatterns = colors.toList().sortedBy { (_, value) -> value }.toMap()
-        lowHighPatterns = lowHighs.toList().sortedBy { (_, value) -> value }.toMap()
-        oddEvenPatterns = oddEvens.toList().sortedBy { (_, value) -> value }.toMap()
+        numberPatterns = numberPatterns.toList().sortedBy { (_, value) -> value }.toMap()
+        colorPatterns = colorPatterns.toList().sortedBy { (_, value) -> value }.toMap()
+        lowHighPatterns = lowHighPatterns.toList().sortedBy { (_, value) -> value }.toMap()
+        oddEvenPatterns = oddEvenPatterns.toList().sortedBy { (_, value) -> value }.toMap()
 
         // Sort patterns' frequency maps
         numberPatterns.forEach { (_, pattern) -> pattern.sortFrequencies() }

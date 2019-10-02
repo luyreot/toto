@@ -4,11 +4,11 @@ import akotlin.utils.*
 
 object Markov {
 
-    val numberCurrentDrawingChain = HashMap<Int, HashMap<Int, Int>>()
-    val numberPreviousDrawingChain = HashMap<Int, HashMap<Int, Int>>()
-    val colorChain = HashMap<String, HashMap<String, Int>>()
-    val lowHighChain = HashMap<String, HashMap<String, Int>>()
-    val oddEvenChain = HashMap<String, HashMap<String, Int>>()
+    val numberCurrentDrawingChain = HashMap<Int, MutableMap<Int, Int>>()
+    val numberPreviousDrawingChain = HashMap<Int, MutableMap<Int, Int>>()
+    val colorChain = HashMap<String, MutableMap<String, Int>>()
+    val lowHighChain = HashMap<String, MutableMap<String, Int>>()
+    val oddEvenChain = HashMap<String, MutableMap<String, Int>>()
 
     fun train() {
         drawingsList.forEachIndexed { drawingIndex, drawing ->
@@ -35,10 +35,28 @@ object Markov {
         }
     }
 
-    private fun processNumberChain(chain: HashMap<Int, HashMap<Int, Int>>, drawing: IntArray) {
+    fun sortChains() {
+        numberCurrentDrawingChain.forEach { (key, value) ->
+            numberCurrentDrawingChain[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
+        }
+        numberPreviousDrawingChain.forEach { (key, value) ->
+            numberPreviousDrawingChain[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
+        }
+        colorChain.forEach { (key, value) ->
+            colorChain[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
+        }
+        lowHighChain.forEach { (key, value) ->
+            lowHighChain[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
+        }
+        oddEvenChain.forEach { (key, value) ->
+            oddEvenChain[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
+        }
+    }
+
+    private fun processNumberChain(chain: HashMap<Int, MutableMap<Int, Int>>, drawing: IntArray) {
         drawing.forEachIndexed { firstIndex, firstNumber ->
             drawing.forEachIndexed { secondIndex, secondNumber ->
-                if (firstIndex < secondIndex) {
+                if (firstIndex != secondIndex) {
                     if (chain.containsKey(firstNumber)) {
                         if (chain[firstNumber]!!.containsKey(secondNumber)) {
                             chain[firstNumber]!![secondNumber] = chain[firstNumber]!![secondNumber]!!.inc()
@@ -54,7 +72,7 @@ object Markov {
         }
     }
 
-    private fun processNumberChain(chain: HashMap<Int, HashMap<Int, Int>>, prevDrawing: IntArray, currDrawing: IntArray) {
+    private fun processNumberChain(chain: HashMap<Int, MutableMap<Int, Int>>, prevDrawing: IntArray, currDrawing: IntArray) {
         prevDrawing.forEach { prevNumber ->
             currDrawing.forEach { currNumber ->
                 if (chain.containsKey(prevNumber)) {
@@ -71,7 +89,7 @@ object Markov {
         }
     }
 
-    private fun processArrayChain(chain: HashMap<String, HashMap<String, Int>>, prevColorPattern: String, currColorPattern: String) {
+    private fun processArrayChain(chain: HashMap<String, MutableMap<String, Int>>, prevColorPattern: String, currColorPattern: String) {
         if (chain.containsKey(prevColorPattern)) {
             if (chain[prevColorPattern]!!.containsKey(currColorPattern)) {
                 chain[prevColorPattern]!![currColorPattern] = chain[prevColorPattern]!![currColorPattern]!!.inc()

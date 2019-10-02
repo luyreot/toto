@@ -17,7 +17,9 @@ class Main {
 //            loadDrawingsForYears("2019")
 
             Patterns.generatePatterns()
+            Patterns.sortPatterns()
             Markov.train()
+            Markov.sortChains()
 
             println()
         }
