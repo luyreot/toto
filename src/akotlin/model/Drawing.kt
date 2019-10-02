@@ -8,18 +8,13 @@ data class Drawing(val year: String, val issue: Int, val numbers: IntArray) {
 
         other as Drawing
 
-        if (year != other.year) return false
-        if (issue != other.issue) return false
-        if (!numbers.contentEquals(other.numbers)) return false
-        return true
+        return year == other.year && issue == other.issue && numbers.contentEquals(other.numbers)
+//        return numbers.contentEquals(other.numbers)
     }
 
     override fun hashCode(): Int {
-        var result = 1
-        result = result xor year.hashCode()
-        result = result xor issue.hashCode()
-        result = result xor numbers.contentHashCode()
-        return result
+        return 1 xor year.hashCode() xor issue.hashCode() xor numbers.contentHashCode()
+//        return 1 xor numbers.contentHashCode()
     }
 
 }
