@@ -17,8 +17,4 @@ abstract class SubPattern : Pattern() {
         }
     }
 
-    fun sortFrequencies() {
-        frequencies = frequencies.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
-    }
-
 }
