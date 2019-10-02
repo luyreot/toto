@@ -1,43 +1,42 @@
 package algorithm
 
+import extensions.addChain
 import utils.*
 
 object Markov {
 
-    val numberCurrentDrawingChains = HashMap<Int, MutableMap<Int, Int>>()
-    val numberPreviousDrawingChains = HashMap<Int, MutableMap<Int, Int>>()
-    val colorChains = HashMap<String, MutableMap<String, Int>>()
-    val lowHighChains = HashMap<String, MutableMap<String, Int>>()
-    val oddEvenChains = HashMap<String, MutableMap<String, Int>>()
+    val numberSameDrawingChains = mutableMapOf<String, MutableMap<String, Int>>()
+    val numberPreviousDrawingChains = mutableMapOf<String, MutableMap<String, Int>>()
+    val colorChains = mutableMapOf<String, MutableMap<String, Int>>()
+    val lowHighChains = mutableMapOf<String, MutableMap<String, Int>>()
+    val oddEvenChains = mutableMapOf<String, MutableMap<String, Int>>()
 
     fun train() {
         drawingsList.forEachIndexed { drawingIndex, drawing ->
-            processNumberChain(numberCurrentDrawingChains, drawing.numbers)
+            numberSameDrawingChains.addChain(drawing.numbers)
 
             if (drawingIndex > 1) {
-                processNumberChain(numberPreviousDrawingChains, drawingsList[drawingIndex - 1].numbers, drawing.numbers)
-                processArrayChain(
-                        colorChains,
-                        convertIntArrayToString(convertDrawingArrayToColorPatternArray(drawingsList[drawingIndex - 1].numbers)),
-                        convertIntArrayToString(convertDrawingArrayToColorPatternArray(drawing.numbers))
+                numberPreviousDrawingChains.addChain(drawingsList[drawingIndex - 1].numbers, drawing.numbers)
+                colorChains.addChain(
+                        convertDrawingIntArrayToString(convertDrawingIntArrayToColorPatternArray(drawingsList[drawingIndex - 1].numbers)),
+                        convertDrawingIntArrayToString(convertDrawingIntArrayToColorPatternArray(drawing.numbers))
                 )
-                processArrayChain(
-                        lowHighChains,
-                        convertIntArrayToString(convertDrawingArrayToLowHighPatternArray(drawingsList[drawingIndex - 1].numbers)),
-                        convertIntArrayToString(convertDrawingArrayToLowHighPatternArray(drawing.numbers))
+                lowHighChains.addChain(
+                        convertDrawingIntArrayToString(convertDrawingIntArrayToLowHighPatternArray(drawingsList[drawingIndex - 1].numbers)),
+                        convertDrawingIntArrayToString(convertDrawingIntArrayToLowHighPatternArray(drawing.numbers))
                 )
-                processArrayChain(
-                        oddEvenChains,
-                        convertIntArrayToString(convertDrawingArrayToOddEvenPatternArray(drawingsList[drawingIndex - 1].numbers)),
-                        convertIntArrayToString(convertDrawingArrayToOddEvenPatternArray(drawing.numbers))
+                oddEvenChains.addChain(
+                        convertDrawingIntArrayToString(convertDrawingIntArrayToOddEvenPatternArray(drawingsList[drawingIndex - 1].numbers)),
+                        convertDrawingIntArrayToString(convertDrawingIntArrayToOddEvenPatternArray(drawing.numbers))
                 )
             }
         }
     }
 
     fun sortChains() {
-        numberCurrentDrawingChains.forEach { (key, value) ->
-            numberCurrentDrawingChains[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
+        // TODO
+        numberSameDrawingChains.forEach { (key, value) ->
+            numberSameDrawingChains[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
         }
         numberPreviousDrawingChains.forEach { (key, value) ->
             numberPreviousDrawingChains[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
@@ -50,55 +49,6 @@ object Markov {
         }
         oddEvenChains.forEach { (key, value) ->
             oddEvenChains[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
-        }
-    }
-
-    private fun processNumberChain(chain: HashMap<Int, MutableMap<Int, Int>>, drawing: IntArray) {
-        drawing.forEachIndexed { firstIndex, firstNumber ->
-            drawing.forEachIndexed { secondIndex, secondNumber ->
-                if (firstIndex != secondIndex) {
-                    if (chain.containsKey(firstNumber)) {
-                        if (chain[firstNumber]!!.containsKey(secondNumber)) {
-                            chain[firstNumber]!![secondNumber] = chain[firstNumber]!![secondNumber]!!.inc()
-                        } else {
-                            chain[firstNumber]!![secondNumber] = 1
-                        }
-                    } else {
-                        chain[firstNumber] = hashMapOf()
-                        chain[firstNumber]!![secondNumber] = 1
-                    }
-                }
-            }
-        }
-    }
-
-    private fun processNumberChain(chain: HashMap<Int, MutableMap<Int, Int>>, prevDrawing: IntArray, currDrawing: IntArray) {
-        prevDrawing.forEach { prevNumber ->
-            currDrawing.forEach { currNumber ->
-                if (chain.containsKey(prevNumber)) {
-                    if (chain[prevNumber]!!.containsKey(currNumber)) {
-                        chain[prevNumber]!![currNumber] = chain[prevNumber]!![currNumber]!!.inc()
-                    } else {
-                        chain[prevNumber]!![currNumber] = 1
-                    }
-                } else {
-                    chain[prevNumber] = hashMapOf()
-                    chain[prevNumber]!![currNumber] = 1
-                }
-            }
-        }
-    }
-
-    private fun processArrayChain(chain: HashMap<String, MutableMap<String, Int>>, prevColorPattern: String, currColorPattern: String) {
-        if (chain.containsKey(prevColorPattern)) {
-            if (chain[prevColorPattern]!!.containsKey(currColorPattern)) {
-                chain[prevColorPattern]!![currColorPattern] = chain[prevColorPattern]!![currColorPattern]!!.inc()
-            } else {
-                chain[prevColorPattern]!![currColorPattern] = 1
-            }
-        } else {
-            chain[prevColorPattern] = hashMapOf()
-            chain[prevColorPattern]!![currColorPattern] = 1
         }
     }
 
