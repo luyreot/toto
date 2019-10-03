@@ -27,10 +27,10 @@ class Main {
             Patterns.sort()
             Markov.train()
             Markov.sortChains()
-            Generate.allPossibleColorPatterns()
-            Generate.allPossibleLowHighPatterns()
-            Generate.allPossibleOddEvenPatterns()
-            // TODO add calculations for probabilities
+            Generate.getAllPossibleColorPatterns()
+            Generate.getAllPossibleLowHighPatterns()
+            Generate.getAllPossibleOddEvenPatterns()
+            Generate.findMissingColorPatterns()
 //            Predict.predict()
 
             println()

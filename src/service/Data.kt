@@ -22,7 +22,6 @@ val colorChains = mutableMapOf<String, MutableMap<String, Int>>()
 val lowHighChains = mutableMapOf<String, MutableMap<String, Int>>()
 val oddEvenChains = mutableMapOf<String, MutableMap<String, Int>>()
 
-// All possible patterns
+// All possible & missing color patterns, no need to do this for low/high and odd/even because they are all there
 val allPossibleColorPatterns = mutableSetOf<String>()
-val allPossibleLowHighPatterns = mutableSetOf<String>()
-val allPossibleOddEvenPatterns = mutableSetOf<String>()
+val missingColorPatterns = mutableMapOf<String, Double>()
