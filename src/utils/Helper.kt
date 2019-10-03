@@ -29,7 +29,7 @@ fun convertDrawingIntArrayToLowHighPatternArray(drawing: IntArray): IntArray =
         drawing.map { number -> if (number <= HIGH_LOW_MIDPOINT) 0 else 1 }.toIntArray()
 
 fun convertDrawingIntArrayToOddEvenPatternArray(drawing: IntArray): IntArray =
-        drawing.map { number -> if ((number and 1) == 0) 1 else 0 }.toIntArray()
+        drawing.map { number -> if ((number and 1) == 0) 1 else 0 }.toIntArray().sortedArray()
 
 fun convertDrawingIntArrayToString(drawing: IntArray): String =
         drawing.asList().toString().replaceFirst("[", "", true).replaceFirst("]", "", true)
