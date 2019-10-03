@@ -6,6 +6,7 @@ import service.colorChains
 import service.drawingsList
 import service.lowHighChains
 import service.oddEvenChains
+import utils.convertDrawingIntArrayToColorPatternArray
 import utils.convertDrawingIntArrayToLowHighPatternArray
 import utils.convertDrawingIntArrayToOddEvenPatternArray
 
@@ -47,43 +48,13 @@ object Predict {
     private fun getLastDrawing(): Drawing = drawingsList[drawingsList.size - 1]
 
     private fun getColorChains(drawing: Drawing): MutableMap<String, Int>? {
-//        val drawingAsString = convertDrawingIntArrayToString(convertDrawingIntArrayToColorPatternArray(drawing.numbers))
-//        val chains = colorChains[drawingAsString]
-//                ?: throw IllegalArgumentException("No chains found for $drawingAsString")
-
-        var probabilitySum = 0.0;
-        var probabilityTotal = 0
-        var aboveAverage = 0
-        colorChains.forEach { (_, chains) ->
-
-            var singleOccurrences = 0
-            var multipleOccurrences = 0
-            chains.forEach { (_, count) ->
-                if (count > 1) {
-                    multipleOccurrences++
-                }
-                if (count == 1) {
-                    singleOccurrences++
-                }
-            }
-            val chainsProbability = multipleOccurrences.div(singleOccurrences.toDouble()) * 100.0
-            if (chainsProbability != 0.0) {
-                println(chainsProbability)
-                if(chainsProbability >= 27.878693831212544) {
-                    aboveAverage++
-                }
-            } else {
-                println()
-            }
-            probabilitySum += chainsProbability
-            probabilityTotal++
-        }
-
-        println("Average probability ${probabilitySum.div(probabilityTotal)}")
-        println("Above average count $aboveAverage out of $probabilityTotal")
+        val drawingAsString = convertDrawingIntArrayToColorPatternArray(drawing.numbers).toDrawingString()
+        val chains = colorChains[drawingAsString]
+                ?: throw IllegalArgumentException("No chains found for $drawingAsString")
 
 
-        return null
+
+        return chains
     }
 
     private fun getLowHighChains(drawing: Drawing): MutableMap<String, Int>? {
@@ -93,6 +64,5 @@ object Predict {
     private fun getOddEvenChains(drawing: Drawing): MutableMap<String, Int>? {
         return oddEvenChains[convertDrawingIntArrayToOddEvenPatternArray(drawing.numbers).toDrawingString()]
     }
-
 
 }
