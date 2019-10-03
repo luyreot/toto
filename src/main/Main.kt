@@ -1,12 +1,10 @@
 package main
 
-import algorithm.Gen
+import algorithm.Generate
 import algorithm.Markov
 import algorithm.Patterns
 import service.drawingsList
 import utils.loadAllDrawings
-import utils.loadDrawingsForYears
-import utils.updateYearDrawings
 
 class Main {
 
@@ -24,12 +22,15 @@ class Main {
 //            loadDrawingsForYears("2019")
 //            printDuplicateDrawings("2019")
 
-            Patterns.generatePatterns()
+            Patterns.generate()
             Patterns.calculateProbabilities()
-            Patterns.sortPatterns()
+            Patterns.sort()
             Markov.train()
             Markov.sortChains()
-//            Gen.gen()
+            Generate.allPossibleColorPatterns()
+            Generate.allPossibleLowHighOddEvenPatterns()
+            // TODO add calculations for probabilities
+//            Predict.predict()
 
             println()
         }

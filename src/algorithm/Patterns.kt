@@ -11,7 +11,7 @@ import utils.convertDrawingIntArrayToOddEvenPatternArray
 
 object Patterns {
 
-    fun generatePatterns() {
+    fun generate() {
         drawingsList.forEachIndexed { drawingIndex, drawing ->
             drawing.numbers.forEachIndexed { _, number ->
                 // Fill the number patterns map
@@ -39,7 +39,7 @@ object Patterns {
         oddEvenPatterns.calculatePatternProbabilities(totalDrawingsCount)
     }
 
-    fun sortPatterns() {
+    fun sort() {
         // Sort pattern maps
         numberPatterns = numberPatterns.sortPatternsByProbability()
         colorPatterns = colorPatterns.sortPatternsByProbability()

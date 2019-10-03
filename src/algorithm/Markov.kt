@@ -2,11 +2,11 @@ package algorithm
 
 import extensions.addChain
 import extensions.sortChain
+import extensions.toDrawingString
 import service.*
 import utils.convertDrawingIntArrayToColorPatternArray
 import utils.convertDrawingIntArrayToLowHighPatternArray
 import utils.convertDrawingIntArrayToOddEvenPatternArray
-import utils.convertDrawingIntArrayToString
 
 object Markov {
 
@@ -17,16 +17,16 @@ object Markov {
             if (drawingIndex > 1) {
                 numberPreviousDrawingChains.addChain(drawingsList[drawingIndex - 1].numbers, drawing.numbers)
                 colorChains.addChain(
-                        convertDrawingIntArrayToString(convertDrawingIntArrayToColorPatternArray(drawingsList[drawingIndex - 1].numbers)),
-                        convertDrawingIntArrayToString(convertDrawingIntArrayToColorPatternArray(drawing.numbers))
+                        convertDrawingIntArrayToColorPatternArray(drawingsList[drawingIndex - 1].numbers).toDrawingString(),
+                        convertDrawingIntArrayToColorPatternArray(drawing.numbers).toDrawingString()
                 )
                 lowHighChains.addChain(
-                        convertDrawingIntArrayToString(convertDrawingIntArrayToLowHighPatternArray(drawingsList[drawingIndex - 1].numbers)),
-                        convertDrawingIntArrayToString(convertDrawingIntArrayToLowHighPatternArray(drawing.numbers))
+                        convertDrawingIntArrayToLowHighPatternArray(drawingsList[drawingIndex - 1].numbers).toDrawingString(),
+                        convertDrawingIntArrayToLowHighPatternArray(drawing.numbers).toDrawingString()
                 )
                 oddEvenChains.addChain(
-                        convertDrawingIntArrayToString(convertDrawingIntArrayToOddEvenPatternArray(drawingsList[drawingIndex - 1].numbers)),
-                        convertDrawingIntArrayToString(convertDrawingIntArrayToOddEvenPatternArray(drawing.numbers))
+                        convertDrawingIntArrayToOddEvenPatternArray(drawingsList[drawingIndex - 1].numbers).toDrawingString(),
+                        convertDrawingIntArrayToOddEvenPatternArray(drawing.numbers).toDrawingString()
                 )
             }
         }

@@ -3,12 +3,11 @@ package extensions
 import model.ArrayPattern
 import model.NumberPattern
 import model.SubPattern
-import utils.convertDrawingIntArrayToString
 
 fun MutableMap<String, SubPattern>.addPattern(content: Any, drawingIndex: Int) {
     require(!(content !is Int && content !is IntArray)) { "Content type must be either Int or IntArray." }
 
-    val key = if (content is Int) content.toString() else convertDrawingIntArrayToString(content as IntArray)
+    val key = if (content is Int) content.toString() else (content as IntArray).toDrawingString()
     if (containsKey(key)) {
         get(key)!!.incrementTimesOccurred()
         get(key)!!.addFrequency(drawingIndex)
