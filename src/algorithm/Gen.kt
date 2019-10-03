@@ -10,15 +10,26 @@ import utils.*
 object Gen {
 
     // 1. Get the last drawing
-    // 2. Get its color chains (maybe the top n number, not all??)
-    // 3. Generate all possible drawing combinations for each color pattern
-    // 4. Get the low/high chains (maybe the top n number, not all??)
-    // 5. Remove any drawings that do not conform to the low/high patterns
-    //    5.1. Store the removed ones and check them if their color pattern probability (decide whether to put them back or not).
-    // 6. Same as 4 & 5 but for odd/even chains.
-    // 7. Remove any drawings that have already been drawn in previous drawings.
-    // 8.
+    // 2. Get the patterns (color, low/high, odd/even) for next drawing from the chains - see NEXT below...
+    // 3. Generate all possible number drawings for the color patterns
+    // 4. Remove any patterns that do not conform to the low/high patterns BUT store the removed ones - see STORE below...
+    // 5. Do the same with the odd/even patterns
+    // 6. Now we should have all possible drawings with the removed ones for LATER
+    // 7. For every possible drawing + the removed ones, calculate its score based on the [numberSameDrawingChains], see SCORE below...
+    // 8. Next do the same but with the [numberPreviousDrawingChains].
+    // 9. 
 
+    // NEXT: Get patterns from chains (for color, low/high, odd/even)
+    // - decide whether next pattern will be one from the current chain or a new one based on the probability
+    // (Probability is calculated on the times each pattern in the chain has occurred more than once)
+    // - if from chain: take every pattern from the chain
+    // - if new: take the most probable patterns (decide on size) that is not in the chain
+
+    // STORE
+    //
+
+    // SCORE
+    //
 
     fun gen() {
         val lastDrawing = getLastDrawing()
