@@ -1,6 +1,7 @@
 package algorithm
 
 import extensions.addChain
+import extensions.sortChain
 import utils.*
 
 object Markov {
@@ -34,22 +35,11 @@ object Markov {
     }
 
     fun sortChains() {
-        // TODO
-        numberSameDrawingChains.forEach { (key, value) ->
-            numberSameDrawingChains[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
-        }
-        numberPreviousDrawingChains.forEach { (key, value) ->
-            numberPreviousDrawingChains[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
-        }
-        colorChains.forEach { (key, value) ->
-            colorChains[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
-        }
-        lowHighChains.forEach { (key, value) ->
-            lowHighChains[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
-        }
-        oddEvenChains.forEach { (key, value) ->
-            oddEvenChains[key] = value.toList().sortedBy { (_, value) -> value }.toMap().toMutableMap()
-        }
+        numberSameDrawingChains.sortChain()
+        numberPreviousDrawingChains.sortChain()
+        colorChains.sortChain()
+        lowHighChains.sortChain()
+        oddEvenChains.sortChain()
     }
 
 }

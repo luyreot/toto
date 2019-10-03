@@ -75,3 +75,9 @@ fun MutableMap<String, MutableMap<String, Int>>.addChain(prevColorPattern: Strin
     val count = getOrPut(prevColorPattern) { mutableMapOf() }.getOrPut(currColorPattern) { 0 }.inc()
     get(prevColorPattern)!![currColorPattern] = count
 }
+
+fun MutableMap<String, MutableMap<String, Int>>.sortChain() {
+    forEach { (key, value) ->
+        set(key, value.toList().sortedBy { (_, _value) -> _value }.toMap().toMutableMap())
+    }
+}
