@@ -21,3 +21,8 @@ val numberPreviousDrawingChains = mutableMapOf<String, MutableMap<String, Int>>(
 val colorChains = mutableMapOf<String, MutableMap<String, Int>>()
 val lowHighChains = mutableMapOf<String, MutableMap<String, Int>>()
 val oddEvenChains = mutableMapOf<String, MutableMap<String, Int>>()
+
+// All possible patterns
+val allPossibleColorPatterns = mutableSetOf<String>()
+val allPossibleLowHighPatterns = mutableSetOf<String>()
+val allPossibleOddEvenPatterns = mutableSetOf<String>()

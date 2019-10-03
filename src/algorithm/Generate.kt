@@ -4,44 +4,33 @@ import extensions.toDrawingString
 
 object Generate {
 
-    fun allPossibleColorPatterns(): Set<String> {
-        val patterns = mutableSetOf<String>()
-
-        for (p1 in 0..4) {
-            for (p2 in 0..4) {
-                for (p3 in 0..4) {
-                    for (p4 in 0..4) {
-                        for (p5 in 0..4) {
-                            for (p6 in 0..4) {
-                                patterns.add(intArrayOf(p1, p2, p3, p4, p5, p6).sortedArray().toDrawingString())
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return patterns
+    fun allPossibleColorPatterns() {
+        generateIntArrayPatterns(service.allPossibleColorPatterns, 4, IntArray(6), 0)
     }
 
-    fun allPossibleLowHighOddEvenPatterns(): Set<String> {
-        val patterns = mutableSetOf<String>()
+    fun allPossibleLowHighPatterns() {
+        generateIntArrayPatterns(service.allPossibleLowHighPatterns, 1, IntArray(6), 0)
+    }
 
-        for (p1 in 0..1) {
-            for (p2 in 0..1) {
-                for (p3 in 0..1) {
-                    for (p4 in 0..1) {
-                        for (p5 in 0..1) {
-                            for (p6 in 0..1) {
-                                patterns.add(intArrayOf(p1, p2, p3, p4, p5, p6).sortedArray().toDrawingString())
-                            }
-                        }
-                    }
+    fun allPossibleOddEvenPatterns() {
+        generateIntArrayPatterns(service.allPossibleOddEvenPatterns, 1, IntArray(6), 0)
+    }
+
+    private fun generateIntArrayPatterns(patterns: MutableSet<String>, end: Int, array: IntArray, index: Int) {
+        for (x in 0..end) {
+            if (index > 0 && x < array[index - 1]) {
+                continue
+            }
+            array[index] = x
+            if (index == array.size - 1) {
+                patterns.add(array.sortedArray().toDrawingString())
+                if (x == end) {
+                    return
                 }
+            } else {
+                generateIntArrayPatterns(patterns, end, array, index + 1)
             }
         }
-
-        return patterns
     }
 
 }

@@ -28,7 +28,8 @@ class Main {
             Markov.train()
             Markov.sortChains()
             Generate.allPossibleColorPatterns()
-            Generate.allPossibleLowHighOddEvenPatterns()
+            Generate.allPossibleLowHighPatterns()
+            Generate.allPossibleOddEvenPatterns()
             // TODO add calculations for probabilities
 //            Predict.predict()
 
