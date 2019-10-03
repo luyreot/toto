@@ -2,15 +2,13 @@ package algorithm
 
 import extensions.addChain
 import extensions.sortChain
-import utils.*
+import service.*
+import utils.convertDrawingIntArrayToColorPatternArray
+import utils.convertDrawingIntArrayToLowHighPatternArray
+import utils.convertDrawingIntArrayToOddEvenPatternArray
+import utils.convertDrawingIntArrayToString
 
 object Markov {
-
-    val numberSameDrawingChains = mutableMapOf<String, MutableMap<String, Int>>()
-    val numberPreviousDrawingChains = mutableMapOf<String, MutableMap<String, Int>>()
-    val colorChains = mutableMapOf<String, MutableMap<String, Int>>()
-    val lowHighChains = mutableMapOf<String, MutableMap<String, Int>>()
-    val oddEvenChains = mutableMapOf<String, MutableMap<String, Int>>()
 
     fun train() {
         drawingsList.forEachIndexed { drawingIndex, drawing ->

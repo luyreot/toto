@@ -1,13 +1,8 @@
 package utils
 
-import model.Drawing
+import service.drawingsList
+import service.drawingsMap
 import java.io.File
-import java.util.*
-
-// Using a TreeMap to sort the drawings per year.
-// The drawings themselves are sorted by the date the were released on.
-val drawingsMap = TreeMap<String, List<Drawing>>()
-val drawingsList = mutableListOf<Drawing>()
 
 fun loadDrawingsForYears(vararg years: String) {
     drawingsMap.clear()

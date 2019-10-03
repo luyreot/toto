@@ -1,6 +1,10 @@
 package algorithm
 
 import model.Drawing
+import service.colorChains
+import service.drawingsList
+import service.lowHighChains
+import service.oddEvenChains
 import utils.*
 
 object Gen {
@@ -21,23 +25,33 @@ object Gen {
         val colorChains = getColorChains(lastDrawing)
         val lowHighChains = getLowHighChains(lastDrawing)
         val oddEvenChains = getOddEvenChains(lastDrawing)
+
+        val drawings = mutableListOf<Drawing>()
+        colorChains?.forEach { chain -> drawings.addAll(generatePossibleDrawingsForColorPattern(convertDrawingStringToIntArray(chain.key))) }
     }
 
     private fun getLastDrawing(): Drawing = drawingsList[drawingsList.size - 1]
 
     private fun getColorChains(drawing: Drawing): MutableMap<String, Int>? {
-        return Markov.colorChains[convertIntArrayToString(convertDrawingArrayToColorPatternArray(drawing.numbers))]
+        return colorChains[convertDrawingIntArrayToString(convertDrawingIntArrayToColorPatternArray(drawing.numbers))]
     }
 
     private fun getLowHighChains(drawing: Drawing): MutableMap<String, Int>? {
-        return Markov.lowHighChains[convertIntArrayToString(convertDrawingArrayToLowHighPatternArray(drawing.numbers))]
+        return lowHighChains[convertDrawingIntArrayToString(convertDrawingIntArrayToLowHighPatternArray(drawing.numbers))]
     }
 
     private fun getOddEvenChains(drawing: Drawing): MutableMap<String, Int>? {
-        return Markov.oddEvenChains[convertIntArrayToString(convertDrawingArrayToOddEvenPatternArray(drawing.numbers))]
+        return oddEvenChains[convertDrawingIntArrayToString(convertDrawingIntArrayToOddEvenPatternArray(drawing.numbers))]
     }
 
     // TODO get number chains
 
+    private fun generatePossibleDrawingsForColorPattern(colorPattern: IntArray): List<Drawing> {
+        val drawings = mutableListOf<Drawing>()
+
+
+
+        return drawings
+    }
 
 }

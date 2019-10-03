@@ -4,18 +4,12 @@ import extensions.addPattern
 import extensions.calculatePatternProbabilities
 import extensions.sortFrequenciesByProbability
 import extensions.sortPatternsByProbability
-import model.SubPattern
+import service.*
 import utils.convertDrawingIntArrayToColorPatternArray
 import utils.convertDrawingIntArrayToLowHighPatternArray
 import utils.convertDrawingIntArrayToOddEvenPatternArray
-import utils.drawingsList
 
 object Patterns {
-
-    var numberPatterns = mutableMapOf<String, SubPattern>()
-    var colorPatterns = mutableMapOf<String, SubPattern>()
-    var lowHighPatterns = mutableMapOf<String, SubPattern>()
-    var oddEvenPatterns = mutableMapOf<String, SubPattern>()
 
     fun generatePatterns() {
         drawingsList.forEachIndexed { drawingIndex, drawing ->

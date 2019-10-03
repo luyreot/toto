@@ -3,8 +3,10 @@ package main
 import algorithm.Gen
 import algorithm.Markov
 import algorithm.Patterns
-import utils.drawingsList
+import service.drawingsList
+import utils.loadAllDrawings
 import utils.loadDrawingsForYears
+import utils.updateYearDrawings
 
 class Main {
 
@@ -13,20 +15,21 @@ class Main {
         fun main(args: Array<String>) {
 //            updateYearDrawings()
 
-//            loadAllDrawings()
+            loadAllDrawings()
 //            printDuplicateDrawings("All")
 
-            loadDrawingsForYears("2017", "2018", "2019")
-            printDuplicateDrawings("2017_2018_2019")
+//            loadDrawingsForYears("2017", "2018", "2019")
+//            printDuplicateDrawings("2017_2018_2019")
 
 //            loadDrawingsForYears("2019")
 //            printDuplicateDrawings("2019")
 
             Patterns.generatePatterns()
+            Patterns.calculateProbabilities()
             Patterns.sortPatterns()
             Markov.train()
             Markov.sortChains()
-            Gen.gen()
+//            Gen.gen()
 
             println()
         }
