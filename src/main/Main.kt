@@ -5,14 +5,18 @@ import algorithm.Markov
 import algorithm.Patterns
 import service.drawingsList
 import utils.loadAllDrawings
+import utils.updateYearDrawings
 
 class Main {
 
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-//            updateYearDrawings()
+            updateYearDrawings()
+//            doOtherStuff()
+        }
 
+        private fun doOtherStuff() {
             loadAllDrawings()
 //            printDuplicateDrawings("All")
 
@@ -28,8 +32,6 @@ class Main {
             Markov.train()
             Markov.sortChains()
             Generate.getAllPossibleColorPatterns()
-            Generate.getAllPossibleLowHighPatterns()
-            Generate.getAllPossibleOddEvenPatterns()
             Generate.findMissingColorPatterns()
 //            Predict.predict()
 

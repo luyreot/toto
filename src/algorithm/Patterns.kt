@@ -35,7 +35,7 @@ object Patterns {
         colorPatterns.calculatePatternProbabilities(totalDrawingsCount)
         // Calculate probabilities of the odd-even patterns
         lowHighPatterns.calculatePatternProbabilities(totalDrawingsCount)
-        //Calculate probabilities of the high-low patterns
+        // Calculate probabilities of the high-low patterns
         oddEvenPatterns.calculatePatternProbabilities(totalDrawingsCount)
     }
 
