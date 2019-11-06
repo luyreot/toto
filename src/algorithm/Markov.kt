@@ -10,7 +10,7 @@ import utils.convertDrawingIntArrayToOddEvenPatternArray
 
 object Markov {
 
-    fun train() {
+    fun trainChains() {
         drawingsList.forEachIndexed { drawingIndex, drawing ->
             numberSameDrawingChains.addChain(drawing.numbers)
 

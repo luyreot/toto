@@ -2,8 +2,10 @@ package utils
 
 import crawler.WebCrawler
 import extensions.toDrawingIntArray
+import extensions.toDrawingString
 import model.ArrayPattern
 import model.Drawing
+import service.allPossibleColorPatterns
 import service.colorPatterns
 
 fun updateYearDrawings() = WebCrawler(getTxtFileContents(getCurrentYearTxtFilePath())).crawl()
@@ -24,6 +26,30 @@ fun convertDrawingIntArrayToLowHighPatternArray(drawing: IntArray): IntArray =
 
 fun convertDrawingIntArrayToOddEvenPatternArray(drawing: IntArray): IntArray =
         drawing.map { number -> if ((number and 1) == 0) 1 else 0 }.toIntArray().sortedArray()
+
+fun getAllPossibleColorPatterns(patterns: MutableSet<String>, end: Int, array: IntArray, index: Int) {
+    for (x in 0..end) {
+        if (index > 0 && x < array[index - 1]) continue
+        array[index] = x
+        if (index == array.size - 1) {
+            patterns.add(array.sortedArray().toDrawingString())
+            if (x == end) return
+        } else {
+            getAllPossibleColorPatterns(patterns, end, array, index + 1)
+        }
+    }
+}
+
+// Methods below are work in progress
+
+fun findMissingColorPatterns() {
+    val missingPatterns = allPossibleColorPatterns - colorPatterns.keys
+    if (missingPatterns.isEmpty()) return
+
+    // Note that not every position (1-6) has every color code (0-4)
+    val scores = calculateColorPatternCodeScores()
+    // TODO calculate score for missing color patterns
+}
 
 /**
  * Model: position (1-6), codes per position (0-4) + their score

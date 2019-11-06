@@ -40,19 +40,19 @@ object Predict {
         val lastDrawing = getLastDrawing()
         // 2
         val colorChains = getColorChains(lastDrawing)
-        //val lowHighChains = getLowHighChains(lastDrawing)
-        //val oddEvenChains = getOddEvenChains(lastDrawing)
+        val lowHighChains = getLowHighChains(lastDrawing)
+        val oddEvenChains = getOddEvenChains(lastDrawing)
 
     }
 
     private fun getLastDrawing(): Drawing = drawingsList[drawingsList.size - 1]
 
     private fun getColorChains(drawing: Drawing): MutableMap<String, Int>? {
-        val drawingAsString = convertDrawingIntArrayToColorPatternArray(drawing.numbers).toDrawingString()
-        val chains = colorChains[drawingAsString]
-                ?: throw IllegalArgumentException("No chains found for $drawingAsString")
-
-
+        val chains = colorChains[convertDrawingIntArrayToColorPatternArray(drawing.numbers).toDrawingString()]
+        if (chains == null || chains.isEmpty()) {
+            // todo get the top n color patterns
+            throw IllegalArgumentException("No chains for drawing " + drawing.numbers.toDrawingString())
+        }
 
         return chains
     }
