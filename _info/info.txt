@@ -5,3 +5,8 @@ Links:
 * https://bgtoto.com/6ot49_arhiv.php
 * http://www.toto.bg/statistika/6x49
 * https://toto.bg/index.php?lang=1&pid=drawing649
+
+
+=================
+Testing lib - https://github.com/kotlintest/kotlintest
+
