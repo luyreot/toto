@@ -5,7 +5,6 @@ import algorithm.Patterns
 import algorithm.Predict
 import service.drawingsList
 import utils.loadAllDrawings
-import utils.updateYearDrawings
 
 class Main {
 
