@@ -2,11 +2,11 @@ package crawler
 
 import extensions.appendDrawingString
 import extensions.appendDrawingsStringList
-import utils.*
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
+import utils.*
 import java.io.IOException
 
 class WebCrawler(contents: List<String>) {
@@ -75,7 +75,7 @@ class WebCrawler(contents: List<String>) {
             println("SUCCESS! Received web page at $url")
             return connection.maxBodySize(MAX_BODY_SIZE).get()
         } catch (ioe: IOException) {
-            println("ERROR! HTTP request was not successful at $url")
+            println("ERROR! Failed getting the page body at $url")
             println(ioe.message)
             return null
         }

@@ -1,40 +1,40 @@
 package main
 
-import algorithm.Gen
 import algorithm.Markov
 import algorithm.Patterns
-import utils.drawingsList
+import algorithm.Predict
+import service.drawingsList
 import utils.loadAllDrawings
-import utils.loadDrawingsForYears
-import utils.updateYearDrawings
 
 class Main {
 
     companion object {
+
         @JvmStatic
         fun main(args: Array<String>) {
-            updateYearDrawings()
+//            updateYearDrawings()
+            doOtherStuff()
+        }
 
-//            loadAllDrawings()
-//            printDuplicateDrawings("All")
+        private fun doOtherStuff() {
+            loadAllDrawings()
+//            loadDrawingsForYears("2017", "2018", "2019")
+//            loadDrawingsForYears("2019")
+            printDuplicateDrawingsCount()
 
-//            loadDrawingsForYears("2017", "2018", "2019, "2020"")
-//            printDuplicateDrawings("2017_2018_2019_2020")
-
-//            loadDrawingsForYears("2020")
-//            printDuplicateDrawings("2020")
-
-//            Patterns.generatePatterns()
-//            Patterns.sortPatterns()
-//            Markov.train()
-//            Markov.sortChains()
-//            Gen.gen()
+            Patterns.generate()
+            Patterns.calculateProbabilities()
+            Patterns.sort()
+            Markov.trainChains()
+            Markov.sortChains()
+            Predict.predict()
 
             println()
         }
 
-        private fun printDuplicateDrawings(years: String) {
-            println("Duplicate drawings for years - $years ::: ${drawingsList.count() - drawingsList.toSet().size}")
+        private fun printDuplicateDrawingsCount(years: String = "*") {
+            println("Duplicate drawings for years $years – ${drawingsList.count() - drawingsList.toSet().size}")
+            // currently 6 duplicate drawings
         }
 
     }
