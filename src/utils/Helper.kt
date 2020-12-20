@@ -7,6 +7,7 @@ import model.ArrayPattern
 import model.Drawing
 import service.allPossibleColorPatterns
 import service.colorPatterns
+import utils.Const.HIGH_LOW_MIDPOINT
 
 fun updateYearDrawings() = WebCrawler(getTxtFileContents(getCurrentYearTxtFilePath())).crawl()
 

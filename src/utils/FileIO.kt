@@ -2,6 +2,8 @@ package utils
 
 import service.drawingsList
 import service.drawingsMap
+import utils.Const.PATH_TXT
+import utils.Const.YEAR
 import java.io.File
 
 fun loadDrawingsForYears(vararg years: String) {
@@ -22,15 +24,15 @@ fun loadDrawingsForYears(vararg years: String) {
 fun loadAllDrawings() {
     drawingsMap.clear()
     drawingsList.clear()
-    listFileNamesInInPath(PATH_TXT_FOLDER).forEach { file ->
+    listFileNamesInInPath(PATH_TXT).forEach { file ->
         drawingsMap[file.name] = getDrawingsFromFileContents(file.name, getTxtFileContents(file))
     }
     drawingsMap.forEach { (_, drawings) -> drawingsList.addAll(drawings) }
 }
 
-fun getCurrentYearTxtFilePath(): String = PATH_TXT_FOLDER.plus(CURRENT_YEAR)
+fun getCurrentYearTxtFilePath(): String = PATH_TXT.plus(YEAR)
 
-fun getYearTxtFilePath(year: String): String = PATH_TXT_FOLDER.plus(year)
+fun getYearTxtFilePath(year: String): String = PATH_TXT.plus(year)
 
 fun getTxtFileContents(fileName: String): List<String> = File(fileName).readLines()
 

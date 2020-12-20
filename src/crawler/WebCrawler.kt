@@ -7,6 +7,9 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 import utils.*
+import utils.Const.DRAWING_PREFIX
+import utils.Const.URL
+import utils.Const.YEAR
 import java.io.IOException
 
 class WebCrawler(contents: List<String>) {
@@ -23,11 +26,11 @@ class WebCrawler(contents: List<String>) {
 
     init {
         contentBuilder.appendDrawingsStringList(contents)
-        println("INFO: Current drawings count for $CURRENT_YEAR - $drawingCount")
+        println("INFO: Current drawings count for $YEAR - $drawingCount")
     }
 
     fun crawl() {
-        val baseUrl = PAGE_BASE_URL.plus(CURRENT_YEAR).plus(DRAWING_PREFIX)
+        val baseUrl = URL.plus(YEAR).plus(DRAWING_PREFIX)
         var shouldContinueCrawling = true
         var didAddNewDrawing = false
         do {

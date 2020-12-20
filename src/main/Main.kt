@@ -5,6 +5,7 @@ import algorithm.Patterns
 import algorithm.Predict
 import service.drawingsList
 import utils.loadAllDrawings
+import utils.updateYearDrawings
 
 class Main {
 
@@ -12,8 +13,8 @@ class Main {
 
         @JvmStatic
         fun main(args: Array<String>) {
-//            updateYearDrawings()
-            doOtherStuff()
+            updateYearDrawings()
+//            doOtherStuff()
         }
 
         private fun doOtherStuff() {
