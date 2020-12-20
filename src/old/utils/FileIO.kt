@@ -1,6 +1,6 @@
 package old.utils
 
-import impl.utils.Const.PATH_TXT
+import impl.util.Const.PATH_TXT
 import old.service.drawingsList
 import old.service.drawingsMap
 import java.io.File

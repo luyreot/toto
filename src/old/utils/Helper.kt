@@ -1,6 +1,6 @@
 package old.utils
 
-import impl.utils.Const.HIGH_LOW_MIDPOINT
+import impl.util.Const.HIGH_LOW_MIDPOINT
 import old.extensions.toDrawingIntArray
 import old.extensions.toDrawingString
 import old.model.ArrayPattern
