@@ -1,10 +1,10 @@
 package impl.crawler
 
 import impl.extensions.appendWithNewLine
+import impl.utils.Const.PATH_TXT
+import impl.utils.Const.URL
+import impl.utils.Const.YEAR
 import impl.utils.IO
-import old.utils.Const.PATH_TXT
-import old.utils.Const.URL
-import old.utils.Const.YEAR
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
