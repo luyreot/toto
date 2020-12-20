@@ -18,7 +18,7 @@ object IO {
 
     fun getFiles(path: String): List<File>? {
         val files = File(path).listFiles()
-        return files?.toList()?.filter { it.isFile && it.name != ".DSf_Store" }
+        return files?.toList()?.filter { it.isFile && it.name != ".DS_Store" }
     }
 
 }
