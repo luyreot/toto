@@ -1,20 +1,10 @@
 package old.utils
 
 import impl.util.Const.HIGH_LOW_MIDPOINT
-import old.extensions.toDrawingIntArray
 import old.extensions.toDrawingString
 import old.model.ArrayPattern
-import old.model.Drawing
 import old.service.allPossibleColorPatterns
 import old.service.colorPatterns
-
-fun getDrawingsFromFileContents(year: String, drawings: List<String>): List<Drawing> {
-    val objectList = mutableListOf<Drawing>()
-    drawings.forEachIndexed { index, drawing ->
-        objectList.add(Drawing(year, index + 1, drawing.toDrawingIntArray()))
-    }
-    return objectList
-}
 
 fun convertDrawingIntArrayToColorPatternArray(drawing: IntArray): IntArray =
         drawing.map { number -> number / 10 }.toIntArray()

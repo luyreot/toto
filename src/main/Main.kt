@@ -1,11 +1,11 @@
 package main
 
 import impl.crawler.WebCrawler
+import impl.data.Data
 import old.algorithm.Markov
 import old.algorithm.Patterns
 import old.algorithm.Predict
 import old.service.drawingsList
-import old.utils.loadAllDrawings
 
 class Main {
 
@@ -13,18 +13,14 @@ class Main {
 
         @JvmStatic
         fun main(args: Array<String>) {
-            WebCrawler.updateDrawings()
 
+            Data.loadDrawings("2017")
 
-
-
-//            doOtherStuff()
+            println()
         }
 
         private fun doOtherStuff() {
-            loadAllDrawings()
-//            loadDrawingsForYears("2017", "2018", "2019")
-//            loadDrawingsForYears("2019")
+
             printDuplicateDrawingsCount()
 
             Patterns.generate()
