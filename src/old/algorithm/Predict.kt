@@ -1,14 +1,14 @@
-package algorithm
+package old.algorithm
 
-import extensions.toDrawingString
-import model.Drawing
-import service.colorChains
-import service.drawingsList
-import service.lowHighChains
-import service.oddEvenChains
-import utils.convertDrawingIntArrayToColorPatternArray
-import utils.convertDrawingIntArrayToLowHighPatternArray
-import utils.convertDrawingIntArrayToOddEvenPatternArray
+import old.extensions.toDrawingString
+import old.model.Drawing
+import old.service.colorChains
+import old.service.drawingsList
+import old.service.lowHighChains
+import old.service.oddEvenChains
+import old.utils.convertDrawingIntArrayToColorPatternArray
+import old.utils.convertDrawingIntArrayToLowHighPatternArray
+import old.utils.convertDrawingIntArrayToOddEvenPatternArray
 
 object Predict {
 

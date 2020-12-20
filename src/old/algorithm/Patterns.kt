@@ -1,13 +1,13 @@
-package algorithm
+package old.algorithm
 
-import extensions.addPattern
-import extensions.calculatePatternProbabilities
-import extensions.sortFrequenciesByProbability
-import extensions.sortPatternsByProbability
-import service.*
-import utils.convertDrawingIntArrayToColorPatternArray
-import utils.convertDrawingIntArrayToLowHighPatternArray
-import utils.convertDrawingIntArrayToOddEvenPatternArray
+import old.extensions.addPattern
+import old.extensions.calculatePatternProbabilities
+import old.extensions.sortFrequenciesByProbability
+import old.extensions.sortPatternsByProbability
+import old.service.*
+import old.utils.convertDrawingIntArrayToColorPatternArray
+import old.utils.convertDrawingIntArrayToLowHighPatternArray
+import old.utils.convertDrawingIntArrayToOddEvenPatternArray
 
 object Patterns {
 

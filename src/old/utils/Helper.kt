@@ -1,13 +1,13 @@
-package utils
+package old.utils
 
 import crawler.WebCrawler
-import extensions.toDrawingIntArray
-import extensions.toDrawingString
-import model.ArrayPattern
-import model.Drawing
-import service.allPossibleColorPatterns
-import service.colorPatterns
-import utils.Const.HIGH_LOW_MIDPOINT
+import old.extensions.toDrawingIntArray
+import old.extensions.toDrawingString
+import old.model.ArrayPattern
+import old.model.Drawing
+import old.service.allPossibleColorPatterns
+import old.service.colorPatterns
+import old.utils.Const.HIGH_LOW_MIDPOINT
 
 fun updateYearDrawings() = WebCrawler(getTxtFileContents(getCurrentYearTxtFilePath())).crawl()
 

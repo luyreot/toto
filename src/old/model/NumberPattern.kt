@@ -1,4 +1,4 @@
-package model
+package old.model
 
 data class NumberPattern(val number: Int, override var lastFrequencyIndex: Int) : SubPattern() {
 

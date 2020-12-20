@@ -1,4 +1,4 @@
-package model
+package old.model
 
 data class Drawing(val year: String, val issue: Int, val numbers: IntArray) {
 

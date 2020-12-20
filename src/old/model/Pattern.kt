@@ -1,4 +1,4 @@
-package model
+package old.model
 
 /**
  * Super class for storing information for various types of patterns.

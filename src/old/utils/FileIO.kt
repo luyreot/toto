@@ -1,9 +1,9 @@
-package utils
+package old.utils
 
-import service.drawingsList
-import service.drawingsMap
-import utils.Const.PATH_TXT
-import utils.Const.YEAR
+import old.service.drawingsList
+import old.service.drawingsMap
+import old.utils.Const.PATH_TXT
+import old.utils.Const.YEAR
 import java.io.File
 
 fun loadDrawingsForYears(vararg years: String) {

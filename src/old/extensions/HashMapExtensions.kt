@@ -1,8 +1,8 @@
-package extensions
+package old.extensions
 
-import model.ArrayPattern
-import model.NumberPattern
-import model.SubPattern
+import old.model.ArrayPattern
+import old.model.NumberPattern
+import old.model.SubPattern
 
 fun MutableMap<String, SubPattern>.addPattern(content: Any, drawingIndex: Int) {
     require(!(content !is Int && content !is IntArray)) { "Content type must be either Int or IntArray." }

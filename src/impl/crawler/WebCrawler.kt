@@ -1,28 +1,30 @@
-package crawler
+package impl.crawler
 
-import extensions.appendDrawingString
-import extensions.appendDrawingsStringList
+import old.extensions.appendDrawingString
+import old.extensions.appendDrawingsStringList
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import utils.*
-import utils.Const.DRAWING_PREFIX
-import utils.Const.URL
-import utils.Const.YEAR
+import old.utils.*
+import old.utils.Const.URL
+import old.utils.Const.YEAR
 import java.io.IOException
 
 class WebCrawler(contents: List<String>) {
 
-    companion object {
-        // A fake USER_AGENT so the web server thinks the robot is a normal web browser.
-        private val USER_AGENT: String = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1"
-        // The max html file size to be read, doesn't work if the number is too low aka the page is too large
-        private val MAX_BODY_SIZE: Int = 10048000
-    }
+    // A fake user agent so the web server thinks the robot is a normal web browser.
+    private val userAgent: String = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1"
+
+    // The max html file size to be read, doesn't work if the number is too low aka the page is too large
+    private val maxBodySize: Int = 10048000
+
+    // Needed for retrieving the url of the drawing - http://www.toto.bg/results/6x49/2020-100
+    private val drawingPrefix: String = "-"
 
     private val contentBuilder = StringBuilder()
     private var drawingCount: Int = contents.size
+
 
     init {
         contentBuilder.appendDrawingsStringList(contents)
@@ -30,7 +32,7 @@ class WebCrawler(contents: List<String>) {
     }
 
     fun crawl() {
-        val baseUrl = URL.plus(YEAR).plus(DRAWING_PREFIX)
+        val baseUrl = URL + YEAR + drawingPrefix
         var shouldContinueCrawling = true
         var didAddNewDrawing = false
         do {
@@ -63,7 +65,7 @@ class WebCrawler(contents: List<String>) {
     private fun readPage(url: String): Document? {
         lateinit var connection: Connection
         try {
-            connection = Jsoup.connect(url).userAgent(USER_AGENT)
+            connection = Jsoup.connect(url).userAgent(userAgent)
             val statusCode = connection.response().statusCode()
             if (statusCode != 0 && statusCode != 200) {
                 println("ERROR! Response status code for $url - $statusCode")
@@ -76,7 +78,7 @@ class WebCrawler(contents: List<String>) {
             }
              */
             println("SUCCESS! Received web page at $url")
-            return connection.maxBodySize(MAX_BODY_SIZE).get()
+            return connection.maxBodySize(maxBodySize).get()
         } catch (ioe: IOException) {
             println("ERROR! Failed getting the page body at $url")
             println(ioe.message)

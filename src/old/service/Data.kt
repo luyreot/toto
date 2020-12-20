@@ -1,7 +1,7 @@
-package service
+package old.service
 
-import model.Drawing
-import model.SubPattern
+import old.model.Drawing
+import old.model.SubPattern
 import java.util.*
 
 // Using a TreeMap to sort the drawings per year.

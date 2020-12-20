@@ -1,11 +1,11 @@
 package main
 
-import algorithm.Markov
-import algorithm.Patterns
-import algorithm.Predict
-import service.drawingsList
-import utils.loadAllDrawings
-import utils.updateYearDrawings
+import old.algorithm.Markov
+import old.algorithm.Patterns
+import old.algorithm.Predict
+import old.service.drawingsList
+import old.utils.loadAllDrawings
+import old.utils.updateYearDrawings
 
 class Main {
 
@@ -14,6 +14,10 @@ class Main {
         @JvmStatic
         fun main(args: Array<String>) {
             updateYearDrawings()
+
+
+
+
 //            doOtherStuff()
         }
 

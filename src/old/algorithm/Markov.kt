@@ -1,12 +1,12 @@
-package algorithm
+package old.algorithm
 
-import extensions.addChain
-import extensions.sortChain
-import extensions.toDrawingString
-import service.*
-import utils.convertDrawingIntArrayToColorPatternArray
-import utils.convertDrawingIntArrayToLowHighPatternArray
-import utils.convertDrawingIntArrayToOddEvenPatternArray
+import old.extensions.addChain
+import old.extensions.sortChain
+import old.extensions.toDrawingString
+import old.service.*
+import old.utils.convertDrawingIntArrayToColorPatternArray
+import old.utils.convertDrawingIntArrayToLowHighPatternArray
+import old.utils.convertDrawingIntArrayToOddEvenPatternArray
 
 object Markov {
 
