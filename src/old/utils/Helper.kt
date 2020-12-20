@@ -1,6 +1,5 @@
 package old.utils
 
-import crawler.WebCrawler
 import old.extensions.toDrawingIntArray
 import old.extensions.toDrawingString
 import old.model.ArrayPattern
@@ -8,8 +7,6 @@ import old.model.Drawing
 import old.service.allPossibleColorPatterns
 import old.service.colorPatterns
 import old.utils.Const.HIGH_LOW_MIDPOINT
-
-fun updateYearDrawings() = WebCrawler(getTxtFileContents(getCurrentYearTxtFilePath())).crawl()
 
 fun getDrawingsFromFileContents(year: String, drawings: List<String>): List<Drawing> {
     val objectList = mutableListOf<Drawing>()

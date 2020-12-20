@@ -1,11 +1,11 @@
 package main
 
+import impl.crawler.WebCrawler
 import old.algorithm.Markov
 import old.algorithm.Patterns
 import old.algorithm.Predict
 import old.service.drawingsList
 import old.utils.loadAllDrawings
-import old.utils.updateYearDrawings
 
 class Main {
 
@@ -13,7 +13,7 @@ class Main {
 
         @JvmStatic
         fun main(args: Array<String>) {
-            updateYearDrawings()
+            WebCrawler.updateDrawings()
 
 
 
