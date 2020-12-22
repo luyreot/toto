@@ -6,6 +6,9 @@ import impl.util.Const.PATH_TXT
 import impl.util.IO
 import java.util.*
 
+/**
+ * Holds a list of [Drawing], read from the txt files.
+ */
 object Data {
 
     val drawings = mutableListOf<Drawing>()
