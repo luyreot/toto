@@ -1,15 +1,15 @@
 package impl.util
 
-import impl.data.Data
+import impl.data.Drawing
 
 object Helper {
 
     /**
-     * Prints how many duplicate drawings there are in [Data.drawings].
+     * Prints how many duplicate drawings there are in [Drawing.drawings].
      */
     fun printDuplicateDrawingsCount() {
-        val totalDrawingsCount = Data.drawings.count()
-        val drawingArrayToSetCount = Data.drawings.map { it.numbers }.toHashSet().count()
+        val totalDrawingsCount = Drawing.drawings.count()
+        val drawingArrayToSetCount = Drawing.drawings.map { it.numbers }.toHashSet().count()
         println("Duplicate drawings - ${totalDrawingsCount - drawingArrayToSetCount}")
     }
 

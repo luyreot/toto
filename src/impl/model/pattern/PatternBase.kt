@@ -1,6 +1,6 @@
 package impl.model.pattern
 
-import impl.data.Data
+import impl.data.Drawing
 
 /**
  * Base pattern for tracking how often a pattern occurs.
@@ -13,9 +13,9 @@ abstract class PatternBase(
 
     /**
      * Calculates the probability of this pattern.
-     * Divide the occurrence by the total number of drawings from [Data.drawings].
+     * Divide the occurrence by the total number of drawings from [Drawing.drawings].
      */
-    open fun calcProbability(total: Int = Data.drawings.count()) {
+    open fun calcProbability(total: Int = Drawing.drawings.count()) {
         probability = occurrence.toDouble().div(total)
     }
 }

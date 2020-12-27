@@ -1,6 +1,6 @@
 package main
 
-import impl.data.Data
+import impl.data.Drawing
 import impl.util.Helper
 import old.algorithm.Markov
 import old.algorithm.Patterns
@@ -12,8 +12,9 @@ class Main {
 
         @JvmStatic
         fun main(args: Array<String>) {
+//            WebCrawler.updateDrawings()
 
-            Data.loadDrawings()
+            Drawing.loadDrawings()
             Helper.printDuplicateDrawingsCount()
 
             println()
