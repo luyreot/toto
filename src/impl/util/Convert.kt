@@ -15,7 +15,7 @@ object Convert {
      */
     private fun colorStrategyDefault(num: Int): Int = num / 10
 
-    // No need to sort the array
+    // No need to sort the array, drawing numbers are already sorted
     fun convertToColorPattern(
             drawing: IntArray,
             strategy: ((num: Int) -> Int) = { num -> colorStrategyDefault(num) }): IntArray {
@@ -37,7 +37,7 @@ object Convert {
      */
     private fun highLowStrategyDefault(num: Int): Int = if (num <= HIGH_LOW_MIDPOINT) 0 else 1
 
-    // No need to sort the array
+    // No need to sort the array, drawing numbers are already sorted
     fun convertToHighLowPattern(
             drawing: IntArray,
             strategy: ((num: Int) -> Int) = { num -> highLowStrategyDefault(num) }): IntArray {
