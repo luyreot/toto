@@ -1,6 +1,6 @@
 package impl.crawler
 
-import impl.extension.appendWithNewLine
+import impl.extension.appendLine
 import impl.util.Const.PATH_TXT
 import impl.util.Const.URL
 import impl.util.Const.YEAR
@@ -36,7 +36,7 @@ class WebCrawler {
 
     init {
         val currentYearDrawings = IO.getTxtFileContents(currentYearPath)
-        currentYearDrawings.forEach { contentBuilder.appendWithNewLine(it) }
+        currentYearDrawings.forEach { contentBuilder.appendLine(it) }
         drawingCount = currentYearDrawings.size
         println("INFO: Current drawings count for $YEAR - $drawingCount")
     }
@@ -64,7 +64,7 @@ class WebCrawler {
             }
 
             val drawing = numbers.text().replace(" ", ",")
-            contentBuilder.appendWithNewLine(drawing)
+            contentBuilder.appendLine(drawing)
             if (saveToFile.not()) {
                 saveToFile = true
             }

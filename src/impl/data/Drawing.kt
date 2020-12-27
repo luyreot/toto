@@ -1,6 +1,6 @@
 package impl.data
 
-import impl.extension.toDrawingArray
+import impl.extension.toArrayDrawing
 import impl.model.drawing.Drawing
 import impl.util.Const.PATH_TXT
 import impl.util.IO
@@ -66,7 +66,7 @@ object Drawing {
 
         // index starts at 0, but drawing issue/number should start at 1
         fileContents.forEachIndexed { index, line ->
-            list.add(Drawing(year, index + 1, line.toDrawingArray()))
+            list.add(Drawing(year, index + 1, line.toArrayDrawing()))
         }
 
         return list
