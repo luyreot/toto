@@ -1,16 +1,5 @@
 package old.service
 
-import impl.model.drawing.Drawing
-import old.model.SubPattern
-
-val drawingsList = mutableListOf<Drawing>()
-
-// Patterns
-var numberPatterns = mutableMapOf<String, SubPattern>()
-var colorPatterns = mutableMapOf<String, SubPattern>()
-var lowHighPatterns = mutableMapOf<String, SubPattern>()
-var oddEvenPatterns = mutableMapOf<String, SubPattern>()
-
 // Markov
 val numberSameDrawingChains = mutableMapOf<String, MutableMap<String, Int>>()
 val numberPreviousDrawingChains = mutableMapOf<String, MutableMap<String, Int>>()

@@ -8,7 +8,7 @@ import impl.data.Drawing
 abstract class PatternBase(
         var occurrence: Int = 1,
         var probability: Double = 0.0
-) {
+) : Comparable<PatternBase> {
     fun occurred() = occurrence++
 
     /**
@@ -17,5 +17,12 @@ abstract class PatternBase(
      */
     open fun calcProbability(total: Int = Drawing.drawings.count()) {
         probability = occurrence.toDouble().div(total)
+    }
+
+    /**
+     * Currently sorts in ascending order.
+     */
+    override fun compareTo(other: PatternBase): Int {
+        return probability.compareTo(other.probability)
     }
 }

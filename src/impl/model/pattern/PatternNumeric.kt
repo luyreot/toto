@@ -1,6 +1,7 @@
 package impl.model.pattern
 
 import impl.data.Drawing
+import impl.util.Helper
 
 /**
  * Adds an implementation of tracking patterns' index from [Drawing.drawings],
@@ -25,6 +26,12 @@ abstract class PatternNumeric : PatternBase() {
      */
     val frequencies = mutableMapOf<Int, PatternFrequency>()
 
+    init {
+        if (lfi < 0) {
+            throw IllegalArgumentException("Last Frequency index is invalid! Current is $lfi")
+        }
+    }
+
     /**
      * Overloads the [occurred] method from parent.
      *
@@ -45,5 +52,23 @@ abstract class PatternNumeric : PatternBase() {
         lfi = lfiNew
         super.occurred()
     }
+
+    override fun calcProbability(total: Int) {
+        super.calcProbability(total)
+
+        if (occurrence <= 1 && frequencies.isEmpty()) return
+
+        val freqTotal = frequencies.values
+                .map { it.occurrence }
+                .reduce(Int::plus)
+
+        if (freqTotal + 1 != occurrence) {
+            throw IllegalArgumentException("Something went wrong when generating the object's frequencies!")
+        }
+
+        frequencies.forEach { (_, v) -> v.calcProbability(freqTotal) }
+    }
+
+    fun sortFrequencies() = Helper.sortPatternMap(frequencies)
 
 }

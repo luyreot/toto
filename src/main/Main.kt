@@ -1,9 +1,9 @@
 package main
 
 import impl.data.Drawing
+import impl.data.Pattern
 import impl.util.Helper
 import old.algorithm.Markov
-import old.algorithm.Patterns
 import old.algorithm.Predict
 
 class Main {
@@ -16,14 +16,13 @@ class Main {
 
             Drawing.loadDrawings()
             Helper.printDuplicateDrawingsCount()
+            Pattern
+
 
             println()
         }
 
         private fun doOtherStuff() {
-            Patterns.generate()
-            Patterns.calculateProbabilities()
-            Patterns.sort()
             Markov.trainChains()
             Markov.sortChains()
             Predict.predict()
