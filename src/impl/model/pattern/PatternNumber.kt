@@ -7,6 +7,12 @@ import impl.model.drawing.Drawing
  */
 data class PatternNumber(val number: Int, override var lfi: Int) : PatternNumeric() {
 
+    init {
+        if (number < 0) {
+            throw IllegalArgumentException("Numbers is invalid!! Current is $number")
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

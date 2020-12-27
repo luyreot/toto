@@ -13,7 +13,7 @@ data class PatternArray(val numbers: IntArray, override var lfi: Int) : PatternN
 
     init {
         if (numbers.size != 6) {
-            throw IllegalArgumentException("Numbers arrays must always have size of 6!")
+            throw IllegalArgumentException("Numbers array must always have size of 6! Current is ${numbers.size}")
         }
     }
 

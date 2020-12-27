@@ -1,19 +1,6 @@
 package old.utils
 
-import impl.util.Const.HIGH_LOW_MIDPOINT
-import old.extensions.toDrawingString
-import old.model.ArrayPattern
 import old.service.allPossibleColorPatterns
-import old.service.colorPatterns
-
-fun convertDrawingIntArrayToColorPatternArray(drawing: IntArray): IntArray =
-        drawing.map { number -> number / 10 }.toIntArray()
-
-fun convertDrawingIntArrayToLowHighPatternArray(drawing: IntArray): IntArray =
-        drawing.map { number -> if (number <= HIGH_LOW_MIDPOINT) 0 else 1 }.toIntArray()
-
-fun convertDrawingIntArrayToOddEvenPatternArray(drawing: IntArray): IntArray =
-        drawing.map { number -> if ((number and 1) == 0) 1 else 0 }.toIntArray().sortedArray()
 
 fun getAllPossibleColorPatterns(patterns: MutableSet<String>, end: Int, array: IntArray, index: Int) {
     for (x in 0..end) {

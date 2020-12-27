@@ -9,3 +9,8 @@ fun String.toArrayDrawing(): IntArray = split(",")
         .mapToInt(String::toInt)
         .toArray()
 
+// Converts an int array to a string used as a key in a map
+fun IntArray.toStringDrawing(): String = toList()
+        .toString()
+        .replaceFirst("[", "", true)
+        .replaceFirst("]", "", true)
