@@ -5,6 +5,13 @@ package impl.model.drawing
  * Ie: 2020, #99, 5,14,22,25,34,49
  */
 data class Drawing(val year: String, val issue: Int, val numbers: IntArray) {
+
+    init {
+        if (numbers.size != 6) {
+            throw IllegalArgumentException("Numbers arrays must always have size of 6!")
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
