@@ -1,7 +1,7 @@
 package old.algorithm
 
 import old.extensions.toDrawingString
-import impl.model.Drawing
+import impl.model.drawing.Drawing
 import old.service.colorChains
 import old.service.drawingsList
 import old.service.lowHighChains

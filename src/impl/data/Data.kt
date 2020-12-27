@@ -1,7 +1,7 @@
 package impl.data
 
 import impl.extension.toDrawingArray
-import impl.model.Drawing
+import impl.model.drawing.Drawing
 import impl.util.Const.PATH_TXT
 import impl.util.IO
 import java.util.*

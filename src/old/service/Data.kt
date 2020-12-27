@@ -1,6 +1,6 @@
 package old.service
 
-import impl.model.Drawing
+import impl.model.drawing.Drawing
 import old.model.SubPattern
 
 val drawingsList = mutableListOf<Drawing>()
