@@ -22,7 +22,6 @@ abstract class PatternBase(
     /**
      * Currently sorts in ascending order.
      */
-    override fun compareTo(other: PatternBase): Int {
-        return probability.compareTo(other.probability)
-    }
+    override fun compareTo(other: PatternBase): Int = probability.compareTo(other.probability)
+
 }

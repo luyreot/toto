@@ -28,8 +28,6 @@ data class PatternArray(val numbers: IntArray, override var lfi: Int) : PatternN
         return true
     }
 
-    override fun hashCode(): Int {
-        return numbers.contentHashCode()
-    }
+    override fun hashCode(): Int = numbers.contentHashCode()
 
 }

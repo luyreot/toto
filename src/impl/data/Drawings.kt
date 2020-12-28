@@ -72,4 +72,10 @@ object Drawings {
         return list
     }
 
+    fun checkDrawings() {
+        if (Drawings.drawings.isEmpty()) {
+            throw IllegalArgumentException("Drawings are empty!")
+        }
+    }
+
 }

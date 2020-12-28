@@ -24,8 +24,6 @@ data class PatternNumber(val number: Int, override var lfi: Int) : PatternNumeri
         return true
     }
 
-    override fun hashCode(): Int {
-        return number.hashCode()
-    }
+    override fun hashCode(): Int = number.hashCode()
 
 }

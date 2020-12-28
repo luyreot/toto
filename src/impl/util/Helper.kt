@@ -1,6 +1,8 @@
 package impl.util
 
 import impl.data.Drawings
+import impl.extension.toStringDrawing
+import impl.model.chain.Chain
 import impl.model.pattern.PatternBase
 import impl.model.pattern.PatternNumeric
 
@@ -24,12 +26,42 @@ object Helper {
                 v.sortFrequencies()
             }
         }
+        sortMap(map)
+    }
+
+    /**
+     * Check [Chain.compareTo].
+     */
+    fun <K, V : Chain> sortChainMap(map: MutableMap<K, V>) {
+        map.forEach { (_, v) ->
+            sortMap(v.chainMap)
+        }
+        sortMap(map)
+    }
+
+    private fun <K, V : Comparable<V>> sortMap(map: MutableMap<K, V>) {
         val sortedMap = map
                 .toList()
                 .sortedBy { (_, v) -> v }
                 .toMap()
         map.clear()
         map.putAll(sortedMap)
+    }
+
+    /**
+     * TODO
+     */
+    fun getAllPossibleColorPatterns(patterns: MutableSet<String>, end: Int, array: IntArray, index: Int) {
+        for (x in 0..end) {
+            if (index > 0 && x < array[index - 1]) continue
+            array[index] = x
+            if (index == array.size - 1) {
+                patterns.add(array.sortedArray().toStringDrawing())
+                if (x == end) return
+            } else {
+                getAllPossibleColorPatterns(patterns, end, array, index + 1)
+            }
+        }
     }
 
 }

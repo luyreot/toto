@@ -14,16 +14,10 @@ object Patterns {
     val lowHighs = mutableMapOf<String, PatternArray>()
 
     init {
-        checkDrawings()
+        Drawings.checkDrawings()
         generate()
         calculateProbabilities()
         sort()
-    }
-
-    private fun checkDrawings() {
-        if (Drawings.drawings.isEmpty()) {
-            throw IllegalArgumentException("Drawings are empty!")
-        }
     }
 
     private fun generate() {
@@ -73,6 +67,21 @@ object Patterns {
         Helper.sortPatternMap(colors)
         Helper.sortPatternMap(oddEvens)
         Helper.sortPatternMap(lowHighs)
+    }
+
+    fun checkPatterns() {
+        val numbersEmpty = Patterns.numbers.isEmpty()
+        val colorsEmpty = Patterns.colors.isEmpty()
+        val oddEvensEmpty = Patterns.oddEvens.isEmpty()
+        val lowHighsEmpty = Patterns.lowHighs.isEmpty()
+        if (numbersEmpty || colorsEmpty || oddEvensEmpty || lowHighsEmpty) {
+            val msg = "Some Patterns are empty. " +
+                    "\nNumbers: $numbersEmpty " +
+                    "\nColors: $colorsEmpty " +
+                    "\nOdd Evens: $oddEvensEmpty " +
+                    "\nLow Highs: $lowHighsEmpty"
+            throw IllegalArgumentException(msg)
+        }
     }
 
 }
