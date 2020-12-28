@@ -1,7 +1,7 @@
-package impl.model.pattern
+package model.pattern
 
-import impl.data.Drawings
-import impl.util.Helper
+import data.Drawings
+import util.Helper
 
 /**
  * Adds an implementation of tracking patterns' index from [Drawings.drawings],

@@ -1,6 +1,6 @@
-import impl.data.Drawings
-import impl.util.Const.PATH_TXT
-import impl.util.IO
+import data.Drawings
+import util.Const.PATH_TXT
+import util.IO
 import org.junit.Test
 import kotlin.test.assertEquals
 

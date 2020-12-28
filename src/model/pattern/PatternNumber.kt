@@ -1,6 +1,6 @@
-package impl.model.pattern
+package model.pattern
 
-import impl.model.drawing.Drawing
+import model.drawing.Drawing
 
 /**
  * Holds a specific number from a [Drawing].

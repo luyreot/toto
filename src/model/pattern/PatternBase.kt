@@ -1,6 +1,6 @@
-package impl.model.pattern
+package model.pattern
 
-import impl.data.Drawings
+import data.Drawings
 
 /**
  * Base pattern for tracking how often a pattern occurs.

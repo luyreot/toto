@@ -1,10 +1,10 @@
-package impl.data
+package data
 
-import impl.extension.toStringDrawing
-import impl.model.pattern.PatternArray
-import impl.model.pattern.PatternNumber
-import impl.util.Convert
-import impl.util.Helper
+import extension.toStringDrawing
+import model.pattern.PatternArray
+import model.pattern.PatternNumber
+import util.Convert
+import util.Helper
 
 object Patterns {
 

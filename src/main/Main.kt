@@ -1,9 +1,9 @@
 package main
 
-import impl.data.Chains
-import impl.data.Drawings
-import impl.data.Patterns
-import impl.util.Helper
+import data.Chains
+import data.Drawings
+import data.Patterns
+import util.Helper
 
 class Main {
 

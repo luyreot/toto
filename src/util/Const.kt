@@ -1,4 +1,4 @@
-package impl.util
+package util
 
 object Const {
 

@@ -1,4 +1,4 @@
-package impl.data
+package data
 
 object Predict {
 

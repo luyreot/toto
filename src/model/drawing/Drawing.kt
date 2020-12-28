@@ -1,4 +1,4 @@
-package impl.model.drawing
+package model.drawing
 
 /**
  * Holds information about a single drawing - year, number within that year, and the drawing numbers themselves.

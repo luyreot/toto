@@ -1,10 +1,10 @@
-package impl.crawler
+package crawler
 
-import impl.extension.appendLine
-import impl.util.Const.PATH_TXT
-import impl.util.Const.URL
-import impl.util.Const.YEAR
-import impl.util.IO
+import extension.appendLine
+import util.Const.PATH_TXT
+import util.Const.URL
+import util.Const.YEAR
+import util.IO
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements

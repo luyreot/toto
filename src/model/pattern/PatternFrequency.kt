@@ -1,6 +1,6 @@
-package impl.model.pattern
+package model.pattern
 
-import impl.data.Drawings
+import data.Drawings
 
 /**
  * Holds a number, a frequency, which represents the number

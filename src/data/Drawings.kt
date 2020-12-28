@@ -1,9 +1,9 @@
-package impl.data
+package data
 
-import impl.extension.toArrayDrawing
-import impl.model.drawing.Drawing
-import impl.util.Const.PATH_TXT
-import impl.util.IO
+import extension.toArrayDrawing
+import model.drawing.Drawing
+import util.Const.PATH_TXT
+import util.IO
 import java.util.*
 
 /**

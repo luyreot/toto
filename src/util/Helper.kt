@@ -1,10 +1,10 @@
-package impl.util
+package util
 
-import impl.data.Drawings
-import impl.extension.toStringDrawing
-import impl.model.chain.Chain
-import impl.model.pattern.PatternBase
-import impl.model.pattern.PatternNumeric
+import data.Drawings
+import extension.toStringDrawing
+import model.chain.Chain
+import model.pattern.PatternBase
+import model.pattern.PatternNumeric
 
 object Helper {
 

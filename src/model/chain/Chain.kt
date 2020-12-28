@@ -1,4 +1,4 @@
-package impl.model.chain
+package model.chain
 
 /**
  *
