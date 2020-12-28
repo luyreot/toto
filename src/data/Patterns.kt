@@ -6,6 +6,11 @@ import model.pattern.PatternNumber
 import util.Convert
 import util.Helper
 
+/**
+ * Holds information about how often a particular pattern occurs, such as:
+ * - a single number
+ * - all variations of color, odd even & low high patterns
+ */
 object Patterns {
 
     val numbers = mutableMapOf<String, PatternNumber>()
@@ -70,10 +75,10 @@ object Patterns {
     }
 
     fun checkPatterns() {
-        val numbersEmpty = Patterns.numbers.isEmpty()
-        val colorsEmpty = Patterns.colors.isEmpty()
-        val oddEvensEmpty = Patterns.oddEvens.isEmpty()
-        val lowHighsEmpty = Patterns.lowHighs.isEmpty()
+        val numbersEmpty = numbers.isEmpty()
+        val colorsEmpty = colors.isEmpty()
+        val oddEvensEmpty = oddEvens.isEmpty()
+        val lowHighsEmpty = lowHighs.isEmpty()
         if (numbersEmpty || colorsEmpty || oddEvensEmpty || lowHighsEmpty) {
             val msg = "Some Patterns are empty. " +
                     "\nNumbers: $numbersEmpty " +

@@ -1,7 +1,11 @@
 package model.chain
 
+import data.Chains
+
 /**
- *
+ * Class that holds a chain between the tracked [entity]
+ * and every possible subsequent occurrence of a new entity from the same "type".
+ * See [Chains].
  */
 data class Chain(val entity: String) : Comparable<Chain> {
 
@@ -9,7 +13,7 @@ data class Chain(val entity: String) : Comparable<Chain> {
      * A map which represents an entity, must be of the same "type" like [entity],
      * and an index of how many times it occurred after the one in [entity].
      */
-    val chainMap = mutableMapOf<String, Int>()
+    val entityMap = mutableMapOf<String, Int>()
 
     init {
         if (entity.isEmpty()) {
@@ -20,13 +24,13 @@ data class Chain(val entity: String) : Comparable<Chain> {
     /**
      *
      */
-    fun updateChainMap(key: String) {
-        if (chainMap.containsKey(key)) {
-            chainMap[key]?.inc()
+    fun updateEntityMap(key: String) {
+        if (entityMap.containsKey(key)) {
+            entityMap[key]?.inc()
             return
         }
 
-        chainMap[key] = 1
+        entityMap[key] = 1
     }
 
     override fun equals(other: Any?): Boolean {

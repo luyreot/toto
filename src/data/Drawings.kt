@@ -73,7 +73,7 @@ object Drawings {
     }
 
     fun checkDrawings() {
-        if (Drawings.drawings.isEmpty()) {
+        if (drawings.isEmpty()) {
             throw IllegalArgumentException("Drawings are empty!")
         }
     }

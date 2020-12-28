@@ -6,7 +6,15 @@ import util.Convert
 import util.Helper
 
 /**
+ * Holds information about relations between two entities of the same type.
+ * The entities could be either two numbers, or two patterns of the same type - color, odd even, low high.
+ * Implies the Markov algorithm, where we track a pattern or a number (entity) and all the possible respective
+ * patterns (or numbers) that come sequentially.
  *
+ * Currently tracking:
+ * - pairs of numbers from within the same drawing
+ * - pairs of numbers from subsequent drawings
+ * - pairs of patterns (color, odd even, low high) from subsequent drawings
  */
 object Chains {
 
@@ -14,7 +22,7 @@ object Chains {
     val numsInDrawing = mutableMapOf<Int, Chain>()
 
     // Tracks the single number relations from subsequent drawings
-    val numsOffDrawing = mutableMapOf<Int, Chain>()
+    val numsSubDrawings = mutableMapOf<Int, Chain>()
 
     // Tracks the pattern relations from subsequent drawings
     val colors = mutableMapOf<String, Chain>()
@@ -33,79 +41,94 @@ object Chains {
 
             if (index > 1) {
                 val previousNumbers = Drawings.drawings[index - 1].numbers
-                generateFromNumbersOffDrawing(previousNumbers, drawing.numbers)
+                generateFromNumbersSubDrawings(previousNumbers, drawing.numbers)
                 generateFromPatterns(previousNumbers, drawing.numbers)
             }
         }
     }
 
+    /**
+     * From within the same drawing, creates every possible two number combination.
+     */
     private fun generateFromNumbersInSameDrawing(numbers: IntArray) {
         numbers.forEachIndexed { index1, num1 ->
             numbers.forEachIndexed { index2, num2 ->
                 if (index1 != index2) {
-                    insertNumberChain(
+                    insertNumberEntity(
                             map = numsInDrawing,
                             entity = num1,
-                            chainKey = num2.toString())
+                            entityKey = num2.toString())
                 }
             }
         }
     }
 
-    private fun generateFromNumbersOffDrawing(previousNumbers: IntArray, numbers: IntArray) {
+    /**
+     * From subsequent drawings, creates every possible two number combination.
+     */
+    private fun generateFromNumbersSubDrawings(previousNumbers: IntArray, numbers: IntArray) {
         previousNumbers.forEach { previousNum ->
             numbers.forEach { num ->
-                insertNumberChain(
-                        map = numsOffDrawing,
+                insertNumberEntity(
+                        map = numsSubDrawings,
                         entity = previousNum,
-                        chainKey = num.toString())
+                        entityKey = num.toString())
             }
         }
     }
 
-    private fun insertNumberChain(map: MutableMap<Int, Chain>, entity: Int, chainKey: String) {
+    /**
+     * Helper method for creating new / updating existing Chain number entity from the provided map.
+     */
+    private fun insertNumberEntity(map: MutableMap<Int, Chain>, entity: Int, entityKey: String) {
         if (map.containsKey(entity)) {
-            map[entity]?.updateChainMap(chainKey)
+            map[entity]?.updateEntityMap(entityKey)
         } else {
             val chain = Chain(entity.toString())
-            chain.updateChainMap(chainKey)
+            chain.updateEntityMap(entityKey)
             map[entity] = chain
         }
     }
 
+    /**
+     * Creates a pair of patterns from two subsequent drawing numbers.
+     */
     private fun generateFromPatterns(previousNumbers: IntArray, numbers: IntArray) {
         var entity = ""
-        var chainKey = ""
+        var entityKey = ""
 
         // Colors
         entity = Convert.convertToColorPattern(previousNumbers).toStringDrawing()
-        chainKey = Convert.convertToColorPattern(numbers).toStringDrawing()
-        insertPatternChain(colors, entity, chainKey)
+        entityKey = Convert.convertToColorPattern(numbers).toStringDrawing()
+        insertPatternEntity(colors, entity, entityKey)
 
         // Odd Evens
         entity = Convert.convertToOddEvenPattern(previousNumbers).toStringDrawing()
-        chainKey = Convert.convertToOddEvenPattern(numbers).toStringDrawing()
-        insertPatternChain(oddEvens, entity, chainKey)
+        entityKey = Convert.convertToOddEvenPattern(numbers).toStringDrawing()
+        insertPatternEntity(oddEvens, entity, entityKey)
 
         // Low Highs
         entity = Convert.convertToHighLowPattern(previousNumbers).toStringDrawing()
-        chainKey = Convert.convertToHighLowPattern(numbers).toStringDrawing()
-        insertPatternChain(lowHighs, entity, chainKey)
+        entityKey = Convert.convertToHighLowPattern(numbers).toStringDrawing()
+        insertPatternEntity(lowHighs, entity, entityKey)
     }
 
-    private fun insertPatternChain(map: MutableMap<String, Chain>, entity: String, chainKey: String) {
+    /**
+     * Helper method for creating new / updating existing Chain pattern entity from the provided map.
+     */
+    private fun insertPatternEntity(map: MutableMap<String, Chain>, entity: String, entityKey: String) {
         if (map.containsKey(entity)) {
-            map[entity]?.updateChainMap(chainKey)
+            map[entity]?.updateEntityMap(entityKey)
         } else {
             val chain = Chain(entity)
-            chain.updateChainMap(chainKey)
+            chain.updateEntityMap(entityKey)
             map[entity] = chain
         }
     }
 
     private fun sort() {
         Helper.sortChainMap(numsInDrawing)
-        Helper.sortChainMap(numsOffDrawing)
+        Helper.sortChainMap(numsSubDrawings)
         Helper.sortChainMap(colors)
         Helper.sortChainMap(oddEvens)
         Helper.sortChainMap(lowHighs)

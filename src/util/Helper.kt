@@ -32,13 +32,16 @@ object Helper {
     /**
      * Check [Chain.compareTo].
      */
-    fun <K, V : Chain> sortChainMap(map: MutableMap<K, V>) {
+    fun <K> sortChainMap(map: MutableMap<K, Chain>) {
         map.forEach { (_, v) ->
-            sortMap(v.chainMap)
+            sortMap(v.entityMap)
         }
         sortMap(map)
     }
 
+    /**
+     * Sorts a mutable map by its values.
+     */
     private fun <K, V : Comparable<V>> sortMap(map: MutableMap<K, V>) {
         val sortedMap = map
                 .toList()
