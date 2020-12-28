@@ -6,7 +6,7 @@ import impl.model.pattern.PatternNumber
 import impl.util.Convert
 import impl.util.Helper
 
-object Pattern {
+object Patterns {
 
     val numbers = mutableMapOf<String, PatternNumber>()
     val colors = mutableMapOf<String, PatternArray>()
@@ -21,13 +21,13 @@ object Pattern {
     }
 
     private fun checkDrawings() {
-        if (Drawing.drawings.isEmpty()) {
+        if (Drawings.drawings.isEmpty()) {
             throw IllegalArgumentException("Drawings are empty!")
         }
     }
 
     private fun generate() {
-        Drawing.drawings.forEachIndexed { index, drawing ->
+        Drawings.drawings.forEachIndexed { index, drawing ->
             generateNumberPatterns(index, drawing.numbers)
             generateArrayPattern(index, Convert.convertToColorPattern(drawing.numbers), colors)
             generateArrayPattern(index, Convert.convertToOddEvenPattern(drawing.numbers), oddEvens)

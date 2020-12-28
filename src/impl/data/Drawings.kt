@@ -9,7 +9,7 @@ import java.util.*
 /**
  * Holds a list of [Drawing], read from the txt files.
  */
-object Drawing {
+object Drawings {
 
     val drawings = mutableListOf<Drawing>()
 

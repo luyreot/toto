@@ -1,10 +1,10 @@
 package impl.model.pattern
 
-import impl.data.Drawing
+import impl.data.Drawings
 import impl.util.Helper
 
 /**
- * Adds an implementation of tracking patterns' index from [Drawing.drawings],
+ * Adds an implementation of tracking patterns' index from [Drawings.drawings],
  * what it is, how often it occurs.
  */
 abstract class PatternNumeric : PatternBase() {
@@ -14,10 +14,10 @@ abstract class PatternNumeric : PatternBase() {
      * Initialize upon creation.
      *
      * Serves as a tmp var for storing the last drawing list index for
-     * a pattern - number or sequence of numbers, taken from [Drawing.drawings].
+     * a pattern - number or sequence of numbers, taken from [Drawings.drawings].
      *
      * This object should be created once with the specific pattern - number or sequence of numbers.
-     * Any subsequent occurrences in [Drawing.drawings] should update this value.
+     * Any subsequent occurrences in [Drawings.drawings] should update this value.
      */
     abstract var lfi: Int
 

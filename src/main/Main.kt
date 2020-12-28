@@ -1,10 +1,9 @@
 package main
 
-import impl.data.Drawing
-import impl.data.Pattern
+import impl.data.Drawings
+import impl.data.Patterns
 import impl.util.Helper
 import old.algorithm.Markov
-import old.algorithm.Predict
 
 class Main {
 
@@ -14,10 +13,9 @@ class Main {
         fun main(args: Array<String>) {
 //            WebCrawler.updateDrawings()
 
-            Drawing.loadDrawings()
+            Drawings.loadDrawings()
             Helper.printDuplicateDrawingsCount()
-            Pattern
-
+            Patterns
 
             println()
         }

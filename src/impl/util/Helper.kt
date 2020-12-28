@@ -1,17 +1,17 @@
 package impl.util
 
-import impl.data.Drawing
+import impl.data.Drawings
 import impl.model.pattern.PatternBase
 import impl.model.pattern.PatternNumeric
 
 object Helper {
 
     /**
-     * Prints how many duplicate drawings there are in [Drawing.drawings].
+     * Prints how many duplicate drawings there are in [Drawings.drawings].
      */
     fun printDuplicateDrawingsCount() {
-        val totalDrawingsCount = Drawing.drawings.count()
-        val drawingArrayToSetCount = Drawing.drawings.map { it.numbers }.toHashSet().count()
+        val totalDrawingsCount = Drawings.drawings.count()
+        val drawingArrayToSetCount = Drawings.drawings.map { it.numbers }.toHashSet().count()
         println("Duplicate drawings - ${totalDrawingsCount - drawingArrayToSetCount}")
     }
 

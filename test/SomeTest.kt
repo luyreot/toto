@@ -1,4 +1,4 @@
-import impl.data.Drawing
+import impl.data.Drawings
 import impl.util.Const.PATH_TXT
 import impl.util.IO
 import org.junit.Test
@@ -14,8 +14,8 @@ class SomeTest {
             totalLinesInFiles += IO.getTxtFileContents(file).count()
         }
 
-        Drawing.loadDrawings()
-        val memoryDrawingsCount = Drawing.drawings.count()
+        Drawings.loadDrawings()
+        val memoryDrawingsCount = Drawings.drawings.count()
 
         assertEquals(totalLinesInFiles, memoryDrawingsCount, "Something went wrong when loading drawings into memory!")
     }
