@@ -8,7 +8,7 @@ data class Drawing(val year: String, val issue: Int, val numbers: IntArray) {
 
     init {
         if (numbers.size != 6) {
-            throw IllegalArgumentException("Numbers arrays must always have size of 6!")
+            throw IllegalArgumentException("Numbers arrays must always have size of 6! Current is ${numbers.size}")
         }
     }
 
