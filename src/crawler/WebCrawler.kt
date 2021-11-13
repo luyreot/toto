@@ -1,13 +1,12 @@
 package crawler
 
 import extension.appendLine
-import util.Const.PATH_TXT
-import util.Const.URL
-import util.Const.YEAR
-import util.IO
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
+import util.Const.PATH_TXT
+import util.Const.YEAR
+import util.IO
 import java.io.IOException
 
 class WebCrawler {
@@ -15,12 +14,17 @@ class WebCrawler {
     // region Web
 
     // A fake user agent so the web server thinks the robot is a normal web browser.
-    private val userAgent: String = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1"
+    private val userAgent: String =
+        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1"
+
     // The max html file size to be read, doesn't work if the number is too low aka the page is too large
     private val maxBodySize: Int = 10048000
+    private val url: String = "http://www.toto.bg/results/6x49/"
+
     // http://www.toto.bg/results/6x49/2020-100
     private val drawingPrefix: String = "-"
     private val currentYearPath = PATH_TXT + YEAR
+
     // Alternative css query: "span[class*=ball-white]"
     private val documentQuery = "div.tir_numbers > div.row > div.col-sm-6.text-right.nopadding > span.ball-white"
 
@@ -29,6 +33,7 @@ class WebCrawler {
     // region File contents
 
     private val contentBuilder = StringBuilder()
+
     // Track the current drawing
     private val drawingCount: Int
 
@@ -42,7 +47,7 @@ class WebCrawler {
     }
 
     fun crawl() {
-        val pageUrl = URL + YEAR + drawingPrefix
+        val pageUrl = url + YEAR + drawingPrefix
         var saveToFile = false
         var drawingIndex = drawingCount
 
