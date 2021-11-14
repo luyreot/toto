@@ -13,13 +13,15 @@ class Main {
 
         @JvmStatic
         fun main(args: Array<String>) {
-//            WebCrawler.updateDrawings()
+            WebCrawler.updateDrawings()
 //            WebCrawlerBackup.updateDrawings()
 
+            /*
             Drawings.loadDrawings()
             Helper.printDuplicateDrawingsCount()
             Patterns
             Chains
+            */
 
             println()
         }
