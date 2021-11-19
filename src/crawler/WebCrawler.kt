@@ -52,7 +52,9 @@ class WebCrawler {
         var drawingIndex = drawingCount
 
         do {
-            //drawingIndex += 1 // For 2021 there is one extra drawing at position 1 in the txt file
+            // For 2021 there is one extra drawing at position 1 in the txt file
+            // Increment last
+            //drawingIndex += 1
             val drawingUrl = pageUrl + drawingIndex
             val document = readPage(drawingUrl)
 
@@ -74,6 +76,7 @@ class WebCrawler {
                 saveToFile = true
             }
 
+            drawingIndex += 1
         } while (true)
 
 
