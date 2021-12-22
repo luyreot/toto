@@ -91,7 +91,9 @@ class WebCrawler {
 
     private fun readPage(url: String): Document? {
         try {
-            val connection = Jsoup.connect(url).userAgent(userAgent)
+            val connection = Jsoup.connect(url).userAgent(userAgent).apply {
+                execute()
+            }
             val statusCode = connection.response().statusCode()
 
             /* Crawler doesn't return a contentType

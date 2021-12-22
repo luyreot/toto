@@ -1,5 +1,3 @@
-package main
-
 import crawler.WebCrawler
 import crawler.WebCrawlerBackup
 import data.Chains
