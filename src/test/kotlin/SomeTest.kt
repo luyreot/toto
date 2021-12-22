@@ -1,7 +1,7 @@
 import data.Drawings
+import org.junit.Test
 import util.Const.PATH_TXT
 import util.IO
-import org.junit.Test
 import kotlin.test.assertEquals
 
 class SomeTest {
@@ -19,5 +19,4 @@ class SomeTest {
 
         assertEquals(totalLinesInFiles, memoryDrawingsCount, "Something went wrong when loading drawings into memory!")
     }
-
 }
