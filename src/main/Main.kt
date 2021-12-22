@@ -1,10 +1,11 @@
 package main
 
-import algorithm.Markov
-import algorithm.Patterns
-import algorithm.Predict
-import service.drawingsList
-import utils.loadAllDrawings
+import crawler.WebCrawler
+import crawler.WebCrawlerBackup
+import data.Chains
+import data.Drawings
+import data.Patterns
+import util.Helper
 
 class Main {
 
@@ -12,29 +13,17 @@ class Main {
 
         @JvmStatic
         fun main(args: Array<String>) {
-//            updateYearDrawings()
-            doOtherStuff()
-        }
+            WebCrawler.updateDrawings()
+//            WebCrawlerBackup.updateDrawings()
 
-        private fun doOtherStuff() {
-            loadAllDrawings()
-//            loadDrawingsForYears("2017", "2018", "2019")
-//            loadDrawingsForYears("2019")
-            printDuplicateDrawingsCount()
-
-            Patterns.generate()
-            Patterns.calculateProbabilities()
-            Patterns.sort()
-            Markov.trainChains()
-            Markov.sortChains()
-            Predict.predict()
+            /*
+            Drawings.loadDrawings()
+            Helper.printDuplicateDrawingsCount()
+            Patterns
+            Chains
+            */
 
             println()
-        }
-
-        private fun printDuplicateDrawingsCount(years: String = "*") {
-            println("Duplicate drawings for years $years – ${drawingsList.count() - drawingsList.toSet().size}")
-            // currently 6 duplicate drawings
         }
 
     }

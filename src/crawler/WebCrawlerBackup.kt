@@ -4,12 +4,12 @@ import extension.appendLine
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import util.Const.PATH_TXT
+import util.Const
 import util.Const.YEAR
 import util.IO
 import java.io.IOException
 
-class WebCrawler {
+class WebCrawlerBackup {
 
     // region Web
 
@@ -19,20 +19,18 @@ class WebCrawler {
 
     // The max html file size to be read, doesn't work if the number is too low aka the page is too large
     private val maxBodySize: Int = 10048000
-    private val url: String = "http://www.toto.bg/results/6x49/"
-
-    // http://www.toto.bg/results/6x49/2020-100
-    private val drawingPrefix: String = "-"
-    private val currentYearPath = PATH_TXT + YEAR
+    private val url: String = "https://bgtoto.com/6ot49_arhiv.php/"
 
     // Alternative css query: "span[class*=ball-white]"
-    private val documentQuery = "div.tir_numbers > div.row > div.col-sm-6.text-right.nopadding > span.ball-white"
+    private val documentQuery =
+        "body > table > tbody > tr > td > table > tbody > tr > td > table > tbody > tr > td > div > center > table > tbody > tr > td > table > tbody > tr"
 
     // endregion Web
 
     // region File contents
 
     private val contentBuilder = StringBuilder()
+    private val currentYearPath = Const.PATH_TXT + YEAR
 
     // Track the current drawing
     private val drawingCount: Int
@@ -47,38 +45,46 @@ class WebCrawler {
     }
 
     fun crawl() {
-        val pageUrl = url + YEAR + drawingPrefix
         var saveToFile = false
         var drawingIndex = drawingCount
 
-        do {
-            // For 2021 there is one extra drawing at position 1 in the txt file
-            // Increment last
-            //drawingIndex += 1
-            val drawingUrl = pageUrl + drawingIndex
-            val document = readPage(drawingUrl)
+        val document = readPage()
 
-            if (document == null) {
-                println("ERROR! HTML Document is empty")
-                break
+        if (document == null) {
+            println("ERROR! HTML Document is empty")
+            return
+        }
+
+        // Gets the individual numbers as a list of elements
+        val numbers: Elements = document.select(documentQuery)
+        if (numbers.isEmpty()) {
+            println("ERROR! Didn't select any elements")
+            return
+        }
+
+        val numbersReversed = numbers.reversed()
+
+        // 0: <td>1</td>
+        // 1: <td>8,11,14,16,34,39</td>
+        // 2: <td></td>
+        try {
+            numbersReversed.forEach { drawing ->
+                if (drawing.children().size == 3) {
+                    val drawingNumber = drawing.child(0).toString().replace("<td>", "").replace("</td>", "").toInt()
+                    if (drawingNumber == drawingIndex) {
+                        val drawingNumbers = drawing.child(1).toString().replace("<td>", "").replace("</td>", "").trim()
+                        contentBuilder.appendLine(drawingNumbers)
+                        drawingIndex += 1
+                    }
+                }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
-            // Gets the individual numbers as a list of elements
-            val numbers: Elements = document.select(documentQuery)
-            if (numbers.isEmpty()) {
-                println("ERROR! Didn't select any elements")
-                break
-            }
-
-            val drawing = numbers.text().replace(" ", ",")
-            contentBuilder.appendLine(drawing)
-            if (saveToFile.not()) {
-                saveToFile = true
-            }
-
-            drawingIndex += 1
-        } while (true)
-
+        if (saveToFile.not() && contentBuilder.isNotBlank()) {
+            saveToFile = true
+        }
 
         if (saveToFile) {
             println("INFO: Saving new drawings...")
@@ -89,7 +95,7 @@ class WebCrawler {
         println("INFO: No new drawings were added")
     }
 
-    private fun readPage(url: String): Document? {
+    private fun readPage(): Document? {
         try {
             val connection = Jsoup.connect(url).userAgent(userAgent)
             val statusCode = connection.response().statusCode()
@@ -121,7 +127,7 @@ class WebCrawler {
 
     companion object {
         fun updateDrawings() {
-            WebCrawler().crawl()
+            WebCrawlerBackup().crawl()
         }
     }
 
