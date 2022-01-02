@@ -11,6 +11,8 @@ class Main {
 
         @JvmStatic
         fun main(args: Array<String>) {
+            println("=== START ===")
+
             val fetchNewDrawings = false
             val fetchNewDrawingsFromBackupSite = false
             if (fetchNewDrawings) {
@@ -29,7 +31,7 @@ class Main {
                 Chains
             }
 
-            println()
+            println("=== END ===")
         }
 
     }
