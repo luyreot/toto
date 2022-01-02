@@ -1,5 +1,8 @@
 import crawler.WebCrawler649
 import crawler.WebCrawler649Backup
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import logicNew.data.DrawingsStats
 import logicNew.model.drawing.DrawingType
 
@@ -22,8 +25,11 @@ class Main {
             }
 
             val stats = DrawingsStats(DrawingType.D_6x49)
-            stats.loadNumbers(2020)
+            stats.loadNumbers(2019, 2020)
 
+            runBlocking {
+                withContext(Dispatchers.Default) { stats.calculateNumberOccurrences() }
+            }
 
             println("=== END ===")
         }

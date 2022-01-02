@@ -7,6 +7,7 @@ class DrawingsStats(
 ) {
 
     val drawnNumbers: DrawnNumbers = DrawnNumbers(drawingType)
+    val occurredNumbers: OccurredNumbers = OccurredNumbers(drawingType)
 
     fun loadNumbers(
         vararg years: Int
@@ -14,5 +15,9 @@ class DrawingsStats(
         drawnNumbers.loadNumbers(*years)
         drawnNumbers.checkDrawings()
         drawnNumbers.validateNumbers()
+    }
+
+    suspend fun calculateNumberOccurrences() {
+        occurredNumbers.calculateNumberOccurrences(drawnNumbers.numbers)
     }
 }

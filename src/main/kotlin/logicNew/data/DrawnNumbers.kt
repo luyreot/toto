@@ -5,6 +5,9 @@ import logicNew.model.drawing.DrawnNumber
 import util.IO
 import util.PATH_TXT_6x49
 
+/**
+ * Holds a list of all drawn numbers.
+ */
 class DrawnNumbers(
     private val drawingType: DrawingType
 ) {
