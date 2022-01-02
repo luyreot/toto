@@ -1,9 +1,9 @@
-package data
+package logicOld.data
 
-import extension.toArrayDrawing
-import model.drawing.Drawing
-import util.Const.PATH_TXT
-import util.IO
+import logicOld.extension.toArrayDrawing
+import logicOld.model.drawing.Drawing
+import logicOld.util.Const.PATH_TXT
+import logicOld.util.IO
 import java.util.*
 
 /**

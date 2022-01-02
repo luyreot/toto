@@ -1,6 +1,6 @@
-package model.pattern
+package logicOld.model.pattern
 
-import data.Drawings
+import logicOld.data.Drawings
 
 /**
  * Base pattern for tracking how often a pattern occurs.

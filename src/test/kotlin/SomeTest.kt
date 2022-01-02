@@ -1,7 +1,7 @@
-import data.Drawings
+import logicOld.data.Drawings
 import org.junit.Test
-import util.Const.PATH_TXT
-import util.IO
+import logicOld.util.Const.PATH_TXT
+import logicOld.util.IO
 import kotlin.test.assertEquals
 
 class SomeTest {

@@ -1,9 +1,9 @@
 import crawler.WebCrawler649
 import crawler.WebCrawler649Backup
-import data.Chains
-import data.Drawings
-import data.Patterns
-import util.Helper
+import logicOld.data.Chains
+import logicOld.data.Drawings
+import logicOld.data.Patterns
+import logicOld.util.Helper
 
 class Main {
 

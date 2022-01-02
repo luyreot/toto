@@ -1,10 +1,10 @@
-package util
+package logicOld.util
 
-import data.Drawings
-import extension.toStringDrawing
-import model.chain.Chain
-import model.pattern.PatternBase
-import model.pattern.PatternNumeric
+import logicOld.data.Drawings
+import logicOld.extension.toStringDrawing
+import logicOld.model.chain.Chain
+import logicOld.model.pattern.PatternBase
+import logicOld.model.pattern.PatternNumeric
 
 object Helper {
 

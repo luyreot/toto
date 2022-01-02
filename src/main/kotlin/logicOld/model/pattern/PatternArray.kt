@@ -1,4 +1,4 @@
-package model.pattern
+package logicOld.model.pattern
 
 /**
  * Holds a specific set of numbers in an int array which always must have a size of 6.

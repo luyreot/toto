@@ -1,6 +1,6 @@
-package model.pattern
+package logicOld.model.pattern
 
-import data.Drawings
+import logicOld.data.Drawings
 
 /**
  * Holds a number, a frequency, which represents the number

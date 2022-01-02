@@ -1,9 +1,9 @@
-package data
+package logicOld.data
 
-import extension.toStringDrawing
-import model.chain.Chain
-import util.Convert
-import util.Helper
+import logicOld.extension.toStringDrawing
+import logicOld.model.chain.Chain
+import logicOld.util.Convert
+import logicOld.util.Helper
 
 /**
  * Holds information about relations between two entities of the same type.

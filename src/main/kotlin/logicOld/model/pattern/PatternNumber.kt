@@ -1,6 +1,6 @@
-package model.pattern
+package logicOld.model.pattern
 
-import model.drawing.Drawing
+import logicOld.model.drawing.Drawing
 
 /**
  * Holds a specific number from a [Drawing].

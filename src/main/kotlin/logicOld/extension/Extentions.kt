@@ -1,4 +1,4 @@
-package extension
+package logicOld.extension
 
 // Appends a string to a string builder and a new line at the end
 fun StringBuilder.appendLine(text: String): StringBuilder = append(text + "\n")

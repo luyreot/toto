@@ -1,12 +1,12 @@
 package crawler
 
-import extension.appendLine
+import logicOld.extension.appendLine
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import util.Const
-import util.Const.YEAR
-import util.IO
+import logicOld.util.Const
+import logicOld.util.Const.YEAR
+import logicOld.util.IO
 import java.io.IOException
 
 class WebCrawler649Backup {

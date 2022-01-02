@@ -1,6 +1,6 @@
-package model.chain
+package logicOld.model.chain
 
-import data.Chains
+import logicOld.data.Chains
 
 /**
  * Class that holds a chain between the tracked [entity]

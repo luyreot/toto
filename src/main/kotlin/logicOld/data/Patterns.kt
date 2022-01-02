@@ -1,10 +1,10 @@
-package data
+package logicOld.data
 
-import extension.toStringDrawing
-import model.pattern.PatternArray
-import model.pattern.PatternNumber
-import util.Convert
-import util.Helper
+import logicOld.extension.toStringDrawing
+import logicOld.model.pattern.PatternArray
+import logicOld.model.pattern.PatternNumber
+import logicOld.util.Convert
+import logicOld.util.Helper
 
 /**
  * Holds information about how often a particular pattern occurs, such as:
