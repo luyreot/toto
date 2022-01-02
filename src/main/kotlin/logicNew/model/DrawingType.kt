@@ -1,4 +1,4 @@
-package logicNew.model.drawing
+package logicNew.model
 
 enum class DrawingType(name: String) {
     D_6x49("6x49"),

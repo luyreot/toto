@@ -1,23 +1,21 @@
 package logicNew.data
 
-import logicNew.model.drawing.DrawingType
+import logicNew.model.DrawingType
 
 class DrawingsStats(
     drawingType: DrawingType
 ) {
 
     val drawnNumbers: DrawnNumbers = DrawnNumbers(drawingType)
-    val occurredNumbers: OccurredNumbers = OccurredNumbers(drawingType)
+    val numberOccurrences: NumberOccurrences = NumberOccurrences(drawingType)
 
     fun loadNumbers(
         vararg years: Int
     ) {
         drawnNumbers.loadNumbers(*years)
-        drawnNumbers.checkDrawings()
-        drawnNumbers.validateNumbers()
     }
 
     suspend fun calculateNumberOccurrences() {
-        occurredNumbers.calculateNumberOccurrences(drawnNumbers.numbers)
+        numberOccurrences.calculateNumberOccurrences(drawnNumbers.numbers)
     }
 }

@@ -1,7 +1,7 @@
 package logicNew.data
 
-import logicNew.model.drawing.DrawingType
-import logicNew.model.drawing.DrawnNumber
+import logicNew.model.DrawingType
+import logicNew.model.DrawnNumber
 import util.IO
 import util.PATH_TXT_6x49
 
@@ -28,16 +28,9 @@ class DrawnNumbers(
         } else {
             loadNumbersForYears(*years)
         }
-    }
 
-    fun validateNumbers() {
-        val listSize: Int = numbersCache.size
-        val setSize: Int = numbersCache.toSet().size
-        if (listSize != setSize) throw IllegalArgumentException("There is an invalid drawing!")
-    }
-
-    fun checkDrawings() {
-        if (numbersCache.isEmpty()) throw IllegalArgumentException("Drawings are empty!")
+        checkDrawings()
+        validateNumbers()
     }
 
     private fun loadAllNumbers() {
@@ -94,5 +87,15 @@ class DrawnNumbers(
                 )
             }
         }
+    }
+
+    private fun checkDrawings() {
+        if (numbersCache.isEmpty()) throw IllegalArgumentException("Drawings are empty!")
+    }
+
+    private fun validateNumbers() {
+        val listSize: Int = numbersCache.size
+        val setSize: Int = numbersCache.toSet().size
+        if (listSize != setSize) throw IllegalArgumentException("There is an invalid drawing!")
     }
 }

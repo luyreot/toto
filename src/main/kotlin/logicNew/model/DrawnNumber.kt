@@ -1,4 +1,4 @@
-package logicNew.model.drawing
+package logicNew.model
 
 /**
  * Represents a single [number] and its [position] in a drawing.

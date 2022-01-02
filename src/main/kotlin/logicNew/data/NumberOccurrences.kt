@@ -1,13 +1,13 @@
 package logicNew.data
 
 import kotlinx.coroutines.coroutineScope
-import logicNew.model.drawing.DrawingType
-import logicNew.model.drawing.DrawnNumber
+import logicNew.model.DrawingType
+import logicNew.model.DrawnNumber
 
 /**
  * Holds information on how often a number has been drawn.
  */
-class OccurredNumbers(
+class NumberOccurrences(
     private val drawingType: DrawingType
 ) {
 
