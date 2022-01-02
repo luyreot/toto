@@ -28,6 +28,7 @@ class NumberOccurrences(
         drawnNumbers: List<DrawnNumber>
     ) = coroutineScope {
         drawnNumbers.forEach { number ->
+            // Increment the value of how often a drawing number has occurred by 1
             numbersCache.merge(number.number, 1, Int::plus)
         }
 
