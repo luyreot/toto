@@ -1,5 +1,6 @@
 import crawler.WebCrawler649
 import crawler.WebCrawler649Backup
+import logicNew.data.DrawnNumbers
 import logicOld.data.Chains
 import logicOld.data.Drawings
 import logicOld.data.Patterns
@@ -29,11 +30,14 @@ class Main {
                 Helper.printDuplicateDrawingsCount()
                 Patterns
                 Chains
+            } else {
+                // Put new logic here
+                DrawnNumbers.loadNumbers(2020)
+                DrawnNumbers.checkDrawings()
+                DrawnNumbers.validateNumbers()
             }
 
             println("=== END ===")
         }
-
     }
-
 }
