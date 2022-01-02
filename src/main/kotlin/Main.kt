@@ -12,9 +12,12 @@ class Main {
         @JvmStatic
         fun main(args: Array<String>) {
             val fetchNewDrawings = false
+            val fetchNewDrawingsFromBackupSite = false
             if (fetchNewDrawings) {
                 WebCrawler649.updateDrawings()
-                WebCrawler649Backup.updateDrawings()
+                if (fetchNewDrawingsFromBackupSite) {
+                    WebCrawler649Backup.updateDrawings()
+                }
             }
 
             val triggerOldLogic = false
