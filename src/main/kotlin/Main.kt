@@ -1,5 +1,9 @@
 import crawler.WebCrawler649
 import crawler.WebCrawler649Backup
+import data.Chains
+import data.Drawings
+import data.Patterns
+import util.Helper
 
 class Main {
 
@@ -7,15 +11,19 @@ class Main {
 
         @JvmStatic
         fun main(args: Array<String>) {
-            WebCrawler649.updateDrawings()
-//            WebCrawler649Backup.updateDrawings()
+            val fetchNewDrawings = false
+            if (fetchNewDrawings) {
+                WebCrawler649.updateDrawings()
+                WebCrawler649Backup.updateDrawings()
+            }
 
-            /*
-            Drawings.loadDrawings()
-            Helper.printDuplicateDrawingsCount()
-            Patterns
-            Chains
-            */
+            val triggerOldLogic = false
+            if (triggerOldLogic) {
+                Drawings.loadDrawings()
+                Helper.printDuplicateDrawingsCount()
+                Patterns
+                Chains
+            }
 
             println()
         }
