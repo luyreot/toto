@@ -1,12 +1,11 @@
 package crawler
 
-import logicOld.extension.appendLine
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import logicOld.util.Const
-import logicOld.util.Const.YEAR
-import logicOld.util.IO
+import util.IO
+import util.PATH_TXT
+import util.YEAR
 import java.io.IOException
 
 class WebCrawler649Backup {
@@ -30,7 +29,7 @@ class WebCrawler649Backup {
     // region File contents
 
     private val contentBuilder = StringBuilder()
-    private val currentYearPath = Const.PATH_TXT + YEAR
+    private val currentYearPath = PATH_TXT + YEAR
 
     // Track the current drawing
     private val drawingCount: Int
@@ -130,5 +129,4 @@ class WebCrawler649Backup {
             WebCrawler649Backup().crawl()
         }
     }
-
 }

@@ -1,12 +1,11 @@
 package crawler
 
-import logicOld.extension.appendLine
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import logicOld.util.Const.PATH_TXT
-import logicOld.util.Const.YEAR
-import logicOld.util.IO
+import util.IO
+import util.PATH_TXT
+import util.YEAR
 import java.io.IOException
 
 class WebCrawler649 {
@@ -126,5 +125,4 @@ class WebCrawler649 {
             WebCrawler649().crawl()
         }
     }
-
 }

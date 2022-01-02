@@ -2,8 +2,8 @@ package logicOld.data
 
 import logicOld.extension.toArrayDrawing
 import logicOld.model.drawing.Drawing
-import logicOld.util.Const.PATH_TXT
-import logicOld.util.IO
+import util.IO
+import util.PATH_TXT
 import java.util.*
 
 /**
