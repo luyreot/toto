@@ -14,9 +14,10 @@ class Main {
             val fetchNewDrawings = false
             val fetchNewDrawingsFromBackupSite = false
             if (fetchNewDrawings) {
-                WebCrawler649.updateDrawings()
                 if (fetchNewDrawingsFromBackupSite) {
                     WebCrawler649Backup.updateDrawings()
+                } else {
+                    WebCrawler649.updateDrawings()
                 }
             }
 
