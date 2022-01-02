@@ -4,10 +4,11 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 import util.IO
-import util.PATH_TXT
-import util.YEAR
+import util.PATH_TXT_6x49
+import util.YEAR_FOR_WEB_CRAWL
 import java.io.IOException
 
+// TODO: 1/2/22 Class is only 6x49 aware
 class WebCrawler649Backup {
 
     // region Web
@@ -29,7 +30,7 @@ class WebCrawler649Backup {
     // region File contents
 
     private val contentBuilder = StringBuilder()
-    private val currentYearPath = PATH_TXT + YEAR
+    private val currentYearPath = PATH_TXT_6x49 + YEAR_FOR_WEB_CRAWL
 
     // Track the current drawing
     private val drawingCount: Int
@@ -40,7 +41,7 @@ class WebCrawler649Backup {
         val currentYearDrawings = IO.getTxtFileContents(currentYearPath)
         currentYearDrawings.forEach { contentBuilder.appendLine(it) }
         drawingCount = currentYearDrawings.size
-        println("INFO: Current drawings count for $YEAR - $drawingCount")
+        println("INFO: Current drawings count for $YEAR_FOR_WEB_CRAWL - $drawingCount")
     }
 
     fun crawl() {

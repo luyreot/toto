@@ -3,7 +3,7 @@ package logicOld.data
 import logicOld.extension.toArrayDrawing
 import logicOld.model.drawing.Drawing
 import util.IO
-import util.PATH_TXT
+import util.PATH_TXT_6x49
 import java.util.*
 
 /**
@@ -30,7 +30,7 @@ object Drawings {
     private fun loadAll(): TreeMap<String, List<Drawing>> {
         val map = TreeMap<String, List<Drawing>>()
 
-        val files = IO.getFiles(PATH_TXT)
+        val files = IO.getFiles(PATH_TXT_6x49)
         if (files.isNullOrEmpty()) throw IllegalArgumentException("Did not load any files!")
 
         files.forEach { file ->
@@ -50,7 +50,7 @@ object Drawings {
         val map = TreeMap<String, List<Drawing>>()
 
         years.forEach { year ->
-            val fileContents = IO.getTxtFileContents(PATH_TXT + year)
+            val fileContents = IO.getTxtFileContents(PATH_TXT_6x49 + year)
             val drawings = extractDrawings(year, fileContents)
             map[year] = drawings
         }

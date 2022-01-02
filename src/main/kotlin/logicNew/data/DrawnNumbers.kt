@@ -2,7 +2,7 @@ package logicNew.data
 
 import logicNew.model.drawing.DrawnNumber
 import util.IO
-import util.PATH_TXT
+import util.PATH_TXT_6x49
 
 object DrawnNumbers {
 
@@ -35,7 +35,7 @@ object DrawnNumbers {
     }
 
     private fun loadAllNumbers() {
-        IO.getFiles(PATH_TXT)?.let { files ->
+        IO.getFiles(PATH_TXT_6x49)?.let { files ->
             files.forEach { file ->
                 addDrawnNumbers(
                     year = file.name.toInt(),
@@ -51,7 +51,7 @@ object DrawnNumbers {
         years.forEach { year ->
             addDrawnNumbers(
                 year = year,
-                fileContents = IO.getTxtFileContents(PATH_TXT + year)
+                fileContents = IO.getTxtFileContents(PATH_TXT_6x49 + year)
             )
         }
     }
