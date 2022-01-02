@@ -1,10 +1,13 @@
 package logicNew.data
 
+import logicNew.model.drawing.DrawingType
 import logicNew.model.drawing.DrawnNumber
 import util.IO
 import util.PATH_TXT_6x49
 
-object DrawnNumbers {
+class DrawnNumbers(
+    private val drawingType: DrawingType
+) {
 
     val numbers: List<DrawnNumber>
         get() = numbersCache
@@ -66,8 +69,16 @@ object DrawnNumbers {
         fileContents.forEachIndexed { issue, drawing ->
             val drawnNumbers: List<String> = drawing.split(",")
 
-            // TODO: 1/2/22 Handles only 6/49 drawings
-            if (drawnNumbers.size != 6) throw IllegalArgumentException("Drawing is not 6/49!")
+            when (drawingType) {
+                DrawingType.D_6x49 -> if (drawnNumbers.size != 6)
+                    throw IllegalArgumentException("Drawing is not ${drawingType.name}!")
+
+                DrawingType.D_6x42 -> if (drawnNumbers.size != 6)
+                    throw IllegalArgumentException("Drawing is not ${drawingType.name}!")
+
+                DrawingType.D_5x35 -> if (drawnNumbers.size != 5)
+                    throw IllegalArgumentException("Drawing is not ${drawingType.name}!")
+            }
 
             drawnNumbers.forEachIndexed { position, number ->
                 numbersCache.add(

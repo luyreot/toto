@@ -1,10 +1,7 @@
 import crawler.WebCrawler649
 import crawler.WebCrawler649Backup
-import logicNew.data.DrawnNumbers
-import logicOld.data.Chains
-import logicOld.data.Drawings
-import logicOld.data.Patterns
-import logicOld.util.Helper
+import logicNew.data.DrawingsStats
+import logicNew.model.drawing.DrawingType
 
 class Main {
 
@@ -24,18 +21,9 @@ class Main {
                 }
             }
 
-            val triggerOldLogic = false
-            if (triggerOldLogic) {
-                Drawings.loadDrawings()
-                Helper.printDuplicateDrawingsCount()
-                Patterns
-                Chains
-            } else {
-                // Put new logic here
-                DrawnNumbers.loadNumbers(2020)
-                DrawnNumbers.checkDrawings()
-                DrawnNumbers.validateNumbers()
-            }
+            val stats = DrawingsStats(DrawingType.D_6x49)
+            stats.loadNumbers(2020)
+
 
             println("=== END ===")
         }
