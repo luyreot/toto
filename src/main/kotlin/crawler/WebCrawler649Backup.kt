@@ -9,7 +9,7 @@ import util.Const.YEAR
 import util.IO
 import java.io.IOException
 
-class WebCrawlerBackup {
+class WebCrawler649Backup {
 
     // region Web
 
@@ -127,7 +127,7 @@ class WebCrawlerBackup {
 
     companion object {
         fun updateDrawings() {
-            WebCrawlerBackup().crawl()
+            WebCrawler649Backup().crawl()
         }
     }
 

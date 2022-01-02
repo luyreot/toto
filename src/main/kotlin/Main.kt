@@ -1,9 +1,5 @@
-import crawler.WebCrawler
-import crawler.WebCrawlerBackup
-import data.Chains
-import data.Drawings
-import data.Patterns
-import util.Helper
+import crawler.WebCrawler649
+import crawler.WebCrawler649Backup
 
 class Main {
 
@@ -11,8 +7,8 @@ class Main {
 
         @JvmStatic
         fun main(args: Array<String>) {
-            WebCrawler.updateDrawings()
-//            WebCrawlerBackup.updateDrawings()
+            WebCrawler649.updateDrawings()
+//            WebCrawler649Backup.updateDrawings()
 
             /*
             Drawings.loadDrawings()
