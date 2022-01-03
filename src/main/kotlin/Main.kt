@@ -28,7 +28,8 @@ object Main {
             listOf(
                 async { lottoStats.calculateLottoNumberOccurrences() },
                 async { lottoStats.calculateLottoNumberFrequencies() },
-                async { lottoStats.calculateLottoOddEvenPatternOccurrences() }
+                async { lottoStats.calculateLottoOddEvenPatternOccurrences() },
+                async { lottoStats.calculateLottoLowHighPatternOccurrences() }
             ).awaitAll()
         }
         Thread.sleep(1000L)
