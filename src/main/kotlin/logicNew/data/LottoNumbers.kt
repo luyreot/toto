@@ -97,6 +97,8 @@ class LottoNumbers(
     private fun validateLottoNumbers() {
         if (numbersCache.isEmpty()) throw IllegalArgumentException("Drawings are empty!")
 
+        if (numbersCache.any { it.issue == 0 }) throw IllegalArgumentException("There is a zero issue drawgin!")
+
         val listSize: Int = numbersCache.size
         val setSize: Int = numbersCache.toSet().size
         if (listSize != setSize) throw IllegalArgumentException("There is an invalid drawing!")

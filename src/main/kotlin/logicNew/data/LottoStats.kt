@@ -8,6 +8,7 @@ class LottoStats(
 
     val lottoNumbers = LottoNumbers(lottoType)
     val lottoNumberOccurrences = LottoNumberOccurrences(lottoType)
+    val lottoNumberFrequencies = LottoNumberFrequencies(lottoType, lottoNumberOccurrences)
 
     fun loadLottoNumbers(
         vararg years: Int
@@ -19,7 +20,7 @@ class LottoStats(
         lottoNumberOccurrences.calculateLottoNumberOccurrences(lottoNumbers.numbers)
     }
 
-    suspend fun calculateNumberFrequencies() {
-        numberFrequencies.calculateNumberFrequencies(drawnNumbers.numbers)
+    suspend fun calculateLottoNumberFrequencies() {
+        lottoNumberFrequencies.calculateLottoNumberFrequencies(lottoNumbers.numbers)
     }
 }
