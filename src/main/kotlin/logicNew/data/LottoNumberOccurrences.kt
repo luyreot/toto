@@ -26,16 +26,8 @@ class LottoNumberOccurrences(
     }
 
     private fun validateLottoNumberOccurrences() {
-        when (lottoType) {
-            LottoType.D_6X49 -> if (occurrencesCache.size != 49)
-                throw IllegalArgumentException("Drawing is not ${lottoType.name}!")
-
-            LottoType.D_6X42 -> if (occurrencesCache.size != 42)
-                throw IllegalArgumentException("Drawing is not ${lottoType.name}!")
-
-            LottoType.D_5X35 -> if (occurrencesCache.size != 35)
-                throw IllegalArgumentException("Drawing is not ${lottoType.name}!")
-        }
+        if (occurrencesCache.size != lottoType.numberCount)
+            throw IllegalArgumentException("Drawing is not ${lottoType.name}!")
 
         if (occurrencesCache.values.any { it == 0 })
             throw IllegalArgumentException("Invalid number occurrence value!")

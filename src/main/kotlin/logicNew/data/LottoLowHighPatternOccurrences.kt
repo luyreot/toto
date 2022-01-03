@@ -29,13 +29,7 @@ class LottoLowHighPatternOccurrences(
                 .thenBy { it.issue }.thenBy { it.position })
             .let { sortedLottoNumbers ->
 
-                val tmpLottoNumbers = IntArray(
-                    when (lottoType) {
-                        LottoType.D_6X49 -> 6
-                        LottoType.D_6X42 -> 6
-                        LottoType.D_5X35 -> 5
-                    }
-                )
+                val tmpLottoNumbers = IntArray(lottoType.drawingSize)
                 sortedLottoNumbers.forEachIndexed { index, lottoNumber ->
                     val position = lottoNumber.position
 
@@ -64,20 +58,11 @@ class LottoLowHighPatternOccurrences(
     private fun convertLottoNumbersToLowHighPattern(
         numbers: IntArray
     ): IntArray {
-        val midPoint: Int = getLowHighMidPoint()
-
         for (i in numbers.indices) {
-            numbers[i] = if (numbers[i] <= midPoint) 0 else 1
+            numbers[i] = if (numbers[i] <= lottoType.lowHighMidPoint) 0 else 1
         }
 
         return numbers
-    }
-
-    private fun getLowHighMidPoint(): Int = when (lottoType) {
-        // Can also be 24, but with 25 we achieve the correct probability % from the LottoMetrix website
-        LottoType.D_6X49 -> 25
-        LottoType.D_6X42 -> 21
-        LottoType.D_5X35 -> 18
     }
 
     private fun validateLottoLowHighPatternOccurrences() {

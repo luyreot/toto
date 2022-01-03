@@ -90,16 +90,8 @@ class LottoNumberFrequencies(
     }
 
     private fun validateLottoNumberFrequencies() {
-        when (lottoType) {
-            LottoType.D_6X49 -> if (frequenciesCache.size != 49)
-                throw IllegalArgumentException("Drawing is not ${lottoType.name}!")
-
-            LottoType.D_6X42 -> if (frequenciesCache.size != 42)
-                throw IllegalArgumentException("Drawing is not ${lottoType.name}!")
-
-            LottoType.D_5X35 -> if (frequenciesCache.size != 35)
-                throw IllegalArgumentException("Drawing is not ${lottoType.name}!")
-        }
+        if (frequenciesCache.size != lottoType.numberCount)
+            throw IllegalArgumentException("Drawing is not ${lottoType.name}!")
 
         if (lottoNumberOccurrences.occurrences.size != frequenciesCache.size)
             throw IllegalArgumentException("Occurrences and frequencies sizes do not match!")

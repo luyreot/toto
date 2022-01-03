@@ -70,16 +70,8 @@ class LottoNumbers(
         fileContents.forEachIndexed { issue, drawing ->
             val drawnNumbers: List<String> = drawing.split(",")
 
-            when (lottoType) {
-                LottoType.D_6X49 -> if (drawnNumbers.size != 6)
-                    throw IllegalArgumentException("Drawing is not ${lottoType.name}!")
-
-                LottoType.D_6X42 -> if (drawnNumbers.size != 6)
-                    throw IllegalArgumentException("Drawing is not ${lottoType.name}!")
-
-                LottoType.D_5X35 -> if (drawnNumbers.size != 5)
-                    throw IllegalArgumentException("Drawing is not ${lottoType.name}!")
-            }
+            if (drawnNumbers.size != lottoType.drawingSize)
+                throw IllegalArgumentException("Drawing is not ${lottoType.name}!")
 
             drawnNumbers.forEachIndexed { position, number ->
                 numbersCache.add(
@@ -99,16 +91,8 @@ class LottoNumbers(
 
         if (numbersCache.any { it.issue == 0 }) throw IllegalArgumentException("There is a zero issue drawing!")
 
-        when (lottoType) {
-            LottoType.D_6X49 -> if (numbersCache.any { it.position > 5 })
-                throw IllegalArgumentException("There is an incorrect position for ${lottoType.name}!")
-
-            LottoType.D_6X42 -> if (numbersCache.any { it.position > 5 })
-                throw IllegalArgumentException("There is an incorrect position for ${lottoType.name}!")
-
-            LottoType.D_5X35 -> if (numbersCache.any { it.position > 4 })
-                throw IllegalArgumentException("There is an incorrect position for ${lottoType.name}!")
-        }
+        if (numbersCache.any { it.position > lottoType.drawingSize - 1 })
+            throw IllegalArgumentException("There is an incorrect position for ${lottoType.name}!")
 
         val listSize: Int = numbersCache.size
         val setSize: Int = numbersCache.toSet().size

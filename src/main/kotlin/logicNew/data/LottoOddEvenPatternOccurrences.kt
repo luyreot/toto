@@ -29,13 +29,7 @@ class LottoOddEvenPatternOccurrences(
                 .thenBy { it.issue }.thenBy { it.position })
             .let { sortedLottoNumbers ->
 
-                val tmpLottoNumbers = IntArray(
-                    when (lottoType) {
-                        LottoType.D_6X49 -> 6
-                        LottoType.D_6X42 -> 6
-                        LottoType.D_5X35 -> 5
-                    }
-                )
+                val tmpLottoNumbers = IntArray(lottoType.drawingSize)
                 sortedLottoNumbers.forEachIndexed { index, lottoNumber ->
                     val position = lottoNumber.position
 
