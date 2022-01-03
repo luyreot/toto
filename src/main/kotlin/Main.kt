@@ -2,8 +2,8 @@ import crawler.WebCrawler649
 import crawler.WebCrawler649Backup
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import logicNew.data.DrawingsStats
-import logicNew.model.DrawingType
+import logicNew.data.LottoStats
+import logicNew.model.LottoType
 
 class Main {
 
@@ -23,12 +23,11 @@ class Main {
                 }
             }
 
-            val stats = DrawingsStats(DrawingType.D_6X49)
-            stats.loadNumbers(2021, 2022)
+            val lottoStats = LottoStats(LottoType.D_6X49)
+            lottoStats.loadLottoNumbers(2021, 2022)
 
             runBlocking {
-                async { stats.calculateNumberOccurrences() }
-
+                async { lottoStats.calculateLottoNumberOccurrences() }
             }
 
             println("=== END ===")
