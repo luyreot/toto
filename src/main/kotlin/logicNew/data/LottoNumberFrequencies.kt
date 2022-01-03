@@ -10,6 +10,7 @@ import logicNew.model.LottoType
  */
 class LottoNumberFrequencies(
     private val lottoType: LottoType,
+    private val lottoNumbers: LottoNumbers,
     private val lottoNumberOccurrences: LottoNumberOccurrences
 ) {
 
@@ -24,10 +25,10 @@ class LottoNumberFrequencies(
      * The difference is calculated between the current and last one.
      * This becomes the frequency at which the lotto number has been drawn.
      */
-    suspend fun calculateLottoNumberFrequencies(
-        lottoNumbers: List<LottoNumber>
-    ) = coroutineScope {
-        lottoNumbers.sortedWith(compareBy<LottoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
+    suspend fun calculateLottoNumberFrequencies() = coroutineScope {
+        lottoNumbers.numbers
+            .sortedWith(compareBy<LottoNumber> { it.year }
+                .thenBy { it.issue }.thenBy { it.position })
             .let { sortedLottoNumbers ->
 
                 val lastOccurredLottoNumberMap = mutableMapOf<Int, Int>()

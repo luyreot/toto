@@ -22,12 +22,13 @@ object Main {
         }
 
         val lottoStats = LottoStats(LottoType.D_6X49)
-        lottoStats.loadLottoNumbers(2019, 2020, 2021, 2022)
+        lottoStats.loadLottoNumbers(2021, 2022)
 
         GlobalScope.launch {
             listOf(
                 async { lottoStats.calculateLottoNumberOccurrences() },
-                async { lottoStats.calculateLottoNumberFrequencies() }
+                async { lottoStats.calculateLottoNumberFrequencies() },
+                async { lottoStats.calculateLottoOddEvenPatternOccurrences() }
             ).awaitAll()
         }
         Thread.sleep(1000L)

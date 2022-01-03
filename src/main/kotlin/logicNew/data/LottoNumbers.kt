@@ -97,7 +97,18 @@ class LottoNumbers(
     private fun validateLottoNumbers() {
         if (numbersCache.isEmpty()) throw IllegalArgumentException("Drawings are empty!")
 
-        if (numbersCache.any { it.issue == 0 }) throw IllegalArgumentException("There is a zero issue drawgin!")
+        if (numbersCache.any { it.issue == 0 }) throw IllegalArgumentException("There is a zero issue drawing!")
+
+        when (lottoType) {
+            LottoType.D_6X49 -> if (numbersCache.any { it.position > 5 })
+                throw IllegalArgumentException("There is an incorrect position for ${lottoType.name}!")
+
+            LottoType.D_6X42 -> if (numbersCache.any { it.position > 5 })
+                throw IllegalArgumentException("There is an incorrect position for ${lottoType.name}!")
+
+            LottoType.D_5X35 -> if (numbersCache.any { it.position > 4 })
+                throw IllegalArgumentException("There is an incorrect position for ${lottoType.name}!")
+        }
 
         val listSize: Int = numbersCache.size
         val setSize: Int = numbersCache.toSet().size
