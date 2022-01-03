@@ -3,7 +3,7 @@ package logicNew.data
 import kotlinx.coroutines.coroutineScope
 import logicNew.extensions.clear
 import logicNew.model.LottoNumber
-import logicNew.model.LottoOddEvenPattern
+import logicNew.model.LottoPattern
 import logicNew.model.LottoType
 
 /**
@@ -18,10 +18,10 @@ class LottoOddEvenPatternOccurrences(
     private val lottoNumbers: LottoNumbers
 ) {
 
-    val patterns: Map<LottoOddEvenPattern, Int>
+    val patterns: Map<LottoPattern, Int>
         get() = patternsCache
 
-    private val patternsCache = mutableMapOf<LottoOddEvenPattern, Int>()
+    private val patternsCache = mutableMapOf<LottoPattern, Int>()
 
     suspend fun calculateLottoOddEvenPatternOccurrences() = coroutineScope {
         lottoNumbers.numbers
@@ -45,7 +45,7 @@ class LottoOddEvenPatternOccurrences(
                     // Save on the last item of the list or when the lotto number position becomes 0
                     if ((index != 0 && position == 0) || index == sortedLottoNumbers.size - 1) {
                         // Already got the lotto numbers of a single drawing
-                        val oddEvenPattern = LottoOddEvenPattern(
+                        val oddEvenPattern = LottoPattern(
                             pattern = convertLottoNumbersToOddEvenPattern(tmpLottoNumbers.copyOf())
                         )
 
