@@ -24,7 +24,7 @@ class Main {
             }
 
             val stats = DrawingsStats(DrawingType.D_6x49)
-            stats.loadNumbers(2019, 2020)
+            stats.loadNumbers(2021, 2022)
 
             runBlocking {
                 async { stats.calculateNumberOccurrences() }
