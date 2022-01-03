@@ -18,9 +18,9 @@ class NumberOccurrences(
 
     init {
         when (drawingType) {
-            DrawingType.D_6x49 -> for (i in 1..49) numbersCache[i] = 0
-            DrawingType.D_6x42 -> for (i in 1..42) numbersCache[i] = 0
-            DrawingType.D_5x35 -> for (i in 1..35) numbersCache[i] = 0
+            DrawingType.D_6X49 -> for (i in 1..49) numbersCache[i] = 0
+            DrawingType.D_6X42 -> for (i in 1..42) numbersCache[i] = 0
+            DrawingType.D_5X35 -> for (i in 1..35) numbersCache[i] = 0
         }
     }
 
@@ -37,13 +37,13 @@ class NumberOccurrences(
 
     private fun validateNumberOccurrences() {
         when (drawingType) {
-            DrawingType.D_6x49 -> if (numbersCache.size != 49)
+            DrawingType.D_6X49 -> if (numbersCache.size != 49)
                 throw IllegalArgumentException("Drawing is not ${drawingType.name}!")
 
-            DrawingType.D_6x42 -> if (numbersCache.size != 42)
+            DrawingType.D_6X42 -> if (numbersCache.size != 42)
                 throw IllegalArgumentException("Drawing is not ${drawingType.name}!")
 
-            DrawingType.D_5x35 -> if (numbersCache.size != 35)
+            DrawingType.D_5X35 -> if (numbersCache.size != 35)
                 throw IllegalArgumentException("Drawing is not ${drawingType.name}!")
         }
     }

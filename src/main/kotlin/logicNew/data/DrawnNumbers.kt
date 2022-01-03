@@ -66,13 +66,13 @@ class DrawnNumbers(
             val drawnNumbers: List<String> = drawing.split(",")
 
             when (drawingType) {
-                DrawingType.D_6x49 -> if (drawnNumbers.size != 6)
+                DrawingType.D_6X49 -> if (drawnNumbers.size != 6)
                     throw IllegalArgumentException("Drawing is not ${drawingType.name}!")
 
-                DrawingType.D_6x42 -> if (drawnNumbers.size != 6)
+                DrawingType.D_6X42 -> if (drawnNumbers.size != 6)
                     throw IllegalArgumentException("Drawing is not ${drawingType.name}!")
 
-                DrawingType.D_5x35 -> if (drawnNumbers.size != 5)
+                DrawingType.D_5X35 -> if (drawnNumbers.size != 5)
                     throw IllegalArgumentException("Drawing is not ${drawingType.name}!")
             }
 

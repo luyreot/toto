@@ -23,7 +23,7 @@ class Main {
                 }
             }
 
-            val stats = DrawingsStats(DrawingType.D_6x49)
+            val stats = DrawingsStats(DrawingType.D_6X49)
             stats.loadNumbers(2021, 2022)
 
             runBlocking {

@@ -1,7 +1,10 @@
 package logicNew.model
 
-enum class DrawingType(name: String) {
-    D_6x49("6x49"),
-    D_6x42("6x42"),
-    D_5x35("5x35")
+/**
+ * Holds information about the different types of lotto drawings - 6x49, etc.
+ */
+enum class DrawingType {
+    D_6X49,
+    D_6X42,
+    D_5X35
 }
