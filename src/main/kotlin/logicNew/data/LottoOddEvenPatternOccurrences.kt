@@ -29,25 +29,25 @@ class LottoOddEvenPatternOccurrences(
                 .thenBy { it.issue }.thenBy { it.position })
             .let { sortedLottoNumbers ->
 
-                val tmpLottoNumbers = IntArray(lottoType.drawingSize)
+                val tmpLottoDrawing = IntArray(lottoType.drawingSize)
                 sortedLottoNumbers.forEachIndexed { index, lottoNumber ->
                     val position = lottoNumber.position
 
-                    tmpLottoNumbers[position] = lottoNumber.number
+                    tmpLottoDrawing[position] = lottoNumber.number
 
                     // Skip the very first item from the list
                     // Save on the last item of the list or when the lotto number position becomes 0
                     if ((index != 0 && position == 0) || index == sortedLottoNumbers.size - 1) {
                         // Already got the lotto numbers of a single drawing
                         val oddEvenPattern = LottoPattern(
-                            pattern = convertLottoNumbersToOddEvenPattern(tmpLottoNumbers.copyOf())
+                            pattern = convertLottoNumbersToOddEvenPattern(tmpLottoDrawing.copyOf())
                         )
 
                         // Save the pattern in the map
                         patternsCache.merge(oddEvenPattern, 1, Int::plus)
 
                         // Reset the tmp array for the next lotto drawing
-                        tmpLottoNumbers.clear()
+                        tmpLottoDrawing.clear()
                     }
                 }
             }

@@ -29,25 +29,25 @@ class LottoLowHighPatternOccurrences(
                 .thenBy { it.issue }.thenBy { it.position })
             .let { sortedLottoNumbers ->
 
-                val tmpLottoNumbers = IntArray(lottoType.drawingSize)
+                val tmpLottoDrawing = IntArray(lottoType.drawingSize)
                 sortedLottoNumbers.forEachIndexed { index, lottoNumber ->
                     val position = lottoNumber.position
 
-                    tmpLottoNumbers[position] = lottoNumber.number
+                    tmpLottoDrawing[position] = lottoNumber.number
 
                     // Skip the very first item from the list
                     // Save on the last item of the list or when the lotto number position becomes 0
                     if ((index != 0 && position == 0) || index == sortedLottoNumbers.size - 1) {
                         // Already got the lotto numbers of a single drawing
                         val lowHighPattern = LottoPattern(
-                            pattern = convertLottoNumbersToLowHighPattern(tmpLottoNumbers.copyOf())
+                            pattern = convertLottoNumbersToLowHighPattern(tmpLottoDrawing.copyOf())
                         )
 
                         // Save the pattern in the map
                         patternsCache.merge(lowHighPattern, 1, Int::plus)
 
                         // Reset the tmp array for the next lotto drawing
-                        tmpLottoNumbers.clear()
+                        tmpLottoDrawing.clear()
                     }
                 }
             }
