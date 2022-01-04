@@ -94,12 +94,9 @@ object Chains {
      * Creates a pair of patterns from two subsequent drawing numbers.
      */
     private fun generateFromPatterns(previousNumbers: IntArray, numbers: IntArray) {
-        var entity = ""
-        var entityKey = ""
-
         // Colors
-        entity = Convert.convertToColorPattern(previousNumbers).toStringDrawing()
-        entityKey = Convert.convertToColorPattern(numbers).toStringDrawing()
+        var entity: String = Convert.convertToColorPattern(previousNumbers).toStringDrawing()
+        var entityKey: String = Convert.convertToColorPattern(numbers).toStringDrawing()
         insertPatternEntity(colors, entity, entityKey)
 
         // Odd Evens
