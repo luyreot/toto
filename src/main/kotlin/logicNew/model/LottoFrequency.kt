@@ -1,7 +1,7 @@
 package logicNew.model
 
 /**
- * Hold information about a particular [frequency] value (the spacing between issues when a particular number has occurred)
+ * Hold information about a particular [frequency] value (the spacing between issues when a particular value has occurred)
  * and the number of times it has occurred represented by the [count].
  *
  * Can be used to track frequencies of:

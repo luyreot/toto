@@ -7,8 +7,7 @@ class LottoStats(
 ) {
 
     val lottoNumbers = LottoNumbers(lottoType)
-    val lottoNumberOccurrences = LottoNumberOccurrences(lottoType, lottoNumbers)
-    val lottoNumberFrequencies = LottoNumberFrequencies(lottoType, lottoNumbers, lottoNumberOccurrences)
+    val lottoNumberStats = LottoNumberStats(lottoType, lottoNumbers)
     val lottoOddEvenPatternOccurrences = LottoOddEvenPatternOccurrences(lottoType, lottoNumbers)
     val lottoLowHighPatternOccurrences = LottoLowHighPatternOccurrences(lottoType, lottoNumbers)
 
@@ -18,12 +17,8 @@ class LottoStats(
         lottoNumbers.loadLottoNumbers(*years)
     }
 
-    suspend fun calculateLottoNumberOccurrences() {
-        lottoNumberOccurrences.calculateLottoNumberOccurrences()
-    }
-
-    suspend fun calculateLottoNumberFrequencies() {
-        lottoNumberFrequencies.calculateLottoNumberFrequencies()
+    suspend fun calculateLottoNumberStats() {
+        lottoNumberStats.calculate()
     }
 
     suspend fun calculateLottoOddEvenPatternOccurrences() {
