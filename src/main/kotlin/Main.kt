@@ -27,8 +27,8 @@ object Main {
         GlobalScope.launch {
             listOf(
                 async { lottoStats.calculateLottoNumberStats() },
-                async { lottoStats.calculateLottoOddEvenPatternOccurrences() },
-                async { lottoStats.calculateLottoLowHighPatternOccurrences() }
+                async { lottoStats.calculateLottoOddEvenPatternStats() },
+                async { lottoStats.calculateLottoLowHighPatternStats() }
             ).awaitAll()
         }
         Thread.sleep(1000L)

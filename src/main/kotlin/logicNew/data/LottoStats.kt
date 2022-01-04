@@ -8,8 +8,8 @@ class LottoStats(
 
     val lottoNumbers = LottoNumbers(lottoType)
     val lottoNumberStats = LottoNumberStats(lottoType, lottoNumbers)
-    val lottoOddEvenPatternOccurrences = LottoOddEvenPatternOccurrences(lottoType, lottoNumbers)
-    val lottoLowHighPatternOccurrences = LottoLowHighPatternOccurrences(lottoType, lottoNumbers)
+    val lottoOddEvenPatternStats = LottoOddEvenPatternStats(lottoType, lottoNumbers)
+    val lottoLowHighPatternStats = LottoLowHighPatternStats(lottoType, lottoNumbers)
 
     fun loadLottoNumbers(
         vararg years: Int
@@ -18,14 +18,14 @@ class LottoStats(
     }
 
     suspend fun calculateLottoNumberStats() {
-        lottoNumberStats.calculate()
+        lottoNumberStats.calculateStats()
     }
 
-    suspend fun calculateLottoOddEvenPatternOccurrences() {
-        lottoOddEvenPatternOccurrences.calculateLottoOddEvenPatternOccurrences()
+    suspend fun calculateLottoOddEvenPatternStats() {
+        lottoOddEvenPatternStats.calculateLottoOddEvenPatternStats()
     }
 
-    suspend fun calculateLottoLowHighPatternOccurrences() {
-        lottoLowHighPatternOccurrences.calculateLottoLowHighPatternOccurrences()
+    suspend fun calculateLottoLowHighPatternStats() {
+        lottoLowHighPatternStats.calculateLottoLowHighPatternStats()
     }
 }

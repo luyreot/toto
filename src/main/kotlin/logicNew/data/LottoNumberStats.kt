@@ -29,7 +29,7 @@ class LottoNumberStats(
      * Calculate number occurrences.
      * Calculate number frequencies.
      */
-    suspend fun calculate() = coroutineScope {
+    suspend fun calculateStats() = coroutineScope {
         lottoNumbers.numbers.sortedWith(compareBy<LottoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
             .let { sortedLottoNumbers ->
 

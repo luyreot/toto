@@ -7,13 +7,13 @@ import logicNew.model.LottoPattern
 import logicNew.model.LottoType
 
 /**
- * Holds information about occurrences of odd/even patterns for each lotto drawing.
+ * Holds information about occurrences of low/high patterns for each lotto drawing.
  *
- * An odd/even pattern for a lotto drawing will look like this:
- * 0 - odd, 1 - even
- * 5,14,22,25,34,49 -> 0,1,1,0,1,0
+ * An low/high pattern for a lotto drawing will look like this:
+ * 0 - <= 25, 1 - > 25 (when the lotto type is 6x49)
+ * 5,14,22,25,34,49 -> 0,0,0,0,1,1
  */
-class LottoOddEvenPatternOccurrences(
+class LottoLowHighPatternStats(
     private val lottoType: LottoType,
     private val lottoNumbers: LottoNumbers
 ) {
@@ -23,7 +23,7 @@ class LottoOddEvenPatternOccurrences(
 
     private val patternsCache = mutableMapOf<LottoPattern, Int>()
 
-    suspend fun calculateLottoOddEvenPatternOccurrences() = coroutineScope {
+    suspend fun calculateLottoLowHighPatternStats() = coroutineScope {
         lottoNumbers.numbers
             .sortedWith(compareBy<LottoNumber> { it.year }
                 .thenBy { it.issue }.thenBy { it.position })
@@ -39,12 +39,12 @@ class LottoOddEvenPatternOccurrences(
                     // Save on the last item of the list or when the lotto number position becomes 0
                     if ((index != 0 && position == 0) || index == sortedLottoNumbers.size - 1) {
                         // Already got the lotto numbers of a single drawing
-                        val oddEvenPattern = LottoPattern(
-                            pattern = convertLottoNumbersToOddEvenPattern(tmpLottoDrawing.copyOf())
+                        val lowHighPattern = LottoPattern(
+                            pattern = convertLottoNumbersToLowHighPattern(tmpLottoDrawing.copyOf())
                         )
 
                         // Save the pattern in the map
-                        patternsCache.merge(oddEvenPattern, 1, Int::plus)
+                        patternsCache.merge(lowHighPattern, 1, Int::plus)
 
                         // Reset the tmp array for the next lotto drawing
                         tmpLottoDrawing.clear()
@@ -52,24 +52,24 @@ class LottoOddEvenPatternOccurrences(
                 }
             }
 
-        validateLottoOddEvenPatternOccurrences()
+        validateLottoLowHighPatternOccurrences()
     }
 
-    private fun convertLottoNumbersToOddEvenPattern(
+    private fun convertLottoNumbersToLowHighPattern(
         numbers: IntArray
     ): IntArray {
         for (i in numbers.indices) {
-            numbers[i] = if ((numbers[i] and 1) == 0) 1 else 0
+            numbers[i] = if (numbers[i] <= lottoType.lowHighMidPoint) 0 else 1
         }
 
         return numbers
     }
 
-    private fun validateLottoOddEvenPatternOccurrences() {
+    private fun validateLottoLowHighPatternOccurrences() {
         // Size of the lotto numbers should be the same as the total sum of the patterns
-        val oddEvenPatternSize = patternsCache.values.sum()
+        val lowHighPatternSize = patternsCache.values.sum()
         val lottoNumberSize = lottoNumbers.numbers.count { it.position == 0 }
-        if (oddEvenPatternSize != lottoNumberSize)
+        if (lowHighPatternSize != lottoNumberSize)
             throw IllegalArgumentException("Pattern size is incorrect!")
 
         // No odd/even pattern should have an occurrence of 0
