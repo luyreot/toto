@@ -1,8 +1,8 @@
 package logicNew.data
 
 import kotlinx.coroutines.coroutineScope
+import logicNew.model.LottoFrequency
 import logicNew.model.LottoNumber
-import logicNew.model.LottoNumberFrequency
 import logicNew.model.LottoType
 
 /**
@@ -14,10 +14,10 @@ class LottoNumberFrequencies(
     private val lottoNumberOccurrences: LottoNumberOccurrences
 ) {
 
-    val frequencies: Map<Int, List<LottoNumberFrequency>>
+    val frequencies: Map<Int, List<LottoFrequency>>
         get() = frequenciesCache
 
-    private val frequenciesCache = mutableMapOf<Int, MutableList<LottoNumberFrequency>>()
+    private val frequenciesCache = mutableMapOf<Int, MutableList<LottoFrequency>>()
 
     /**
      * Map that holds the last occurred lotto number at a particular year and issue represented by an index.
@@ -60,24 +60,24 @@ class LottoNumberFrequencies(
                                 val index: Int = frequenciesCache[number]?.indexOfFirst { it.frequency == newFrequency } ?: -1
 
                                 if (index == -1) {
-                                    frequenciesCache[number]?.add(LottoNumberFrequency(frequency = newFrequency))
+                                    frequenciesCache[number]?.add(LottoFrequency(frequency = newFrequency))
                                 } else {
-                                    val lottoNumberFrequency: LottoNumberFrequency? = frequenciesCache[number]?.get(index)
-                                    if (lottoNumberFrequency == null) {
-                                        frequenciesCache[number]?.add(LottoNumberFrequency(frequency = newFrequency))
+                                    val lottoFrequency: LottoFrequency? = frequenciesCache[number]?.get(index)
+                                    if (lottoFrequency == null) {
+                                        frequenciesCache[number]?.add(LottoFrequency(frequency = newFrequency))
                                     } else {
                                         frequenciesCache[number]?.set(
                                             index,
-                                            lottoNumberFrequency.copy(count = lottoNumberFrequency.count + 1)
+                                            lottoFrequency.copy(count = lottoFrequency.count + 1)
                                         )
                                     }
                                 }
                             } else {
-                                frequenciesCache[number]?.add(LottoNumberFrequency(frequency = newFrequency))
+                                frequenciesCache[number]?.add(LottoFrequency(frequency = newFrequency))
                             }
                         } else {
                             // Lotto number does not have any frequencies yet
-                            frequenciesCache[number] = mutableListOf(LottoNumberFrequency(frequency = newFrequency))
+                            frequenciesCache[number] = mutableListOf(LottoFrequency(frequency = newFrequency))
                         }
 
                         lastOccurredLottoNumberMap[number] = lottoDrawingIndex
