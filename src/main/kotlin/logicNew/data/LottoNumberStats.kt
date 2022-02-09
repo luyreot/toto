@@ -6,7 +6,7 @@ import logicNew.model.LottoNumber
 import logicNew.model.LottoType
 
 /**
- * Holds information on:
+ * Holds information about:
  * - how often a number has been drawn
  * - the spacing between issues when a particular number has occurred, via the [LottoFrequency] data class
  */
@@ -33,11 +33,11 @@ class LottoNumberStats(
         lottoNumbers.numbers.sortedWith(compareBy<LottoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
             .let { sortedLottoNumbers ->
 
-                // The index of a particular drawing. Independent of the drawing's issue value.
-                // Drawings from multiple years can be loaded. Since each year can have the same number of issues,
-                // each drawing must be tracked individually.
-                // Most important when tracking numbers when the year changes.
+                // Var to track the index of the drawing. Increment each time when a new drawing issue is occurring.
+                // Needed to calculate the frequencies between the same number from different drawings.
+                // lottoNumber.issue cannot be used since two different years can have the same issue number, ie. 1
                 var currentDrawingIndex = 0
+                // Var to detect when a new drawing issue is occurring.
                 var currentDrawingIssue = -1
 
                 // Track the number and the drawing index at which it has occurred last
@@ -78,28 +78,30 @@ class LottoNumberStats(
                         }
 
                         // Lotto number has already some frequencies
-                        val doesNewFrequencyExist = frequenciesCache[number]?.any { it.frequency == newFrequency }
-                        // New frequency does not exist
-                        if (doesNewFrequencyExist?.not() == true) {
+                        val doesNewFrequencyExist: Boolean = frequenciesCache[number]?.any { it.frequency == newFrequency } ?: false
+
+                        // Add new frequency to number
+                        if (doesNewFrequencyExist.not()) {
                             frequenciesCache[number]?.add(LottoFrequency(frequency = newFrequency))
                             return@forEach
                         }
 
-                        // New frequency does not exist
+                        // Get index of the existing frequency
                         val index: Int = frequenciesCache[number]?.indexOfFirst { it.frequency == newFrequency } ?: -1
+                        // Defensive coding in case the frequency does not exist
                         if (index == -1) {
                             frequenciesCache[number]?.add(LottoFrequency(frequency = newFrequency))
                             return@forEach
                         }
 
-                        // New frequency does not exist
+                        // Defensive coding in case the frequency does not exist
                         val lottoFrequency: LottoFrequency? = frequenciesCache[number]?.get(index)
                         if (lottoFrequency == null) {
                             frequenciesCache[number]?.add(LottoFrequency(frequency = newFrequency))
                             return@forEach
                         }
 
-                        // New frequency does exist
+                        // Increment the count of the exiting frequency
                         frequenciesCache[number]?.set(
                             index,
                             lottoFrequency.copy(count = lottoFrequency.count + 1)
