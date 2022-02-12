@@ -17,27 +17,27 @@ class TotoNumbers(
 
     private val numbersCache = mutableListOf<TotoNumber>()
 
-    fun loadLottoNumbers(
+    fun loadTotoNumbers(
         vararg years: Int
     ) {
         if (numbersCache.isNotEmpty()) numbersCache.clear()
 
         val shouldLoadAllNumbers: Boolean = years.isEmpty()
         if (shouldLoadAllNumbers) {
-            loadAllLottoNumbers()
+            loadAllTotoNumbers()
         } else {
-            loadLottoNumbersForYears(*years)
+            loadTotoNumbersForYears(*years)
         }
 
-        validateLottoNumbers()
+        validateTotoNumbers()
     }
 
-    private fun loadAllLottoNumbers() {
+    private fun loadAllTotoNumbers() {
         when (totoType) {
             TotoType.D_6X49 -> {
                 IO.getFiles(PATH_TXT_6x49)?.let { files ->
                     files.forEach { file ->
-                        addLottoNumbers(
+                        addTotoNumbers(
                             year = file.name.toInt(),
                             fileContents = IO.getTxtFileContents(file)
                         )
@@ -49,18 +49,18 @@ class TotoNumbers(
         }
     }
 
-    private fun loadLottoNumbersForYears(
+    private fun loadTotoNumbersForYears(
         vararg years: Int
     ) {
         years.forEach { year ->
-            addLottoNumbers(
+            addTotoNumbers(
                 year = year,
                 fileContents = IO.getTxtFileContents(PATH_TXT_6x49 + year)
             )
         }
     }
 
-    private fun addLottoNumbers(
+    private fun addTotoNumbers(
         year: Int,
         fileContents: List<String>
     ) {
@@ -86,7 +86,7 @@ class TotoNumbers(
         }
     }
 
-    private fun validateLottoNumbers() {
+    private fun validateTotoNumbers() {
         if (numbersCache.isEmpty()) throw IllegalArgumentException("Drawings are empty!")
 
         if (numbersCache.any { it.issue == 0 }) throw IllegalArgumentException("There is a zero issue drawing!")

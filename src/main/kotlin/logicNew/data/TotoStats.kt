@@ -1,6 +1,7 @@
 package logicNew.data
 
 import logicNew.model.TotoType
+import logicNew.model.divideBy10
 
 class TotoStats(
     totoType: TotoType
@@ -10,12 +11,12 @@ class TotoStats(
     val totoNumberStats = TotoNumberStats(totoType, totoNumbers)
     val totoOddEvenPatternStats = TotoOddEvenPatternStats(totoType, totoNumbers)
     val totoLowHighPatternStats = TotoLowHighPatternStats(totoType, totoNumbers)
-    val totoGroupPatternStats = TotoGroupPatternStats(totoType, totoNumbers)
+    val totoGroupPatternStats = TotoGroupPatternStats(totoType, totoNumbers, ::divideBy10)
 
     fun loadTotoNumbers(
         vararg years: Int
     ) {
-        totoNumbers.loadLottoNumbers(*years)
+        totoNumbers.loadTotoNumbers(*years)
     }
 
     suspend fun calculateTotoNumberStats() {

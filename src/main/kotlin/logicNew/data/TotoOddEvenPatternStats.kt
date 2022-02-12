@@ -33,12 +33,12 @@ class TotoOddEvenPatternStats(
 
     suspend fun calculateTotoOddEvenPatternStats() = coroutineScope {
         totoNumbers.numbers.sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
-            .let { sortedLottoNumbers ->
+            .let { sortedTotoNumbers ->
                 val currentDrawing = IntArray(totoType.drawingSize)
                 var currentDrawingIndex = 0
-                val lastLottoPatternOccurrenceMap = mutableMapOf<TotoPattern, Int>()
+                val lastTotoPatternOccurrenceMap = mutableMapOf<TotoPattern, Int>()
 
-                sortedLottoNumbers.forEach { totoNumber ->
+                sortedTotoNumbers.forEach { totoNumber ->
                     // Fill the array with the numbers corresponding to the individual drawing
                     currentDrawing[totoNumber.position] = totoNumber.number
 
@@ -48,7 +48,7 @@ class TotoOddEvenPatternStats(
 
                         // Already got the toto numbers of a single drawing
                         val oddEvenPattern = TotoPattern(
-                            pattern = convertLottoNumbersToOddEvenPattern(currentDrawing.copyOf())
+                            pattern = convertTotoNumbersToOddEvenPattern(currentDrawing.copyOf())
                         )
 
                         // Save the pattern in the map
@@ -59,15 +59,15 @@ class TotoOddEvenPatternStats(
 
                         // Frequencies
 
-                        if (lastLottoPatternOccurrenceMap.containsKey(oddEvenPattern).not()) {
-                            lastLottoPatternOccurrenceMap[oddEvenPattern] = currentDrawingIndex
+                        if (lastTotoPatternOccurrenceMap.containsKey(oddEvenPattern).not()) {
+                            lastTotoPatternOccurrenceMap[oddEvenPattern] = currentDrawingIndex
                             return@forEach
                         }
 
-                        lastLottoPatternOccurrenceMap[oddEvenPattern]?.let { lastDrawingIndex ->
+                        lastTotoPatternOccurrenceMap[oddEvenPattern]?.let { lastDrawingIndex ->
                             val newFrequency = currentDrawingIndex - lastDrawingIndex
 
-                            lastLottoPatternOccurrenceMap[oddEvenPattern] = currentDrawingIndex
+                            lastTotoPatternOccurrenceMap[oddEvenPattern] = currentDrawingIndex
 
                             if (frequenciesCache.containsKey(oddEvenPattern).not()) {
                                 frequenciesCache[oddEvenPattern] = mutableListOf(TotoFrequency(frequency = newFrequency))
@@ -102,11 +102,11 @@ class TotoOddEvenPatternStats(
                 }
             }
 
-        validateLottoOddEvenPatternOccurrences()
-        validateLottoOddEvenPatternFrequencies()
+        validateTotoOddEvenPatternOccurrences()
+        validateTotoOddEvenPatternFrequencies()
     }
 
-    private fun convertLottoNumbersToOddEvenPattern(
+    private fun convertTotoNumbersToOddEvenPattern(
         numbers: IntArray
     ): IntArray {
         for (i in numbers.indices) {
@@ -116,7 +116,7 @@ class TotoOddEvenPatternStats(
         return numbers
     }
 
-    private fun validateLottoOddEvenPatternOccurrences() {
+    private fun validateTotoOddEvenPatternOccurrences() {
         // Size of the toto numbers should be the same as the total sum of the patterns
         val oddEvenPatternSize = patternsCache.values.sum()
         val totoNumberSize = totoNumbers.numbers.count { it.position == 0 }
@@ -135,7 +135,7 @@ class TotoOddEvenPatternStats(
             throw IllegalArgumentException("Invalid odd/even pattern!")
     }
 
-    private fun validateLottoOddEvenPatternFrequencies() {
+    private fun validateTotoOddEvenPatternFrequencies() {
         val countOfSingleOccurredPatterns = patternsCache.count { it.value == 1 }
         if (patternsCache.size != frequenciesCache.size + countOfSingleOccurredPatterns)
             throw IllegalArgumentException("Patterns size and frequencies sizes do not match!")

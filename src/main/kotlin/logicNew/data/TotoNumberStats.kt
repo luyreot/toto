@@ -31,7 +31,7 @@ class TotoNumberStats(
      */
     suspend fun calculateStats() = coroutineScope {
         totoNumbers.numbers.sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
-            .let { sortedLottoNumbers ->
+            .let { sortedTotoNumbers ->
 
                 // Var to track the index of the drawing. Increment each time when a new drawing issue is occurring.
                 // Needed to calculate the frequencies between the same number from different drawings.
@@ -41,9 +41,9 @@ class TotoNumberStats(
                 var currentDrawingIssue = -1
 
                 // Track the number and the drawing index at which it has occurred last
-                val lastLottoNumberOccurrenceMap = mutableMapOf<Int, Int>()
+                val lastTotoNumberOccurrenceMap = mutableMapOf<Int, Int>()
 
-                sortedLottoNumbers.forEach { totoNumber ->
+                sortedTotoNumbers.forEach { totoNumber ->
                     val number = totoNumber.number
 
                     // Increment the value of how often a drawing number has occurred by 1
@@ -59,25 +59,25 @@ class TotoNumberStats(
 
                     // Track the first occurrence of a particular number.
                     // Store it, cannot calculate its frequency yet.
-                    if (lastLottoNumberOccurrenceMap.containsKey(number).not()) {
-                        lastLottoNumberOccurrenceMap[number] = currentDrawingIndex
+                    if (lastTotoNumberOccurrenceMap.containsKey(number).not()) {
+                        lastTotoNumberOccurrenceMap[number] = currentDrawingIndex
                         return@forEach
                     }
 
                     // Track the subsequent occurrence of a number.
                     // Calculate the frequency and update the index at which the number last occurred.
-                    lastLottoNumberOccurrenceMap[number]?.let { lastDrawingIndex ->
+                    lastTotoNumberOccurrenceMap[number]?.let { lastDrawingIndex ->
                         val newFrequency = currentDrawingIndex - lastDrawingIndex
 
-                        lastLottoNumberOccurrenceMap[number] = currentDrawingIndex
+                        lastTotoNumberOccurrenceMap[number] = currentDrawingIndex
 
-                        // Lotto number does not have any frequencies yet
+                        // Toto number does not have any frequencies yet
                         if (frequenciesCache.containsKey(number).not()) {
                             frequenciesCache[number] = mutableListOf(TotoFrequency(frequency = newFrequency))
                             return@forEach
                         }
 
-                        // Lotto number has already some frequencies
+                        // Toto number has already some frequencies
                         val doesNewFrequencyExist: Boolean = frequenciesCache[number]?.any { it.frequency == newFrequency } ?: false
 
                         // Add new frequency to number
@@ -110,11 +110,11 @@ class TotoNumberStats(
                 }
             }
 
-        validateLottoNumberOccurrences()
-        validateLottoNumberFrequencies()
+        validateTotoNumberOccurrences()
+        validateTotoNumberFrequencies()
     }
 
-    private fun validateLottoNumberOccurrences() {
+    private fun validateTotoNumberOccurrences() {
         if (occurrencesCache.size != totoType.numberCount)
             throw IllegalArgumentException("Drawing is not ${totoType.name}!")
 
@@ -122,7 +122,7 @@ class TotoNumberStats(
             throw IllegalArgumentException("Invalid number occurrence value!")
     }
 
-    private fun validateLottoNumberFrequencies() {
+    private fun validateTotoNumberFrequencies() {
         if (frequenciesCache.size != totoType.numberCount)
             throw IllegalArgumentException("Drawing is not ${totoType.name}!")
 
