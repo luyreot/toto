@@ -2,59 +2,59 @@ package logicNew.data
 
 import kotlinx.coroutines.coroutineScope
 import logicNew.extensions.clear
-import logicNew.model.LottoFrequency
-import logicNew.model.LottoNumber
-import logicNew.model.LottoPattern
-import logicNew.model.LottoType
+import logicNew.model.TotoFrequency
+import logicNew.model.TotoNumber
+import logicNew.model.TotoPattern
+import logicNew.model.TotoType
 
 /**
  * Holds information about:
- * - occurrences of low/high patterns for each lotto drawing
- * - the spacing between issues when a particular pattern has occurred, via the [LottoFrequency] data class
+ * - occurrences of low/high patterns for each toto drawing
+ * - the spacing between issues when a particular pattern has occurred, via the [TotoFrequency] data class
  *
- * An low/high pattern for a lotto drawing will look like this:
- * 0 - <= 25, 1 - > 25 (when the lotto type is 6x49)
+ * An low/high pattern for a toto drawing will look like this:
+ * 0 - <= 25, 1 - > 25 (when the toto type is 6x49)
  * 5,14,22,25,34,49 -> 0,0,0,0,1,1
  */
-class LottoLowHighPatternStats(
-    private val lottoType: LottoType,
-    private val lottoNumbers: LottoNumbers
+class TotoLowHighPatternStats(
+    private val totoType: TotoType,
+    private val totoNumbers: TotoNumbers
 ) {
 
-    val patterns: Map<LottoPattern, Int>
+    val patterns: Map<TotoPattern, Int>
         get() = patternsCache
 
-    private val patternsCache = mutableMapOf<LottoPattern, Int>()
+    private val patternsCache = mutableMapOf<TotoPattern, Int>()
 
-    val frequencies: Map<LottoPattern, List<LottoFrequency>>
+    val frequencies: Map<TotoPattern, List<TotoFrequency>>
         get() = frequenciesCache
 
-    private val frequenciesCache = mutableMapOf<LottoPattern, MutableList<LottoFrequency>>()
+    private val frequenciesCache = mutableMapOf<TotoPattern, MutableList<TotoFrequency>>()
 
-    suspend fun calculateLottoLowHighPatternStats() = coroutineScope {
-        lottoNumbers.numbers.sortedWith(compareBy<LottoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
+    suspend fun calculateTotoLowHighPatternStats() = coroutineScope {
+        totoNumbers.numbers.sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
             .let { sortedLottoNumbers ->
-                val currentDrawing = IntArray(lottoType.drawingSize)
+                val currentDrawing = IntArray(totoType.drawingSize)
                 var currentDrawingIndex = 0
-                val lastLottoPatternOccurrenceMap = mutableMapOf<LottoPattern, Int>()
+                val lastLottoPatternOccurrenceMap = mutableMapOf<TotoPattern, Int>()
 
-                sortedLottoNumbers.forEach { lottoNumber ->
+                sortedLottoNumbers.forEach { totoNumber ->
                     // Fill the array with the numbers corresponding to the individual drawing
-                    currentDrawing[lottoNumber.position] = lottoNumber.number
+                    currentDrawing[totoNumber.position] = totoNumber.number
 
                     // Add the odd even pattern on the last number from the current issue
-                    if (lottoNumber.position == lottoType.drawingSize - 1) {
+                    if (totoNumber.position == totoType.drawingSize - 1) {
                         currentDrawingIndex += 1
 
-                        // Already got the lotto numbers of a single drawing
-                        val lowHighPattern = LottoPattern(
+                        // Already got the toto numbers of a single drawing
+                        val lowHighPattern = TotoPattern(
                             pattern = convertLottoNumbersToLowHighPattern(currentDrawing.copyOf())
                         )
 
                         // Save the pattern in the map
                         patternsCache.merge(lowHighPattern, 1, Int::plus)
 
-                        // Reset the tmp array for the next lotto drawing
+                        // Reset the tmp array for the next toto drawing
                         currentDrawing.clear()
 
                         // Frequencies
@@ -70,32 +70,32 @@ class LottoLowHighPatternStats(
                             lastLottoPatternOccurrenceMap[lowHighPattern] = currentDrawingIndex
 
                             if (frequenciesCache.containsKey(lowHighPattern).not()) {
-                                frequenciesCache[lowHighPattern] = mutableListOf(LottoFrequency(frequency = newFrequency))
+                                frequenciesCache[lowHighPattern] = mutableListOf(TotoFrequency(frequency = newFrequency))
                                 return@forEach
                             }
 
                             val doesNewFrequencyExist: Boolean = frequenciesCache[lowHighPattern]?.any { it.frequency == newFrequency }
                                 ?: false
                             if (doesNewFrequencyExist.not()) {
-                                frequenciesCache[lowHighPattern]?.add(LottoFrequency(frequency = newFrequency))
+                                frequenciesCache[lowHighPattern]?.add(TotoFrequency(frequency = newFrequency))
                                 return@forEach
                             }
 
                             val index: Int = frequenciesCache[lowHighPattern]?.indexOfFirst { it.frequency == newFrequency } ?: -1
                             if (index == -1) {
-                                frequenciesCache[lowHighPattern]?.add(LottoFrequency(frequency = newFrequency))
+                                frequenciesCache[lowHighPattern]?.add(TotoFrequency(frequency = newFrequency))
                                 return@forEach
                             }
 
-                            val lottoFrequency: LottoFrequency? = frequenciesCache[lowHighPattern]?.get(index)
-                            if (lottoFrequency == null) {
-                                frequenciesCache[lowHighPattern]?.add(LottoFrequency(frequency = newFrequency))
+                            val totoFrequency: TotoFrequency? = frequenciesCache[lowHighPattern]?.get(index)
+                            if (totoFrequency == null) {
+                                frequenciesCache[lowHighPattern]?.add(TotoFrequency(frequency = newFrequency))
                                 return@forEach
                             }
 
                             frequenciesCache[lowHighPattern]?.set(
                                 index,
-                                lottoFrequency.copy(count = lottoFrequency.count + 1)
+                                totoFrequency.copy(count = totoFrequency.count + 1)
                             )
                         }
                     }
@@ -110,17 +110,17 @@ class LottoLowHighPatternStats(
         numbers: IntArray
     ): IntArray {
         for (i in numbers.indices) {
-            numbers[i] = if (numbers[i] <= lottoType.lowHighMidPoint) 0 else 1
+            numbers[i] = if (numbers[i] <= totoType.lowHighMidPoint) 0 else 1
         }
 
         return numbers
     }
 
     private fun validateLottoLowHighPatternOccurrences() {
-        // Size of the lotto numbers should be the same as the total sum of the patterns
+        // Size of the toto numbers should be the same as the total sum of the patterns
         val lowHighPatternSize = patternsCache.values.sum()
-        val lottoNumberSize = lottoNumbers.numbers.count { it.position == 0 }
-        if (lowHighPatternSize != lottoNumberSize)
+        val totoNumberSize = totoNumbers.numbers.count { it.position == 0 }
+        if (lowHighPatternSize != totoNumberSize)
             throw IllegalArgumentException("Pattern size is incorrect!")
 
         // No odd/even pattern should have an occurrence of 0

@@ -1,21 +1,21 @@
 package logicNew.data
 
-import logicNew.model.LottoNumber
-import logicNew.model.LottoType
+import logicNew.model.TotoNumber
+import logicNew.model.TotoType
 import util.IO
 import util.PATH_TXT_6x49
 
 /**
  * Holds a list of all drawn numbers.
  */
-class LottoNumbers(
-    private val lottoType: LottoType
+class TotoNumbers(
+    private val totoType: TotoType
 ) {
 
-    val numbers: List<LottoNumber>
+    val numbers: List<TotoNumber>
         get() = numbersCache
 
-    private val numbersCache = mutableListOf<LottoNumber>()
+    private val numbersCache = mutableListOf<TotoNumber>()
 
     fun loadLottoNumbers(
         vararg years: Int
@@ -33,8 +33,8 @@ class LottoNumbers(
     }
 
     private fun loadAllLottoNumbers() {
-        when (lottoType) {
-            LottoType.D_6X49 -> {
+        when (totoType) {
+            TotoType.D_6X49 -> {
                 IO.getFiles(PATH_TXT_6x49)?.let { files ->
                     files.forEach { file ->
                         addLottoNumbers(
@@ -45,7 +45,7 @@ class LottoNumbers(
                 } ?: throw IllegalArgumentException("Did not load any files!")
             }
 
-            else -> throw IllegalArgumentException("${lottoType.name} is not supported!")
+            else -> throw IllegalArgumentException("${totoType.name} is not supported!")
         }
     }
 
@@ -64,18 +64,18 @@ class LottoNumbers(
         year: Int,
         fileContents: List<String>
     ) {
-        // Index represents the lotto issue.
+        // Index represents the toto issue.
         // Index starts at 0 but in actuality the 0 line is the first issue for that year.
         // Line represents each separate drawing, ie. '1,12,34,35,44,49'.
         fileContents.forEachIndexed { issue, drawing ->
             val drawnNumbers: List<String> = drawing.split(",")
 
-            if (drawnNumbers.size != lottoType.drawingSize)
-                throw IllegalArgumentException("Drawing is not ${lottoType.name}!")
+            if (drawnNumbers.size != totoType.drawingSize)
+                throw IllegalArgumentException("Drawing is not ${totoType.name}!")
 
             drawnNumbers.forEachIndexed { position, number ->
                 numbersCache.add(
-                    LottoNumber(
+                    TotoNumber(
                         number = number.toInt(),
                         position = position,
                         year = year,
@@ -91,8 +91,8 @@ class LottoNumbers(
 
         if (numbersCache.any { it.issue == 0 }) throw IllegalArgumentException("There is a zero issue drawing!")
 
-        if (numbersCache.any { it.position > lottoType.drawingSize - 1 })
-            throw IllegalArgumentException("There is an incorrect position for ${lottoType.name}!")
+        if (numbersCache.any { it.position > totoType.drawingSize - 1 })
+            throw IllegalArgumentException("There is an incorrect position for ${totoType.name}!")
 
         val listSize: Int = numbersCache.size
         val setSize: Int = numbersCache.toSet().size

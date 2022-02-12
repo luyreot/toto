@@ -5,10 +5,10 @@ package logicNew.model
  * and the number of times it has occurred represented by the [count].
  *
  * Can be used to track frequencies of:
- * - a lotto number
- * - a lotto pattern
+ * - a toto number
+ * - a toto pattern
  */
-data class LottoFrequency(
+data class TotoFrequency(
     val frequency: Int,
     val count: Int = 1
 )

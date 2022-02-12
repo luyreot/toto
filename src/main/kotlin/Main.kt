@@ -1,8 +1,8 @@
 import crawler.WebCrawler649
 import crawler.WebCrawler649Backup
 import kotlinx.coroutines.*
-import logicNew.data.LottoStats
-import logicNew.model.LottoType
+import logicNew.data.TotoStats
+import logicNew.model.TotoType
 
 @DelicateCoroutinesApi
 object Main {
@@ -21,17 +21,17 @@ object Main {
             }
         }
 
-        val lottoStats = LottoStats(LottoType.D_6X49)
-        lottoStats.loadLottoNumbers(2021, 2022)
+        val totoStats = TotoStats(TotoType.D_6X49)
+        totoStats.loadTotoNumbers(2021, 2022)
 
         GlobalScope.launch {
             listOf(
-                async { lottoStats.calculateLottoNumberStats() },
-                async { lottoStats.calculateLottoOddEvenPatternStats() },
-                async { lottoStats.calculateLottoLowHighPatternStats() }
+                async { totoStats.calculateTotoNumberStats() },
+                async { totoStats.calculateTotoOddEvenPatternStats() },
+                async { totoStats.calculateTotoLowHighPatternStats() },
             ).awaitAll()
         }
-        Thread.sleep(1000L)
+        Thread.sleep(100000000000L)
 
         println("=== END ===")
     }

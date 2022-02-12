@@ -1,9 +1,9 @@
 package logicNew.model
 
 /**
- * Holds information about the different types of lotto drawings - 6x49, etc.
+ * Holds information about the different types of toto drawings - 6x49, etc.
  */
-enum class LottoType(
+enum class TotoType(
     val numberCount: Int,
     val drawingSize: Int,
     val lowHighMidPoint: Int
