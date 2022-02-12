@@ -2,7 +2,6 @@ package logicOld.data
 
 import logicOld.extension.toStringDrawing
 import logicOld.model.chain.Chain
-import logicOld.util.Convert
 import logicOld.util.Helper
 
 /**
@@ -94,20 +93,20 @@ object Chains {
      * Creates a pair of patterns from two subsequent drawing numbers.
      */
     private fun generateFromPatterns(previousNumbers: IntArray, numbers: IntArray) {
-        // Colors
-        var entity: String = Convert.convertToColorPattern(previousNumbers).toStringDrawing()
-        var entityKey: String = Convert.convertToColorPattern(numbers).toStringDrawing()
-        insertPatternEntity(colors, entity, entityKey)
-
-        // Odd Evens
-        entity = Convert.convertToOddEvenPattern(previousNumbers).toStringDrawing()
-        entityKey = Convert.convertToOddEvenPattern(numbers).toStringDrawing()
-        insertPatternEntity(oddEvens, entity, entityKey)
-
-        // Low Highs
-        entity = Convert.convertToHighLowPattern(previousNumbers).toStringDrawing()
-        entityKey = Convert.convertToHighLowPattern(numbers).toStringDrawing()
-        insertPatternEntity(lowHighs, entity, entityKey)
+//        // Colors
+//        var entity: String = Convert.convertToColorPattern(previousNumbers).toStringDrawing()
+//        var entityKey: String = Convert.convertToColorPattern(numbers).toStringDrawing()
+//        insertPatternEntity(colors, entity, entityKey)
+//
+//        // Odd Evens
+//        entity = Convert.convertToOddEvenPattern(previousNumbers).toStringDrawing()
+//        entityKey = Convert.convertToOddEvenPattern(numbers).toStringDrawing()
+//        insertPatternEntity(oddEvens, entity, entityKey)
+//
+//        // Low Highs
+//        entity = Convert.convertToHighLowPattern(previousNumbers).toStringDrawing()
+//        entityKey = Convert.convertToHighLowPattern(numbers).toStringDrawing()
+//        insertPatternEntity(lowHighs, entity, entityKey)
     }
 
     /**

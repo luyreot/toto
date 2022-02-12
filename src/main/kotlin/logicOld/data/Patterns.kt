@@ -3,7 +3,6 @@ package logicOld.data
 import logicOld.extension.toStringDrawing
 import logicOld.model.pattern.PatternArray
 import logicOld.model.pattern.PatternNumber
-import logicOld.util.Convert
 import logicOld.util.Helper
 
 /**
@@ -28,9 +27,9 @@ object Patterns {
     private fun generate() {
         Drawings.drawings.forEachIndexed { index, drawing ->
             generateNumberPatterns(index, drawing.numbers)
-            generateArrayPattern(index, Convert.convertToColorPattern(drawing.numbers), colors)
-            generateArrayPattern(index, Convert.convertToOddEvenPattern(drawing.numbers), oddEvens)
-            generateArrayPattern(index, Convert.convertToHighLowPattern(drawing.numbers), lowHighs)
+//            generateArrayPattern(index, Convert.convertToColorPattern(drawing.numbers), colors)
+//            generateArrayPattern(index, Convert.convertToOddEvenPattern(drawing.numbers), oddEvens)
+//            generateArrayPattern(index, Convert.convertToHighLowPattern(drawing.numbers), lowHighs)
         }
     }
 
