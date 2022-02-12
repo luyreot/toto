@@ -29,6 +29,7 @@ object Main {
                 async { totoStats.calculateTotoNumberStats() },
                 async { totoStats.calculateTotoOddEvenPatternStats() },
                 async { totoStats.calculateTotoLowHighPatternStats() },
+                async { totoStats.calculateTotoGroupPatternStats() }
             ).awaitAll()
         }
         Thread.sleep(100000000000L)
