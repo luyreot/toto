@@ -1,8 +1,8 @@
-package logicNew.model
+package model
 
 /**
  * Represents a single [number] and its [position] in a toto drawing.
- * Ie. the '11' in '7,11,22,26,29,30'.
+ * IE. the '11' in '7,11,22,26,29,30'.
  *
  * Also, holds the [year] and the [issue] number of that drawing.
  */

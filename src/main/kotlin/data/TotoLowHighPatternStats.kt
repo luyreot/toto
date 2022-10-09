@@ -1,19 +1,19 @@
-package logicNew.data
+package data
 
+import extensions.clear
+import extensions.sortByValueDescending
 import kotlinx.coroutines.coroutineScope
-import logicNew.extensions.clear
-import logicNew.extensions.sortByValueDescending
-import logicNew.model.TotoFrequency
-import logicNew.model.TotoNumber
-import logicNew.model.TotoPattern
-import logicNew.model.TotoType
+import model.TotoFrequency
+import model.TotoNumber
+import model.TotoPattern
+import model.TotoType
 
 /**
  * Holds information about:
  * - occurrences of low/high patterns for each toto drawing
  * - the spacing between issues when a particular pattern has occurred, via the [TotoFrequency] data class
  *
- * An low/high pattern for a toto drawing will look like this:
+ * A low/high pattern for a toto drawing will look like this:
  * 0 - <= 25, 1 - > 25 (when the toto type is 6x49)
  * 5,14,22,25,34,49 -> 0,0,0,0,1,1
  */

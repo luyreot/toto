@@ -1,7 +1,7 @@
-package logicNew.data
+package data
 
-import logicNew.model.TotoType
-import logicNew.model.divideBy10
+import model.TotoType
+import model.divideBy10
 
 class TotoStats(
     totoType: TotoType

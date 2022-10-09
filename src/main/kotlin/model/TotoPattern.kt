@@ -1,4 +1,4 @@
-package logicNew.model
+package model
 
 /**
  * Represents different types of toto patterns:

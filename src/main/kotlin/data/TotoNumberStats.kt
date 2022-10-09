@@ -1,10 +1,10 @@
-package logicNew.data
+package data
 
+import extensions.sortByValueDescending
 import kotlinx.coroutines.coroutineScope
-import logicNew.extensions.sortByValueDescending
-import logicNew.model.TotoFrequency
-import logicNew.model.TotoNumber
-import logicNew.model.TotoType
+import model.TotoFrequency
+import model.TotoNumber
+import model.TotoType
 
 /**
  * Holds information about:

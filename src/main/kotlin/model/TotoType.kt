@@ -1,4 +1,4 @@
-package logicNew.model
+package model
 
 /**
  * Holds information about the different types of toto drawings - 6x49, etc.

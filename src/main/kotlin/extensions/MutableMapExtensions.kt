@@ -1,4 +1,4 @@
-package logicNew.extensions
+package extensions
 
 fun <K, V : Comparable<V>> MutableMap<K, V>.sortByValue() {
     val sortedMap = toList().sortedBy { (_, value) -> value }.toMap()

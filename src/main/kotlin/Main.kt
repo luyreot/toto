@@ -1,11 +1,11 @@
 import crawler.WebCrawler649
 import crawler.WebCrawler649Backup
+import data.TotoStats
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
-import logicNew.data.TotoStats
-import logicNew.model.TotoType
+import model.TotoType
 
 @DelicateCoroutinesApi
 object Main {

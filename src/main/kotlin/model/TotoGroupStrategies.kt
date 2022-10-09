@@ -1,4 +1,4 @@
-package logicNew.model
+package model
 
 /**
  * Methods for creating group patterns.

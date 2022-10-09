@@ -1,12 +1,12 @@
-package logicNew.data
+package data
 
+import extensions.clear
+import extensions.sortByValueDescending
 import kotlinx.coroutines.coroutineScope
-import logicNew.extensions.clear
-import logicNew.extensions.sortByValueDescending
-import logicNew.model.TotoFrequency
-import logicNew.model.TotoNumber
-import logicNew.model.TotoPattern
-import logicNew.model.TotoType
+import model.TotoFrequency
+import model.TotoNumber
+import model.TotoPattern
+import model.TotoType
 
 class TotoGroupPatternStats(
     private val totoType: TotoType,

@@ -1,7 +1,7 @@
-package logicNew.data
+package data
 
-import logicNew.model.TotoNumber
-import logicNew.model.TotoType
+import model.TotoNumber
+import model.TotoType
 import util.IO
 import util.PATH_TXT_6x49
 

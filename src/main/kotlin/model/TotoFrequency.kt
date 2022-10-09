@@ -1,4 +1,4 @@
-package logicNew.model
+package model
 
 /**
  * Hold information about a particular [frequency] value (the spacing between issues when a particular value has occurred)
