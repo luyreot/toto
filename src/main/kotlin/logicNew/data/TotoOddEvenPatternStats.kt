@@ -32,7 +32,8 @@ class TotoOddEvenPatternStats(
     private val frequenciesCache = mutableMapOf<TotoPattern, MutableList<TotoFrequency>>()
 
     suspend fun calculateTotoOddEvenPatternStats() = coroutineScope {
-        totoNumbers.numbers.sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
+        totoNumbers.numbers
+            .sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
             .let { sortedTotoNumbers ->
                 val currentDrawing = IntArray(totoType.drawingSize)
                 var currentDrawingIndex = 0

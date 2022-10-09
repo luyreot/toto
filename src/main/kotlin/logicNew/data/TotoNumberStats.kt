@@ -30,7 +30,8 @@ class TotoNumberStats(
      * Calculate number frequencies.
      */
     suspend fun calculateStats() = coroutineScope {
-        totoNumbers.numbers.sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
+        totoNumbers.numbers
+            .sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
             .let { sortedTotoNumbers ->
 
                 // Var to track the index of the drawing. Increment each time when a new drawing issue is occurring.

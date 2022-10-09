@@ -24,7 +24,8 @@ class TotoGroupPatternStats(
     private val frequenciesCache = mutableMapOf<TotoPattern, MutableList<TotoFrequency>>()
 
     suspend fun calculateTotoGroupPatternStats() = coroutineScope {
-        totoNumbers.numbers.sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
+        totoNumbers.numbers
+            .sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
             .let { sortedTotoNumbers ->
                 val currentDrawing = IntArray(totoType.drawingSize)
                 var currentDrawingIndex = 0
