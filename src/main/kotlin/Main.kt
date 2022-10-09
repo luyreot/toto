@@ -11,15 +11,7 @@ object Main {
     fun main(args: Array<String>) {
         println("=== START ===")
 
-        val fetchNewDrawings = false
-        val fetchNewDrawingsFromBackupSite = false
-        if (fetchNewDrawings) {
-            if (fetchNewDrawingsFromBackupSite) {
-                WebCrawler649Backup.updateDrawings()
-            } else {
-                WebCrawler649.updateDrawings()
-            }
-        }
+        //fetchNewDrawings()
 
         val totoStats = TotoStats(TotoType.D_6X49)
         totoStats.loadTotoNumbers(2021, 2022)
@@ -35,5 +27,13 @@ object Main {
         Thread.sleep(100000000000L)
 
         println("=== END ===")
+    }
+
+    private fun fetchNewDrawings(fetchFromBackupSite: Boolean = false) {
+        if (fetchFromBackupSite) {
+            WebCrawler649Backup.updateDrawings()
+        } else {
+            WebCrawler649.updateDrawings()
+        }
     }
 }
