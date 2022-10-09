@@ -1,6 +1,7 @@
 package logicNew.data
 
 import kotlinx.coroutines.coroutineScope
+import logicNew.extensions.sortByValueDescending
 import logicNew.model.TotoFrequency
 import logicNew.model.TotoNumber
 import logicNew.model.TotoType
@@ -113,6 +114,9 @@ class TotoNumberStats(
 
         validateTotoNumberOccurrences()
         validateTotoNumberFrequencies()
+
+        sortTotoNumberOccurrences()
+        sortTotoNumberFrequencies()
     }
 
     private fun validateTotoNumberOccurrences() {
@@ -137,6 +141,33 @@ class TotoNumberStats(
 
             if (totalFrequencyCount + 1 != occurrences)
                 throw IllegalArgumentException("Occurrences and frequencies for $totoNumber do not match!")
+        }
+    }
+
+    /**
+     * Sort by how ofter a number has appeared.
+     */
+    private fun sortTotoNumberOccurrences() {
+        occurrencesCache.sortByValueDescending()
+    }
+
+    /**
+     * Sort by the same sort order that is used for the [occurrencesCache].
+     * See [sortTotoNumberOccurrences].
+     */
+    private fun sortTotoNumberFrequencies() {
+        val sortedOccurrences = occurrencesCache.keys.toList()
+        val sortedFrequencies = mutableMapOf<Int, MutableList<TotoFrequency>>()
+
+        sortedOccurrences.forEach { number ->
+            frequenciesCache[number]?.let { frequencies ->
+                sortedFrequencies[number] = frequencies
+            }
+        }
+
+        frequenciesCache.apply {
+            clear()
+            putAll(sortedFrequencies)
         }
     }
 }

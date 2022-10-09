@@ -2,6 +2,7 @@ package logicNew.data
 
 import kotlinx.coroutines.coroutineScope
 import logicNew.extensions.clear
+import logicNew.extensions.sortByValueDescending
 import logicNew.model.TotoFrequency
 import logicNew.model.TotoNumber
 import logicNew.model.TotoPattern
@@ -105,6 +106,9 @@ class TotoLowHighPatternStats(
 
         validateTotoLowHighPatternOccurrences()
         validateTotoLowHighPatternFrequencies()
+
+        sortTotoLowHighPatternOccurrences()
+        sortTotoLowHighPatternFrequencies()
     }
 
     private fun convertTotoNumbersToLowHighPattern(
@@ -147,6 +151,33 @@ class TotoLowHighPatternStats(
 
             if (totalFrequencyCount + 1 != occurrence)
                 throw IllegalArgumentException("Occurrence and frequencies for $pattern do not match!")
+        }
+    }
+
+    /**
+     * Sort by how ofter the pattern has appeared.
+     */
+    private fun sortTotoLowHighPatternOccurrences() {
+        patternsCache.sortByValueDescending()
+    }
+
+    /**
+     * Sort by the same sort order that is used for the [patternsCache].
+     * See [sortTotoLowHighPatternOccurrences].
+     */
+    private fun sortTotoLowHighPatternFrequencies() {
+        val sortedOccurrences = patternsCache.keys.toList()
+        val sortedFrequencies = mutableMapOf<TotoPattern, MutableList<TotoFrequency>>()
+
+        sortedOccurrences.forEach { pattern ->
+            frequenciesCache[pattern]?.let { frequencies ->
+                sortedFrequencies[pattern] = frequencies
+            }
+        }
+
+        frequenciesCache.apply {
+            clear()
+            putAll(sortedFrequencies)
         }
     }
 }
