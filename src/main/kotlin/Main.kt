@@ -15,7 +15,7 @@ object Main {
         //fetchNewDrawings()
 
         TotoStats(TotoType.D_6X49).apply {
-            loadTotoNumbers(2021, 2022)
+            loadTotoNumbers(2019, 2020, 2021, 2022)
 
             listOf(
                 launchThread { calculateTotoNumberStats() },
@@ -25,6 +25,8 @@ object Main {
             ).forEach {
                 it.join()
             }
+
+            println()
         }
 
         println("=== END ===")

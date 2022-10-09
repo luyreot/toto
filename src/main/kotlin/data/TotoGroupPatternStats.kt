@@ -10,7 +10,8 @@ import model.TotoType
 class TotoGroupPatternStats(
     private val totoType: TotoType,
     private val totoNumbers: TotoNumbers,
-    private val groupStrategy: (number: Int) -> Int
+    private val groupStrategy: (number: Int) -> Int,
+    private val totoPredict: TotoPredict
 ) {
 
     val patterns: Map<TotoPattern, Int>
@@ -43,6 +44,8 @@ class TotoGroupPatternStats(
 
                         patternsCache.merge(groupPattern, 1, Int::plus)
 
+                        totoPredict.addGroupPattern(groupPattern.pattern)
+
                         currentDrawing.clear()
 
                         // Frequencies
@@ -62,14 +65,16 @@ class TotoGroupPatternStats(
                                 return@forEach
                             }
 
-                            val doesNewFrequencyExist: Boolean = frequenciesCache[groupPattern]?.any { it.frequency == newFrequency }
-                                ?: false
+                            val doesNewFrequencyExist: Boolean =
+                                frequenciesCache[groupPattern]?.any { it.frequency == newFrequency }
+                                    ?: false
                             if (doesNewFrequencyExist.not()) {
                                 frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
                                 return@forEach
                             }
 
-                            val index: Int = frequenciesCache[groupPattern]?.indexOfFirst { it.frequency == newFrequency } ?: -1
+                            val index: Int =
+                                frequenciesCache[groupPattern]?.indexOfFirst { it.frequency == newFrequency } ?: -1
                             if (index == -1) {
                                 frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
                                 return@forEach

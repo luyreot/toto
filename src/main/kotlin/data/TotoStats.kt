@@ -8,10 +8,11 @@ class TotoStats(
 ) {
 
     val totoNumbers = TotoNumbers(totoType)
-    val totoNumberStats = TotoNumberStats(totoType, totoNumbers)
-    val totoOddEvenPatternStats = TotoOddEvenPatternStats(totoType, totoNumbers)
-    val totoLowHighPatternStats = TotoLowHighPatternStats(totoType, totoNumbers)
-    val totoGroupPatternStats = TotoGroupPatternStats(totoType, totoNumbers, ::divideBy10)
+    val totoPredict = TotoPredict(totoType)
+    val totoNumberStats = TotoNumberStats(totoType, totoNumbers, totoPredict)
+    val totoOddEvenPatternStats = TotoOddEvenPatternStats(totoType, totoNumbers, totoPredict)
+    val totoLowHighPatternStats = TotoLowHighPatternStats(totoType, totoNumbers, totoPredict)
+    val totoGroupPatternStats = TotoGroupPatternStats(totoType, totoNumbers, ::divideBy10, totoPredict)
 
     fun loadTotoNumbers(
         vararg years: Int

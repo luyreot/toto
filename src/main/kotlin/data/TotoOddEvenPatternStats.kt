@@ -18,7 +18,8 @@ import model.TotoType
  */
 class TotoOddEvenPatternStats(
     private val totoType: TotoType,
-    private val totoNumbers: TotoNumbers
+    private val totoNumbers: TotoNumbers,
+    private val totoPredict: TotoPredict
 ) {
 
     val patterns: Map<TotoPattern, Int>
@@ -55,6 +56,8 @@ class TotoOddEvenPatternStats(
                         // Save the pattern in the map
                         patternsCache.merge(oddEvenPattern, 1, Int::plus)
 
+                        totoPredict.addOddEvenPattern(oddEvenPattern.pattern)
+
                         // Reset the tmp array for the next toto drawing
                         currentDrawing.clear()
 
@@ -71,18 +74,21 @@ class TotoOddEvenPatternStats(
                             lastTotoPatternOccurrenceMap[oddEvenPattern] = currentDrawingIndex
 
                             if (frequenciesCache.containsKey(oddEvenPattern).not()) {
-                                frequenciesCache[oddEvenPattern] = mutableListOf(TotoFrequency(frequency = newFrequency))
+                                frequenciesCache[oddEvenPattern] =
+                                    mutableListOf(TotoFrequency(frequency = newFrequency))
                                 return@forEach
                             }
 
-                            val doesNewFrequencyExist: Boolean = frequenciesCache[oddEvenPattern]?.any { it.frequency == newFrequency }
-                                ?: false
+                            val doesNewFrequencyExist: Boolean =
+                                frequenciesCache[oddEvenPattern]?.any { it.frequency == newFrequency }
+                                    ?: false
                             if (doesNewFrequencyExist.not()) {
                                 frequenciesCache[oddEvenPattern]?.add(TotoFrequency(frequency = newFrequency))
                                 return@forEach
                             }
 
-                            val index: Int = frequenciesCache[oddEvenPattern]?.indexOfFirst { it.frequency == newFrequency } ?: -1
+                            val index: Int =
+                                frequenciesCache[oddEvenPattern]?.indexOfFirst { it.frequency == newFrequency } ?: -1
                             if (index == -1) {
                                 frequenciesCache[oddEvenPattern]?.add(TotoFrequency(frequency = newFrequency))
                                 return@forEach

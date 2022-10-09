@@ -12,7 +12,8 @@ import model.TotoType
  */
 class TotoNumberStats(
     private val totoType: TotoType,
-    private val totoNumbers: TotoNumbers
+    private val totoNumbers: TotoNumbers,
+    private val totoPredict: TotoPredict
 ) {
 
     val occurrences: Map<Int, Int>
@@ -79,7 +80,8 @@ class TotoNumberStats(
                         }
 
                         // Toto number has already some frequencies
-                        val doesNewFrequencyExist: Boolean = frequenciesCache[number]?.any { it.frequency == newFrequency } ?: false
+                        val doesNewFrequencyExist: Boolean =
+                            frequenciesCache[number]?.any { it.frequency == newFrequency } ?: false
 
                         // Add new frequency to number
                         if (doesNewFrequencyExist.not()) {
