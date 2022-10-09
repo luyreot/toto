@@ -1,14 +1,15 @@
 package crawler
 
-import extension.appendLine
+import kotlinx.coroutines.coroutineScope
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import util.Const.PATH_TXT
-import util.Const.YEAR
 import util.IO
+import util.PATH_TXT_6x49
+import util.YEAR_FOR_WEB_CRAWL
 import java.io.IOException
 
+// TODO: 1/2/22 Class is only 6x49 aware
 class WebCrawler649 {
 
     // region Web
@@ -23,7 +24,7 @@ class WebCrawler649 {
 
     // http://www.toto.bg/results/6x49/2020-100
     private val drawingPrefix: String = "-"
-    private val currentYearPath = PATH_TXT + YEAR
+    private val currentYearPath = PATH_TXT_6x49 + YEAR_FOR_WEB_CRAWL
 
     // Alternative css query: "span[class*=ball-white]"
     private val documentQuery = "div.tir_numbers > div.row > div.col-sm-6.text-right.nopadding > span.ball-white"
@@ -43,11 +44,11 @@ class WebCrawler649 {
         val currentYearDrawings = IO.getTxtFileContents(currentYearPath)
         currentYearDrawings.forEach { contentBuilder.appendLine(it) }
         drawingCount = currentYearDrawings.size
-        println("INFO: Current drawings count for $YEAR - $drawingCount")
+        println("INFO: Current drawings count for $YEAR_FOR_WEB_CRAWL - $drawingCount")
     }
 
     fun crawl() {
-        val pageUrl = url + YEAR + drawingPrefix
+        val pageUrl = url + YEAR_FOR_WEB_CRAWL + drawingPrefix
         var saveToFile = false
         var drawingIndex = drawingCount
 
@@ -122,9 +123,8 @@ class WebCrawler649 {
     }
 
     companion object {
-        fun updateDrawings() {
+        suspend fun updateDrawings() = coroutineScope {
             WebCrawler649().crawl()
         }
     }
-
 }

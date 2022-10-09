@@ -1,25 +1,42 @@
 import crawler.WebCrawler649
 import crawler.WebCrawler649Backup
+import data.TotoStats
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
+import model.TotoType
 
-class Main {
+@DelicateCoroutinesApi
+object Main {
 
-    companion object {
+    @JvmStatic
+    fun main(args: Array<String>) {
+        println("=== START ===")
 
-        @JvmStatic
-        fun main(args: Array<String>) {
-            WebCrawler649.updateDrawings()
-//            WebCrawler649Backup.updateDrawings()
+        val totoStats = TotoStats(TotoType.D_6X49)
 
-            /*
-            Drawings.loadDrawings()
-            Helper.printDuplicateDrawingsCount()
-            Patterns
-            Chains
-            */
+        runBlocking {
+            //fetchNewDrawings()
 
-            println()
+            totoStats.loadTotoNumbers(2021, 2022)
+
+            listOf(
+                async { totoStats.calculateTotoNumberStats() },
+                async { totoStats.calculateTotoOddEvenPatternStats() },
+                async { totoStats.calculateTotoLowHighPatternStats() },
+                async { totoStats.calculateTotoGroupPatternStats() }
+            ).awaitAll()
         }
 
+        println("=== END ===")
     }
 
+    private suspend fun fetchNewDrawings(fetchFromBackupSite: Boolean = false) {
+        if (fetchFromBackupSite) {
+            WebCrawler649Backup.updateDrawings()
+        } else {
+            WebCrawler649.updateDrawings()
+        }
+    }
 }
