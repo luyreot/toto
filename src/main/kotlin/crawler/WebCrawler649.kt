@@ -1,6 +1,5 @@
 package crawler
 
-import kotlinx.coroutines.coroutineScope
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
@@ -123,7 +122,7 @@ class WebCrawler649 {
     }
 
     companion object {
-        suspend fun updateDrawings() = coroutineScope {
+        fun updateDrawings() {
             WebCrawler649().crawl()
         }
     }

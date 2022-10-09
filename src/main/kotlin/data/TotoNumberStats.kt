@@ -1,7 +1,6 @@
 package data
 
 import extensions.sortByValueDescending
-import kotlinx.coroutines.coroutineScope
 import model.TotoFrequency
 import model.TotoNumber
 import model.TotoType
@@ -30,7 +29,7 @@ class TotoNumberStats(
      * Calculate number occurrences.
      * Calculate number frequencies.
      */
-    suspend fun calculateStats() = coroutineScope {
+    fun calculateStats() {
         totoNumbers.numbers
             .sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
             .let { sortedTotoNumbers ->

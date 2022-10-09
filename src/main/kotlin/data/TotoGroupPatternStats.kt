@@ -2,7 +2,6 @@ package data
 
 import extensions.clear
 import extensions.sortByValueDescending
-import kotlinx.coroutines.coroutineScope
 import model.TotoFrequency
 import model.TotoNumber
 import model.TotoPattern
@@ -24,7 +23,7 @@ class TotoGroupPatternStats(
 
     private val frequenciesCache = mutableMapOf<TotoPattern, MutableList<TotoFrequency>>()
 
-    suspend fun calculateTotoGroupPatternStats() = coroutineScope {
+    fun calculateTotoGroupPatternStats() {
         totoNumbers.numbers
             .sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
             .let { sortedTotoNumbers ->

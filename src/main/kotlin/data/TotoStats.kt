@@ -19,19 +19,19 @@ class TotoStats(
         totoNumbers.loadTotoNumbers(*years)
     }
 
-    suspend fun calculateTotoNumberStats() {
+    fun calculateTotoNumberStats() {
         totoNumberStats.calculateStats()
     }
 
-    suspend fun calculateTotoOddEvenPatternStats() {
+    fun calculateTotoOddEvenPatternStats() {
         totoOddEvenPatternStats.calculateTotoOddEvenPatternStats()
     }
 
-    suspend fun calculateTotoLowHighPatternStats() {
+    fun calculateTotoLowHighPatternStats() {
         totoLowHighPatternStats.calculateTotoLowHighPatternStats()
     }
 
-    suspend fun calculateTotoGroupPatternStats() {
+    fun calculateTotoGroupPatternStats() {
         totoGroupPatternStats.calculateTotoGroupPatternStats()
     }
 }
