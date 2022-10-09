@@ -2,6 +2,7 @@ package logicNew.data
 
 import kotlinx.coroutines.coroutineScope
 import logicNew.extensions.clear
+import logicNew.extensions.sortByValueDescending
 import logicNew.model.TotoFrequency
 import logicNew.model.TotoNumber
 import logicNew.model.TotoPattern
@@ -32,7 +33,8 @@ class TotoOddEvenPatternStats(
     private val frequenciesCache = mutableMapOf<TotoPattern, MutableList<TotoFrequency>>()
 
     suspend fun calculateTotoOddEvenPatternStats() = coroutineScope {
-        totoNumbers.numbers.sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
+        totoNumbers.numbers
+            .sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
             .let { sortedTotoNumbers ->
                 val currentDrawing = IntArray(totoType.drawingSize)
                 var currentDrawingIndex = 0
@@ -104,6 +106,9 @@ class TotoOddEvenPatternStats(
 
         validateTotoOddEvenPatternOccurrences()
         validateTotoOddEvenPatternFrequencies()
+
+        sortTotoOddEvenPatternOccurrences()
+        sortTotoOddEvenPatternFrequencies()
     }
 
     private fun convertTotoNumbersToOddEvenPattern(
@@ -146,6 +151,33 @@ class TotoOddEvenPatternStats(
 
             if (totalFrequencyCount + 1 != occurrence)
                 throw IllegalArgumentException("Occurrence and frequencies for $pattern do not match!")
+        }
+    }
+
+    /**
+     * Sort by how ofter the pattern has appeared.
+     */
+    private fun sortTotoOddEvenPatternOccurrences() {
+        patternsCache.sortByValueDescending()
+    }
+
+    /**
+     * Sort by the same sort order that is used for the [patternsCache].
+     * See [sortTotoOddEvenPatternOccurrences].
+     */
+    private fun sortTotoOddEvenPatternFrequencies() {
+        val sortedOccurrences = patternsCache.keys.toList()
+        val sortedFrequencies = mutableMapOf<TotoPattern, MutableList<TotoFrequency>>()
+
+        sortedOccurrences.forEach { pattern ->
+            frequenciesCache[pattern]?.let { frequencies ->
+                sortedFrequencies[pattern] = frequencies
+            }
+        }
+
+        frequenciesCache.apply {
+            clear()
+            putAll(sortedFrequencies)
         }
     }
 }
