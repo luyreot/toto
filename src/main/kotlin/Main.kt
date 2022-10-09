@@ -14,10 +14,11 @@ object Main {
     fun main(args: Array<String>) {
         println("=== START ===")
 
+        val totoStats = TotoStats(TotoType.D_6X49)
+
         runBlocking {
             //fetchNewDrawings()
 
-            val totoStats = TotoStats(TotoType.D_6X49)
             totoStats.loadTotoNumbers(2021, 2022)
 
             listOf(
