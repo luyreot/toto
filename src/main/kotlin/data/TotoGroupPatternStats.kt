@@ -2,15 +2,12 @@ package data
 
 import extensions.clear
 import extensions.sortByValueDescending
-import model.TotoFrequency
-import model.TotoNumber
-import model.TotoPattern
-import model.TotoType
+import model.*
 
 class TotoGroupPatternStats(
     private val totoType: TotoType,
     private val totoNumbers: TotoNumbers,
-    private val groupStrategy: (number: Int) -> Int,
+    private val groupStrategy: TotoGroupStrategy,
     private val totoPredict: TotoPredict
 ) {
 
@@ -95,6 +92,9 @@ class TotoGroupPatternStats(
                 }
             }
 
+        validateTotoGroupPatternOccurrences()
+        validateTotoGroupPatternFrequencies()
+
         sortTotoGroupPatternOccurrences()
         sortTotoGroupPatternFrequencies()
     }
@@ -103,10 +103,47 @@ class TotoGroupPatternStats(
         numbers: IntArray
     ): IntArray {
         for (i in numbers.indices) {
-            numbers[i] = groupStrategy.invoke(numbers[i])
+            numbers[i] = groupStrategy.method.invoke(numbers[i])
         }
 
         return numbers
+    }
+
+    private fun validateTotoGroupPatternOccurrences() {
+        // Size of the toto numbers should be the same as the total sum of the patterns
+        val groupPatternSize = patternsCache.values.sum()
+        val totoNumberSize = totoNumbers.numbers.count { it.position == 0 }
+        if (groupPatternSize != totoNumberSize)
+            throw IllegalArgumentException("Pattern size is incorrect!")
+
+        // No group patter should have an occurrence of 0
+        if (patternsCache.values.any { it == 0 })
+            throw IllegalArgumentException("Invalid pattern occurrence value!")
+
+        // All patterns should have the proper values
+        if (groupStrategy != TotoGroupStrategy.DIVIDE_BY_10)
+            throw IllegalArgumentException("Invalid Toto Group Strategy!")
+
+        val anyInvalidPatterns = patternsCache.keys.any { pattern ->
+            pattern.pattern.any { item ->
+                item != 0 && item != 1 && item != 2 && item != 3 && item != 4
+            }
+        }
+        if (anyInvalidPatterns) throw IllegalArgumentException("Invalid group pattern!")
+    }
+
+    private fun validateTotoGroupPatternFrequencies() {
+        val countOfSingleOccurredPatterns = patternsCache.count { it.value == 1 }
+        if (patternsCache.size != frequenciesCache.size + countOfSingleOccurredPatterns)
+            throw IllegalArgumentException("Patterns size and frequencies sizes do not match!")
+
+        // The number of occurrences should be the same as the total sum of the frequencies plus 1
+        patternsCache.forEach { (pattern, occurrence) ->
+            val totalFrequencyCount: Int = frequenciesCache[pattern]?.sumOf { it.count } ?: 0
+
+            if (totalFrequencyCount + 1 != occurrence)
+                throw IllegalArgumentException("Occurrence and frequencies for $pattern do not match!")
+        }
     }
 
     /**

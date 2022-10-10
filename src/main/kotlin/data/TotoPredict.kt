@@ -2,6 +2,7 @@ package data
 
 import model.TotoType
 
+// TODO: Needs a lot more work. This is only a pof currently.
 class TotoPredict(
     private val totoType: TotoType
 ) {
