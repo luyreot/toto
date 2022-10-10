@@ -1,69 +1,68 @@
 package data
 
 import model.TotoType
+import kotlin.math.roundToInt
 
-// TODO: Needs a lot more work. This is only a pof currently.
 class TotoPredict(
     private val totoType: TotoType
 ) {
 
-    val nextLowHighPattern = FloatArray(totoType.drawingSize)
     val nextOddEvenPattern = FloatArray(totoType.drawingSize)
-    val nextGroupPattern = FloatArray(totoType.drawingSize)
+
+    var correctlyPredicted: Int = 0
 
     init {
         for (i in 0 until totoType.drawingSize) {
-            nextLowHighPattern[i] = 0.5f
-            nextOddEvenPattern[i] = 0.5f
-            nextGroupPattern[i] = 2f
+            nextOddEvenPattern[i] = PATTERN_DEFAULT_VALUE
         }
     }
 
-    fun addLowHighPattern(pattern: IntArray) {
-        if (pattern.size != nextLowHighPattern.size ||
-            pattern.size != totoType.drawingSize
-        ) {
-            throw IllegalArgumentException("Something wrong with low high pattern's size $pattern!")
+    fun handleNextOddEvenPattern(pattern: IntArray, drawingIndex: Int) {
+        // check if the our next odd even pattern is actually the next pattern
+        // correct if any of the indexes is not correct
+        // re-calculate our next odd even pattern
+
+        if (pattern.size != totoType.drawingSize)
+            throw IllegalArgumentException("There is something wrong with the odd even pattern!  ")
+
+        // Handle first pattern ever
+        if (nextOddEvenPattern.all { index -> index == PATTERN_DEFAULT_VALUE }) {
+            pattern.forEachIndexed { index, value ->
+                nextOddEvenPattern[index] = value.toFloat()
+            }
+            return
         }
 
-        for (i in 0 until totoType.drawingSize) {
-            if (pattern[i] == 0 && nextLowHighPattern[i] <= 0.01563f) {
-                continue
+        // Handle second pattern
+        if (drawingIndex == 2) {
+            pattern.forEachIndexed { index, value ->
+                nextOddEvenPattern[index] = (nextOddEvenPattern[index] + value).div(drawingIndex).roundToInt().toFloat()
+            }
+            return
+        }
+
+        // Check and correct whether our next pattern is the one we are getting as a parameter
+        pattern.forEachIndexed { index, value ->
+            when {
+                // We want 1 but we are predicting 0
+                value > nextOddEvenPattern[index].roundToInt() -> {
+                    nextOddEvenPattern[index] = nextOddEvenPattern[index] + 0.2f
+                }
+                // We want 0 but we are predicting 1
+                value < nextOddEvenPattern[index].roundToInt() -> {
+                    nextOddEvenPattern[index] = nextOddEvenPattern[index] - 0.2f
+                }
+                else -> {
+                    // Value correctly predicted
+                    correctlyPredicted++
+                }
             }
 
-            nextLowHighPattern[i] = (nextLowHighPattern[i] + pattern[i]).div(2)
+            nextOddEvenPattern[index] = ((nextOddEvenPattern[index] * (drawingIndex - 1)) + value).div(drawingIndex)
         }
     }
 
-    fun addOddEvenPattern(pattern: IntArray) {
-        if (pattern.size != nextOddEvenPattern.size ||
-            pattern.size != totoType.drawingSize
-        ) {
-            throw IllegalArgumentException("Something wrong with odd event pattern's size $pattern!")
-        }
-
-        for (i in 0 until totoType.drawingSize) {
-            if (pattern[i] == 0 && nextOddEvenPattern[i] <= 0.01563f) {
-                continue
-            }
-
-            nextOddEvenPattern[i] = (nextOddEvenPattern[i] + pattern[i]).div(2)
-        }
-    }
-
-    fun addGroupPattern(pattern: IntArray) {
-        if (pattern.size != nextGroupPattern.size ||
-            pattern.size != totoType.drawingSize
-        ) {
-            throw IllegalArgumentException("Something wrong with group pattern's size $pattern!")
-        }
-
-        for (i in 0 until totoType.drawingSize) {
-            if (pattern[i] == 0 && nextGroupPattern[i] <= 0.01563f) {
-                continue
-            }
-
-            nextGroupPattern[i] = (nextGroupPattern[i] + pattern[i]).div(2)
-        }
+    private companion object {
+        const val PATTERN_DEFAULT_VALUE = -1f
     }
 }

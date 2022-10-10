@@ -56,7 +56,7 @@ class TotoOddEvenPatternStats(
                         // Save the pattern in the map
                         patternsCache.merge(oddEvenPattern, 1, Int::plus)
 
-                        totoPredict.addOddEvenPattern(oddEvenPattern.pattern)
+                        totoPredict.handleNextOddEvenPattern(oddEvenPattern.pattern, currentDrawingIndex)
 
                         // Reset the tmp array for the next toto drawing
                         currentDrawing.clear()
