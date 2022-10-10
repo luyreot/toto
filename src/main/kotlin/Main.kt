@@ -22,8 +22,8 @@ object Main {
                 launchThread { calculateTotoOddEvenPatternStats() },
                 launchThread { calculateTotoLowHighPatternStats() },
                 launchThread { calculateTotoGroupPatternStats() }
-            ).forEach {
-                it.join()
+            ).forEach { thread ->
+                thread.join()
             }
 
             println()
