@@ -41,7 +41,7 @@ class TotoGroupPatternStats(
 
                         patternsCache.merge(groupPattern, 1, Int::plus)
 
-                        totoPredict.addGroupPattern(groupPattern.pattern)
+                        // send to machine learning algo
 
                         currentDrawing.clear()
 

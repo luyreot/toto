@@ -14,9 +14,7 @@ class TotoStats(
     val totoLowHighPatternStats = TotoLowHighPatternStats(totoType, totoNumbers, totoPredict)
     val totoGroupPatternStats = TotoGroupPatternStats(totoType, totoNumbers, DIVIDE_BY_10, totoPredict)
 
-    fun loadTotoNumbers(
-        vararg years: Int
-    ) {
+    fun loadTotoNumbers(vararg years: Int) {
         totoNumbers.loadTotoNumbers(*years)
     }
 

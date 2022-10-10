@@ -56,7 +56,7 @@ class TotoLowHighPatternStats(
                         // Save the pattern in the map
                         patternsCache.merge(lowHighPattern, 1, Int::plus)
 
-                        totoPredict.addLowHighPattern(lowHighPattern.pattern)
+                        // send to machine learning algo
 
                         // Reset the tmp array for the next toto drawing
                         currentDrawing.clear()
