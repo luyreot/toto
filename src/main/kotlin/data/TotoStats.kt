@@ -11,7 +11,7 @@ class TotoStats(
 
     val totoNumberStats = TotoNumberStats(totoType, totoNumbers)
 
-    val totoPredictOddEvenPattern = TotoPredictOddEvenPattern(totoType)
+    val totoPredictOddEvenPattern = TotoOddEvenPatternPredict(totoType)
     val totoOddEvenPatternStats = TotoOddEvenPatternStats(totoType, totoNumbers, totoPredictOddEvenPattern)
 
     val totoLowHighPatternStats = TotoLowHighPatternStats(totoType, totoNumbers)

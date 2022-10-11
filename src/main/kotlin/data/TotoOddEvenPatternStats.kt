@@ -19,7 +19,7 @@ import model.TotoType
 class TotoOddEvenPatternStats(
     private val totoType: TotoType,
     private val totoNumbers: TotoNumbers,
-    private val totoPredict: TotoPredictOddEvenPattern
+    private val totoPredict: TotoOddEvenPatternPredict
 ) {
 
     val patterns: Map<TotoPattern, Int>

@@ -3,7 +3,7 @@ package data
 import model.TotoType
 import kotlin.math.roundToInt
 
-class TotoPredictOddEvenPattern(
+class TotoOddEvenPatternPredict(
     private val totoType: TotoType,
     private val correctPatternUpwards: Float = CORRECT_UPWARDS_VALUE,
     private val correctPatternDownwards: Float = CORRECT_DOWNWARDS_VALUE,
