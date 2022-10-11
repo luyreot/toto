@@ -18,8 +18,7 @@ import model.TotoType
  */
 class TotoLowHighPatternStats(
     private val totoType: TotoType,
-    private val totoNumbers: TotoNumbers,
-    private val totoPredict: TotoPredict
+    private val totoNumbers: TotoNumbers
 ) {
 
     val patterns: Map<TotoPattern, Int>

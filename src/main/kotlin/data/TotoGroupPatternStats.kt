@@ -7,8 +7,7 @@ import model.*
 class TotoGroupPatternStats(
     private val totoType: TotoType,
     private val totoNumbers: TotoNumbers,
-    private val groupStrategy: TotoGroupStrategy,
-    private val totoPredict: TotoPredict
+    private val groupStrategy: TotoGroupStrategy
 ) {
 
     val patterns: Map<TotoPattern, Int>

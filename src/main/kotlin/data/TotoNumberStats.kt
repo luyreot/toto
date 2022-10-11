@@ -12,8 +12,7 @@ import model.TotoType
  */
 class TotoNumberStats(
     private val totoType: TotoType,
-    private val totoNumbers: TotoNumbers,
-    private val totoPredict: TotoPredict
+    private val totoNumbers: TotoNumbers
 ) {
 
     val occurrences: Map<Int, Int>
