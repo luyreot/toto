@@ -26,6 +26,8 @@ object Main {
                 thread.join()
             }
 
+            testOddEventLowHighPredictionAlgo()
+
             println()
         }
 
