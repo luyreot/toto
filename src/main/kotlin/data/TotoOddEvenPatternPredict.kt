@@ -89,7 +89,7 @@ class TotoOddEvenPatternPredict(
 
     fun normalizePrediction() {
         nextOddEvenPattern.forEachIndexed { index, value ->
-            nextOddEvenPattern[index] = nextOddEvenPattern[index].roundToInt().toFloat()
+            nextOddEvenPattern[index] = value.roundToInt().toFloat()
         }
     }
 
