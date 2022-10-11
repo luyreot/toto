@@ -109,6 +109,8 @@ class TotoOddEvenPatternStats(
                 }
             }
 
+        totoPredict.normalizePrediction()
+
         validateTotoOddEvenPatternOccurrences()
         validateTotoOddEvenPatternFrequencies()
 

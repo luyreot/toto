@@ -87,6 +87,12 @@ class TotoOddEvenPatternPredict(
         }
     }
 
+    fun normalizePrediction() {
+        nextOddEvenPattern.forEachIndexed { index, value ->
+            nextOddEvenPattern[index] = nextOddEvenPattern[index].roundToInt().toFloat()
+        }
+    }
+
     private companion object {
         const val PATTERN_DEFAULT_VALUE = -1f
         const val CORRECT_UPWARDS_VALUE = 0.4f
