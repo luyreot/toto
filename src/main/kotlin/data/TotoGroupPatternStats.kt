@@ -92,6 +92,8 @@ class TotoGroupPatternStats(
                 }
             }
 
+        totoPredict.normalizePrediction()
+
         validateTotoGroupPatternOccurrences()
         validateTotoGroupPatternFrequencies()
 

@@ -11,8 +11,8 @@ class TotoGroupPatternPredict(
 
     val nextGroupPattern = FloatArray(totoType.drawingSize)
 
-    var correctlyPredictedPatternPart: Int = 0
-    var correctlyPredictedPatternFull: Int = 0
+    //var correctlyPredictedPatternPart: Int = 0
+    //var correctlyPredictedPatternFull: Int = 0
 
     init {
         for (i in 0 until totoType.drawingSize) {
@@ -45,7 +45,7 @@ class TotoGroupPatternPredict(
             return
         }
 
-//        /*
+        /*
         var didCorrectlyPredictPattern = true
         nextGroupPattern.map { it.roundToInt() }.forEachIndexed { index, item ->
             if (didCorrectlyPredictPattern.not()) {
@@ -59,7 +59,7 @@ class TotoGroupPatternPredict(
         if (didCorrectlyPredictPattern) {
             correctlyPredictedPatternFull++
         }
-//        */
+        */
 
         // Check and correct whether our next pattern is the one we are getting as a parameter
         pattern.forEachIndexed { index, value ->
@@ -70,8 +70,8 @@ class TotoGroupPatternPredict(
                     nextGroupPattern[index] = nextGroupPattern[index] + difference
 
                     // Assuming we are using DIVIDE_BY_10
-                    if (nextGroupPattern[index] > 4) {
-                        nextGroupPattern[index] = 4f
+                    if (nextGroupPattern[index] > 4.49) {
+                        nextGroupPattern[index] = 4.49f
                     }
                 }
                 // We are getting a number that is lower than the prediction
@@ -86,7 +86,7 @@ class TotoGroupPatternPredict(
                 }
                 else -> {
                     // Value correctly predicted
-                    correctlyPredictedPatternPart++
+                    //correctlyPredictedPatternPart++
                 }
             }
 
@@ -102,7 +102,7 @@ class TotoGroupPatternPredict(
 
     private companion object {
         const val PATTERN_DEFAULT_VALUE = -1f
-        const val CORRECT_UPWARDS_VALUE = 0f
-        const val CORRECT_DOWNWARDS_VALUE = 0f
+        const val CORRECT_UPWARDS_VALUE = 0.1f
+        const val CORRECT_DOWNWARDS_VALUE = 0.3f
     }
 }
