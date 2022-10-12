@@ -64,14 +64,14 @@ class TotoOddEvenPatternPredict(
         // Check and correct whether our next pattern is the one we are getting as a parameter
         pattern.forEachIndexed { index, value ->
             when {
-                // We want 1 but we are predicting 0
+                // We are getting 1 but we are predicting 0
                 value > nextOddEvenPattern[index].roundToInt() -> {
                     nextOddEvenPattern[index] = nextOddEvenPattern[index] + correctPatternUpwards
                     if (nextOddEvenPattern[index] > 1) {
                         nextOddEvenPattern[index] = 1f
                     }
                 }
-                // We want 0 but we are predicting 1
+                // We are getting 0 but we are predicting 1
                 value < nextOddEvenPattern[index].roundToInt() -> {
                     nextOddEvenPattern[index] = nextOddEvenPattern[index] - correctPatternDownwards
                     if (nextOddEvenPattern[index] < 0) {

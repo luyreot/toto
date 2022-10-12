@@ -64,14 +64,14 @@ class TotoLowHighPatternPredict(
         // Check and correct whether our next pattern is the one we are getting as a parameter
         pattern.forEachIndexed { index, value ->
             when {
-                // We want 1 but we are predicting 0
+                // We are getting 1 but we are predicting 0
                 value > nextLowHighPattern[index].roundToInt() -> {
                     nextLowHighPattern[index] = nextLowHighPattern[index] + correctPatternUpwards
                     if (nextLowHighPattern[index] > 1) {
                         nextLowHighPattern[index] = 1f
                     }
                 }
-                // We want 0 but we are predicting 1
+                // We are getting 0 but we are predicting 1
                 value < nextLowHighPattern[index].roundToInt() -> {
                     nextLowHighPattern[index] = nextLowHighPattern[index] - correctPatternDownwards
                     if (nextLowHighPattern[index] < 0) {
