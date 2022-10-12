@@ -27,6 +27,7 @@ object Main {
             }
 
             testOddEventLowHighPredictionAlgo()
+            testGroupPredictionAlgo()
 
             println()
         }

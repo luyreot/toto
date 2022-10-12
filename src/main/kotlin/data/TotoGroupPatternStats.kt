@@ -7,7 +7,8 @@ import model.*
 class TotoGroupPatternStats(
     private val totoType: TotoType,
     private val totoNumbers: TotoNumbers,
-    private val groupStrategy: TotoGroupStrategy
+    private val groupStrategy: TotoGroupStrategy,
+    private val totoPredict: TotoGroupPatternPredict
 ) {
 
     val patterns: Map<TotoPattern, Int>
@@ -40,7 +41,7 @@ class TotoGroupPatternStats(
 
                         patternsCache.merge(groupPattern, 1, Int::plus)
 
-                        // send to machine learning algo
+                        totoPredict.handleNextGroupPattern(groupPattern.pattern, currentDrawingIndex)
 
                         currentDrawing.clear()
 

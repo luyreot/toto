@@ -17,7 +17,8 @@ class TotoStats(
     val totoLowHighPatternPredict = TotoLowHighPatternPredict(totoType)
     val totoLowHighPatternStats = TotoLowHighPatternStats(totoType, totoNumbers, totoLowHighPatternPredict)
 
-    val totoGroupPatternStats = TotoGroupPatternStats(totoType, totoNumbers, DIVIDE_BY_10)
+    val totoGroupPatternPredict = TotoGroupPatternPredict(totoType)
+    val totoGroupPatternStats = TotoGroupPatternStats(totoType, totoNumbers, DIVIDE_BY_10, totoGroupPatternPredict)
 
     fun loadTotoNumbers(vararg years: Int) {
         totoNumbers.loadTotoNumbers(*years)
@@ -74,5 +75,42 @@ class TotoStats(
         println("highestCorrectlyPredictedPatternPart - $highestCorrectlyPredictedPatternPart")
         println("highestCorrectlyPredictedPatternFull - $highestCorrectlyPredictedPatternFull")
         */
+    }
+
+    fun testGroupPredictionAlgo() {
+//        /*
+        var up = 0.5f
+        var down = 0.5f
+        var highestCorrectlyPredictedPatternPart = 0
+        var highestCorrectlyPredictedPatternFull = 0
+        for (u in 0..20) {
+            for (d in 0..20) {
+                val predict = TotoGroupPatternPredict(totoType, up, down)
+                TotoGroupPatternStats(totoType, totoNumbers, DIVIDE_BY_10, predict).apply {
+                    calculateTotoGroupPatternStats()
+
+                    println("UP - $up, DOWN - $down")
+                    println("correctlyPredictedPatternPart - ${predict.correctlyPredictedPatternPart}")
+                    println("correctlyPredictedPatternFull - ${predict.correctlyPredictedPatternFull}")
+                    println("nextLowHighPattern - ${predict.nextGroupPattern.map { it }}")
+                    println("--------")
+                }
+
+                if (predict.correctlyPredictedPatternPart > highestCorrectlyPredictedPatternPart) {
+                    highestCorrectlyPredictedPatternPart = predict.correctlyPredictedPatternPart
+                }
+                if (predict.correctlyPredictedPatternFull > highestCorrectlyPredictedPatternFull) {
+                    highestCorrectlyPredictedPatternFull = predict.correctlyPredictedPatternFull
+                }
+
+                down += 0.1f
+            }
+            up += 0.1f
+            down = 0.5f
+        }
+
+        println("highestCorrectlyPredictedPatternPart - $highestCorrectlyPredictedPatternPart")
+        println("highestCorrectlyPredictedPatternFull - $highestCorrectlyPredictedPatternFull")
+//        */
     }
 }
