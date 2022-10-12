@@ -19,7 +19,7 @@ import model.TotoType
 class TotoLowHighPatternStats(
     private val totoType: TotoType,
     private val totoNumbers: TotoNumbers,
-    private val totoLowHighPatternPredict: TotoLowHighPatternPredict
+    private val totoPredict: TotoLowHighPatternPredict
 ) {
 
     val patterns: Map<TotoPattern, Int>
@@ -56,7 +56,7 @@ class TotoLowHighPatternStats(
                         // Save the pattern in the map
                         patternsCache.merge(lowHighPattern, 1, Int::plus)
 
-                        totoLowHighPatternPredict.handleNextLowHighPattern(lowHighPattern.pattern, currentDrawingIndex)
+                        totoPredict.handleNextLowHighPattern(lowHighPattern.pattern, currentDrawingIndex)
 
                         // Reset the tmp array for the next toto drawing
                         currentDrawing.clear()
@@ -109,7 +109,7 @@ class TotoLowHighPatternStats(
                 }
             }
 
-        totoLowHighPatternPredict.normalizePrediction()
+        totoPredict.normalizePrediction()
 
         validateTotoLowHighPatternOccurrences()
         validateTotoLowHighPatternFrequencies()
