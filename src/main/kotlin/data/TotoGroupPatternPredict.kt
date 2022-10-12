@@ -64,19 +64,25 @@ class TotoGroupPatternPredict(
         // Check and correct whether our next pattern is the one we are getting as a parameter
         pattern.forEachIndexed { index, value ->
             when {
-                // We want 1 but we are predicting 0
+                // We are getting a number that is higher than the prediction
                 value > nextGroupPattern[index].roundToInt() -> {
-                    nextGroupPattern[index] = nextGroupPattern[index] + correctPatternUpwards
-//                    if (nextGroupPattern[index] > 1) {
-//                        nextGroupPattern[index] = 1f
-//                    }
+                    val difference = (value - nextGroupPattern[index]).div(2) - correctPatternUpwards
+                    nextGroupPattern[index] = nextGroupPattern[index] + difference
+
+                    // Assuming we are using DIVIDE_BY_10
+                    if (nextGroupPattern[index] > 4) {
+                        nextGroupPattern[index] = 4f
+                    }
                 }
-                // We want 0 but we are predicting 1
+                // We are getting a number that is lower than the prediction
                 value < nextGroupPattern[index].roundToInt() -> {
-                    nextGroupPattern[index] = nextGroupPattern[index] - correctPatternDownwards
-//                    if (nextGroupPattern[index] < 0) {
-//                        nextGroupPattern[index] = 0f
-//                    }
+                    val difference = (nextGroupPattern[index] - value).div(2) - correctPatternDownwards
+                    nextGroupPattern[index] = nextGroupPattern[index] - difference
+
+                    // Assuming we are using DIVIDE_BY_10
+                    if (nextGroupPattern[index] < 0) {
+                        nextGroupPattern[index] = 0f
+                    }
                 }
                 else -> {
                     // Value correctly predicted

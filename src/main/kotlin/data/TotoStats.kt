@@ -79,12 +79,12 @@ class TotoStats(
 
     fun testGroupPredictionAlgo() {
 //        /*
-        var up = 0.5f
-        var down = 0.5f
+        var up = 0f
+        var down = 0f
         var highestCorrectlyPredictedPatternPart = 0
         var highestCorrectlyPredictedPatternFull = 0
-        for (u in 0..20) {
-            for (d in 0..20) {
+        for (u in 0..40) {
+            for (d in 0..40) {
                 val predict = TotoGroupPatternPredict(totoType, up, down)
                 TotoGroupPatternStats(totoType, totoNumbers, DIVIDE_BY_10, predict).apply {
                     calculateTotoGroupPatternStats()
@@ -92,7 +92,7 @@ class TotoStats(
                     println("UP - $up, DOWN - $down")
                     println("correctlyPredictedPatternPart - ${predict.correctlyPredictedPatternPart}")
                     println("correctlyPredictedPatternFull - ${predict.correctlyPredictedPatternFull}")
-                    println("nextLowHighPattern - ${predict.nextGroupPattern.map { it }}")
+                    println("nextGroupPattern - ${predict.nextGroupPattern.map { it }}")
                     println("--------")
                 }
 
@@ -106,7 +106,7 @@ class TotoStats(
                 down += 0.1f
             }
             up += 0.1f
-            down = 0.5f
+            down = 0f
         }
 
         println("highestCorrectlyPredictedPatternPart - $highestCorrectlyPredictedPatternPart")
