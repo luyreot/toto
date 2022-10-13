@@ -66,8 +66,7 @@ class TotoGroupPatternPredict(
             when {
                 // We are getting a number that is higher than the prediction
                 value > nextGroupPattern[index].roundToInt() -> {
-                    val difference = (value - nextGroupPattern[index]).div(2) - correctPatternUpwards
-                    nextGroupPattern[index] = nextGroupPattern[index] + difference
+                    //nextGroupPattern[index] = nextGroupPattern[index] - correctPatternUpwards
 
                     // Assuming we are using DIVIDE_BY_10
                     if (nextGroupPattern[index] > 4.49) {
@@ -76,8 +75,7 @@ class TotoGroupPatternPredict(
                 }
                 // We are getting a number that is lower than the prediction
                 value < nextGroupPattern[index].roundToInt() -> {
-                    val difference = (nextGroupPattern[index] - value).div(2) - correctPatternDownwards
-                    nextGroupPattern[index] = nextGroupPattern[index] - difference
+                    //nextGroupPattern[index] = nextGroupPattern[index] - correctPatternDownwards
 
                     // Assuming we are using DIVIDE_BY_10
                     if (nextGroupPattern[index] < 0) {
@@ -102,7 +100,7 @@ class TotoGroupPatternPredict(
 
     private companion object {
         const val PATTERN_DEFAULT_VALUE = -1f
-        const val CORRECT_UPWARDS_VALUE = 0.1f
-        const val CORRECT_DOWNWARDS_VALUE = 0.3f
+        const val CORRECT_UPWARDS_VALUE = 0f
+        const val CORRECT_DOWNWARDS_VALUE = 0f
     }
 }
