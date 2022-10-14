@@ -51,7 +51,8 @@ class TotoNextDrawing(
 
         val numberCombinations = getAllNumberCombinations(results)
 
-        // todo implement
+        // todo exclude any combinations that have occurred all time
+        // todo calculate each combinations' score based of each number's occurrence
     }
 
     private fun getNumbers(
