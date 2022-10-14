@@ -1,19 +1,24 @@
 package data
 
+import extensions.sortByValueDescending
 import model.TotoGroupStrategy
+import model.TotoNumber
 import model.TotoType
 
 class TotoNextDrawing(
     private val totoType: TotoType,
-    private val groupStrategy: TotoGroupStrategy,
+    private val totoNumbers: TotoNumbers,
     private val totoNumberStats: TotoNumberStats,
     private val totoOddEvenPatternStats: TotoOddEvenPatternStats,
     private val totoOddEvenPatternPredict: TotoOddEvenPatternPredict,
     private val totoLowHighPatternStats: TotoLowHighPatternStats,
     private val totoLowHighPatternPredict: TotoLowHighPatternPredict,
     private val totoGroupPatternStats: TotoGroupPatternStats,
-    private val totoGroupPatternPredict: TotoGroupPatternPredict
+    private val totoGroupPatternPredict: TotoGroupPatternPredict,
+    private val groupStrategy: TotoGroupStrategy
 ) {
+
+    val predictionCombinations = mutableMapOf<IntArray, Int>()
 
     lateinit var nextOddEvenPattern: IntArray
     lateinit var nextLowHighPattern: IntArray
@@ -35,13 +40,13 @@ class TotoNextDrawing(
 
     fun predictNextDrawing() {
         val numberOfResults = 2 // get # different numbers for each slot
-        val results = arrayOfNulls<List<Int>>(totoType.drawingSize)
+        val predictionNumbers = Array<List<Int>>(totoType.drawingSize) { emptyList() }
 
         for (i in 0 until totoType.drawingSize) {
             val isOdd = nextOddEvenPattern[i] == 0
             val isLow = nextLowHighPattern[i] == 0
             val group = nextGroupPattern[i]
-            results[i] = getNumbers(
+            predictionNumbers[i] = getPredictedNumbers(
                 isOdd = isOdd,
                 isLow = isLow,
                 group = group,
@@ -49,13 +54,23 @@ class TotoNextDrawing(
             )
         }
 
-        val numberCombinations = getAllNumberCombinations(results)
+        val numberCombinations: MutableList<IntArray> = getPredictionCombinations(predictionNumbers)
 
-        // todo exclude any combinations that have occurred all time
-        // todo calculate each combinations' score based of each number's occurrence
+        // Remove already existing drawings
+        for (i in numberCombinations.size - 1..0) {
+            if (doesDrawingExists(numberCombinations[i])) {
+                numberCombinations.removeAt(i)
+            }
+        }
+
+        // Calculate prediction score
+        numberCombinations.forEach { drawing ->
+            predictionCombinations[drawing] = getDrawingScore(drawing)
+        }
+        predictionCombinations.sortByValueDescending()
     }
 
-    private fun getNumbers(
+    private fun getPredictedNumbers(
         isOdd: Boolean,
         isLow: Boolean,
         group: Int,
@@ -63,7 +78,7 @@ class TotoNextDrawing(
     ): List<Int> {
         val results = mutableListOf<Int>()
 
-        totoNumberStats.occurrences.forEach { (number, occurence) ->
+        totoNumberStats.occurrences.forEach { (number, _) ->
             val isOddEvenCriteriaFulfilled = (isOdd.not() && isEven(number)) || (isOdd && isEven(number).not())
             val isLowHighCriteriaFulfilled = (isLow.not() && isHigh(number)) || (isLow && isHigh(number).not())
             val isGroupCriteriaFulfilled = isFromSameGroup(group, number)
@@ -94,14 +109,14 @@ class TotoNextDrawing(
     /**
      * Currently works for list size of 2.
      */
-    private fun getAllNumberCombinations(appPossibleNumbers: Array<List<Int>?>): List<Array<Int?>> {
-        val combinations = mutableListOf<Array<Int?>>()
+    private fun getPredictionCombinations(appPossibleNumbers: Array<List<Int>>): MutableList<IntArray> {
+        val combinations = mutableListOf<IntArray>()
         val numberOfCombinations = appPossibleNumbers
-            .map { list -> list?.size ?: 1 }
+            .map { list -> list.size }
             .reduce { acc, size -> acc * size } // 2 x 2 x 2 x 2 x 2 x 2 = 64
 
         for (i in 0 until numberOfCombinations) {
-            combinations.add(arrayOfNulls(totoType.drawingSize))
+            combinations.add(IntArray(totoType.drawingSize))
         }
 
         appPossibleNumbers.forEachIndexed { arrayIndex, possibleNumbersList ->
@@ -116,10 +131,40 @@ class TotoNextDrawing(
                     5 -> combinationIndex % 2
                     else -> 0
                 }
-                combinationArray[arrayIndex] = possibleNumbersList?.get(possibleNumberIndex)
+                combinationArray[arrayIndex] = possibleNumbersList[possibleNumberIndex]
             }
         }
 
         return combinations
+    }
+
+    fun doesDrawingExists(drawing: IntArray): Boolean {
+        totoNumbers.numbers
+            .sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
+            .let { sortedTotoNumbers ->
+                val currentDrawing = IntArray(totoType.drawingSize)
+
+                sortedTotoNumbers.forEach { totoNumber ->
+                    currentDrawing[totoNumber.position] = totoNumber.number
+                    if (totoNumber.position == totoType.drawingSize - 1) {
+                        currentDrawing.forEachIndexed { index, number ->
+                            if (drawing[index] != number) {
+                                return@forEach
+                            }
+                        }
+                        return true
+                    }
+                }
+            }
+
+        return false
+    }
+
+    private fun getDrawingScore(drawing: IntArray): Int {
+        var score = 0
+        drawing.forEach { number ->
+            score += totoNumberStats.occurrences[number] ?: 0
+        }
+        return score
     }
 }

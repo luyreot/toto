@@ -1,7 +1,6 @@
 package data
 
 import model.TotoGroupStrategy.DIVIDE_BY_10
-import model.TotoNumber
 import model.TotoType
 
 class TotoStats(
@@ -23,14 +22,15 @@ class TotoStats(
 
     val totoNextDrawing = TotoNextDrawing(
         totoType,
-        DIVIDE_BY_10,
+        totoNumbers,
         totoNumberStats,
         totoOddEvenPatternStats,
         totoOddEvenPatternPredict,
         totoLowHighPatternStats,
         totoLowHighPatternPredict,
         totoGroupPatternStats,
-        totoGroupPatternPredict
+        totoGroupPatternPredict,
+        DIVIDE_BY_10
     )
 
     fun loadTotoNumbers(vararg years: Int) {
@@ -56,28 +56,6 @@ class TotoStats(
     fun predictNextDrawing() {
         totoNextDrawing.populateArrays()
         totoNextDrawing.predictNextDrawing()
-    }
-
-    fun doesDrawingExists(drawing: IntArray): Boolean {
-        totoNumbers.numbers
-            .sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
-            .let { sortedTotoNumbers ->
-                val currentDrawing = IntArray(totoType.drawingSize)
-
-                sortedTotoNumbers.forEach { totoNumber ->
-                    currentDrawing[totoNumber.position] = totoNumber.number
-                    if (totoNumber.position == totoType.drawingSize - 1) {
-                        currentDrawing.forEachIndexed { index, number ->
-                            if (drawing[index] != number) {
-                                return@forEach
-                            }
-                        }
-                        return true
-                    }
-                }
-            }
-
-        return false
     }
 
     fun testOddEventLowHighPredictionAlgo() {
