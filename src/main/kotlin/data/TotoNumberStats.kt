@@ -12,7 +12,8 @@ import model.TotoType
  */
 class TotoNumberStats(
     private val totoType: TotoType,
-    private val totoNumbers: TotoNumbers
+    private val totoNumbers: TotoNumbers,
+    private val fromYear: Int
 ) {
 
     val occurrences: Map<Int, Int>
@@ -45,6 +46,10 @@ class TotoNumberStats(
                 val lastTotoNumberOccurrenceMap = mutableMapOf<Int, Int>()
 
                 sortedTotoNumbers.forEach { totoNumber ->
+                    if (totoNumber.year < fromYear) {
+                        return@forEach
+                    }
+
                     val number = totoNumber.number
 
                     // Increment the value of how often a drawing number has occurred by 1

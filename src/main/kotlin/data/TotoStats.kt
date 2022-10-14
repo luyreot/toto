@@ -4,21 +4,22 @@ import model.TotoGroupStrategy.DIVIDE_BY_10
 import model.TotoType
 
 class TotoStats(
-    private val totoType: TotoType
+    private val totoType: TotoType,
+    private val fromYear: Int
 ) {
 
     val totoNumbers = TotoNumbers(totoType)
 
-    val totoNumberStats = TotoNumberStats(totoType, totoNumbers)
+    val totoNumberStats = TotoNumberStats(totoType, totoNumbers, fromYear)
 
     val totoOddEvenPatternPredict = TotoOddEvenPatternPredict(totoType)
-    val totoOddEvenPatternStats = TotoOddEvenPatternStats(totoType, totoNumbers, totoOddEvenPatternPredict)
+    val totoOddEvenPatternStats = TotoOddEvenPatternStats(totoType, totoNumbers, totoOddEvenPatternPredict, fromYear)
 
     val totoLowHighPatternPredict = TotoLowHighPatternPredict(totoType)
-    val totoLowHighPatternStats = TotoLowHighPatternStats(totoType, totoNumbers, totoLowHighPatternPredict)
+    val totoLowHighPatternStats = TotoLowHighPatternStats(totoType, totoNumbers, totoLowHighPatternPredict, fromYear)
 
     val totoGroupPatternPredict = TotoGroupPatternPredict(totoType)
-    val totoGroupPatternStats = TotoGroupPatternStats(totoType, totoNumbers, DIVIDE_BY_10, totoGroupPatternPredict)
+    val totoGroupPatternStats = TotoGroupPatternStats(totoType, totoNumbers, DIVIDE_BY_10, totoGroupPatternPredict, fromYear)
 
     val totoNextDrawing = TotoNextDrawing(
         totoType,

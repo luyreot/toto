@@ -19,7 +19,8 @@ import model.TotoType
 class TotoLowHighPatternStats(
     private val totoType: TotoType,
     private val totoNumbers: TotoNumbers,
-    private val totoPredict: TotoLowHighPatternPredict
+    private val totoPredict: TotoLowHighPatternPredict,
+    private val fromYear: Int
 ) {
 
     val patterns: Map<TotoPattern, Int>
@@ -41,6 +42,10 @@ class TotoLowHighPatternStats(
                 val lastTotoPatternOccurrenceMap = mutableMapOf<TotoPattern, Int>()
 
                 sortedTotoNumbers.forEach { totoNumber ->
+                    if (totoNumber.year < fromYear) {
+                        return@forEach
+                    }
+
                     // Fill the array with the numbers corresponding to the individual drawing
                     currentDrawing[totoNumber.position] = totoNumber.number
 

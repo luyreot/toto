@@ -8,7 +8,8 @@ class TotoGroupPatternStats(
     private val totoType: TotoType,
     private val totoNumbers: TotoNumbers,
     private val groupStrategy: TotoGroupStrategy,
-    private val totoPredict: TotoGroupPatternPredict
+    private val totoPredict: TotoGroupPatternPredict,
+    private val fromYear: Int
 ) {
 
     val patterns: Map<TotoPattern, Int>
@@ -30,6 +31,10 @@ class TotoGroupPatternStats(
                 val lastTotoPatternOccurrenceMap = mutableMapOf<TotoPattern, Int>()
 
                 sortedTotoNumbers.forEach { totoNumber ->
+                    if (totoNumber.year < fromYear) {
+                        return@forEach
+                    }
+
                     currentDrawing[totoNumber.position] = totoNumber.number
 
                     if (totoNumber.position == totoType.drawingSize - 1) {

@@ -57,7 +57,7 @@ class TotoNextDrawing(
         val numberCombinations: MutableList<IntArray> = getPredictionCombinations(predictionNumbers)
 
         // Remove already existing drawings
-        for (i in numberCombinations.size - 1..0) {
+        for (i in numberCombinations.size - 1 downTo 0) {
             if (doesDrawingExists(numberCombinations[i])) {
                 numberCombinations.removeAt(i)
             }
