@@ -26,8 +26,10 @@ object Main {
                 thread.join()
             }
 
-            testOddEventLowHighPredictionAlgo()
-            testGroupPredictionAlgo()
+            //testOddEventLowHighPredictionAlgo()
+            //testGroupPredictionAlgo()
+
+            predictNextDrawing()
 
             println(doesDrawingExists(intArrayOf(8, 10, 21, 27, 36, 44)))
             println(doesDrawingExists(intArrayOf(8, 10, 23, 27, 34, 42)))

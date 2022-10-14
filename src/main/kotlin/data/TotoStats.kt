@@ -12,14 +12,25 @@ class TotoStats(
 
     val totoNumberStats = TotoNumberStats(totoType, totoNumbers)
 
-    val totoPredictOddEvenPattern = TotoOddEvenPatternPredict(totoType)
-    val totoOddEvenPatternStats = TotoOddEvenPatternStats(totoType, totoNumbers, totoPredictOddEvenPattern)
+    val totoOddEvenPatternPredict = TotoOddEvenPatternPredict(totoType)
+    val totoOddEvenPatternStats = TotoOddEvenPatternStats(totoType, totoNumbers, totoOddEvenPatternPredict)
 
     val totoLowHighPatternPredict = TotoLowHighPatternPredict(totoType)
     val totoLowHighPatternStats = TotoLowHighPatternStats(totoType, totoNumbers, totoLowHighPatternPredict)
 
     val totoGroupPatternPredict = TotoGroupPatternPredict(totoType)
     val totoGroupPatternStats = TotoGroupPatternStats(totoType, totoNumbers, DIVIDE_BY_10, totoGroupPatternPredict)
+
+    val totoNextDrawing = TotoNextDrawing(
+        totoType,
+        totoNumberStats,
+        totoOddEvenPatternStats,
+        totoOddEvenPatternPredict,
+        totoLowHighPatternStats,
+        totoLowHighPatternPredict,
+        totoGroupPatternStats,
+        totoGroupPatternPredict
+    )
 
     fun loadTotoNumbers(vararg years: Int) {
         totoNumbers.loadTotoNumbers(*years)
@@ -39,6 +50,10 @@ class TotoStats(
 
     fun calculateTotoGroupPatternStats() {
         totoGroupPatternStats.calculateTotoGroupPatternStats()
+    }
+
+    fun predictNextDrawing() {
+        totoNextDrawing.predictNextDrawing()
     }
 
     fun doesDrawingExists(drawing: IntArray): Boolean {
