@@ -23,6 +23,7 @@ class TotoStats(
 
     val totoNextDrawing = TotoNextDrawing(
         totoType,
+        DIVIDE_BY_10,
         totoNumberStats,
         totoOddEvenPatternStats,
         totoOddEvenPatternPredict,

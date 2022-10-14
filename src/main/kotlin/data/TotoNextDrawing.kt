@@ -1,9 +1,11 @@
 package data
 
+import model.TotoGroupStrategy
 import model.TotoType
 
 class TotoNextDrawing(
     private val totoType: TotoType,
+    private val groupStrategy: TotoGroupStrategy,
     private val totoNumberStats: TotoNumberStats,
     private val totoOddEvenPatternStats: TotoOddEvenPatternStats,
     private val totoOddEvenPatternPredict: TotoOddEvenPatternPredict,
@@ -32,10 +34,91 @@ class TotoNextDrawing(
     }
 
     fun predictNextDrawing() {
+        val numberOfResults = 2 // get # different numbers for each slot
+        val results = arrayOfNulls<List<Int>>(totoType.drawingSize)
+
         for (i in 0 until totoType.drawingSize) {
             val isOdd = nextOddEvenPattern[i] == 0
-            val isLow = nextOddEvenPattern[i] == 0
-
+            val isLow = nextLowHighPattern[i] == 0
+            val group = nextGroupPattern[i]
+            results[i] = getNumbers(
+                isOdd = isOdd,
+                isLow = isLow,
+                group = group,
+                numberOfResults = numberOfResults
+            )
         }
+
+        val numberCombinations = getAllNumberCombinations(results)
+
+        // todo implement
+    }
+
+    private fun getNumbers(
+        isOdd: Boolean,
+        isLow: Boolean,
+        group: Int,
+        numberOfResults: Int
+    ): List<Int> {
+        val results = mutableListOf<Int>()
+
+        totoNumberStats.occurrences.forEach { (number, occurence) ->
+            val isOddEvenCriteriaFulfilled = (isOdd.not() && isEven(number)) || (isOdd && isEven(number).not())
+            val isLowHighCriteriaFulfilled = (isLow.not() && isHigh(number)) || (isLow && isHigh(number).not())
+            val isGroupCriteriaFulfilled = isFromSameGroup(group, number)
+
+            if (isOddEvenCriteriaFulfilled && isLowHighCriteriaFulfilled && isGroupCriteriaFulfilled)
+                results.add(number)
+
+            if (results.size == numberOfResults)
+                return results
+        }
+
+        if (results.isEmpty())
+            throw IllegalArgumentException("Empty number prediction results!")
+
+        // There are only 2 even / odd numbers from group 2 that are high - 26, 28 and 27, 29
+        if (results.size != numberOfResults && (group == 2 && isLow.not()).not())
+            throw IllegalArgumentException("Something is wrong with the number prediction results!")
+
+        return results
+    }
+
+    private fun isEven(number: Int): Boolean = number and 1 == 0
+
+    private fun isHigh(number: Int): Boolean = number > totoType.lowHighMidPoint
+
+    private fun isFromSameGroup(group: Int, number: Int): Boolean = group == groupStrategy.method.invoke(number)
+
+    /**
+     * Currently works for list size of 2.
+     */
+    private fun getAllNumberCombinations(appPossibleNumbers: Array<List<Int>?>): List<Array<Int?>> {
+        val combinations = mutableListOf<Array<Int?>>()
+        val numberOfCombinations = appPossibleNumbers
+            .map { list -> list?.size ?: 1 }
+            .reduce { acc, size -> acc * size } // 2 x 2 x 2 x 2 x 2 x 2 = 64
+
+        for (i in 0 until numberOfCombinations) {
+            combinations.add(arrayOfNulls(totoType.drawingSize))
+        }
+
+        appPossibleNumbers.forEachIndexed { arrayIndex, possibleNumbersList ->
+            combinations.forEachIndexed { combinationIndex, combinationArray ->
+                // Must be either 0 or 1
+                val possibleNumberIndex = when (arrayIndex) {
+                    0 -> combinationIndex / 32 % 2
+                    1 -> combinationIndex / 16 % 2
+                    2 -> combinationIndex / 8 % 2
+                    3 -> combinationIndex / 4 % 2
+                    4 -> combinationIndex / 2 % 2
+                    5 -> combinationIndex % 2
+                    else -> 0
+                }
+                combinationArray[arrayIndex] = possibleNumbersList?.get(possibleNumberIndex)
+            }
+        }
+
+        return combinations
     }
 }
