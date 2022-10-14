@@ -53,6 +53,7 @@ class TotoStats(
     }
 
     fun predictNextDrawing() {
+        totoNextDrawing.populateArrays()
         totoNextDrawing.predictNextDrawing()
     }
 
