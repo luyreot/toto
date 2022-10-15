@@ -8,7 +8,7 @@ import util.PATH_TXT_6x49
 /**
  * Holds a list of all drawn numbers.
  */
-class TotoNumbers(
+class TotoDrawnNumbers(
     private val totoType: TotoType
 ) {
 

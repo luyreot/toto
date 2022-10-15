@@ -1,7 +1,8 @@
 package model
 
 /**
- * Represents different types of toto patterns:
+ * Represents different types of toto numbers:
+ * - drawing
  * - odd/even
  * - low/high
  * - group
@@ -25,8 +26,8 @@ package model
  *
  * The size of the array depends on the toto type - 6x49, 6x42 or 5x35.
  */
-data class TotoPattern(
-    val pattern: IntArray
+data class TotoNumbers(
+    val numbers: IntArray
 ) {
 
     override fun equals(
@@ -36,8 +37,8 @@ data class TotoPattern(
 
         javaClass != other?.javaClass -> false
 
-        else -> pattern.contentEquals((other as? TotoPattern)?.pattern)
+        else -> numbers.contentEquals((other as? TotoNumbers)?.numbers)
     }
 
-    override fun hashCode(): Int = pattern.contentHashCode()
+    override fun hashCode(): Int = numbers.contentHashCode()
 }

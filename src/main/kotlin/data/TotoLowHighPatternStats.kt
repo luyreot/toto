@@ -4,7 +4,7 @@ import extensions.clear
 import extensions.sortByValueDescending
 import model.TotoFrequency
 import model.TotoNumber
-import model.TotoPattern
+import model.TotoNumbers
 import model.TotoType
 
 /**
@@ -18,20 +18,20 @@ import model.TotoType
  */
 class TotoLowHighPatternStats(
     private val totoType: TotoType,
-    private val totoNumbers: TotoNumbers,
+    private val totoNumbers: TotoDrawnNumbers,
     private val totoPredict: TotoLowHighPatternPredict,
     private val fromYear: Int? = null
 ) {
 
-    val patterns: Map<TotoPattern, Int>
+    val patterns: Map<TotoNumbers, Int>
         get() = patternsCache
 
-    private val patternsCache = mutableMapOf<TotoPattern, Int>()
+    private val patternsCache = mutableMapOf<TotoNumbers, Int>()
 
-    val frequencies: Map<TotoPattern, List<TotoFrequency>>
+    val frequencies: Map<TotoNumbers, List<TotoFrequency>>
         get() = frequenciesCache
 
-    private val frequenciesCache = mutableMapOf<TotoPattern, MutableList<TotoFrequency>>()
+    private val frequenciesCache = mutableMapOf<TotoNumbers, MutableList<TotoFrequency>>()
 
     fun calculateTotoLowHighPatternStats() {
         totoNumbers.numbers
@@ -39,7 +39,7 @@ class TotoLowHighPatternStats(
             .let { sortedTotoNumbers ->
                 val currentDrawing = IntArray(totoType.drawingSize)
                 var currentDrawingIndex = 0
-                val lastTotoPatternOccurrenceMap = mutableMapOf<TotoPattern, Int>()
+                val lastTotoPatternOccurrenceMap = mutableMapOf<TotoNumbers, Int>()
 
                 sortedTotoNumbers.forEach { totoNumber ->
                     if (fromYear != null && totoNumber.year < fromYear) {
@@ -54,12 +54,12 @@ class TotoLowHighPatternStats(
                         currentDrawingIndex += 1
 
                         // Already got the toto numbers of a single drawing
-                        val lowHighPattern = TotoPattern(convertTotoNumbersToLowHighPattern(currentDrawing.copyOf()))
+                        val lowHighPattern = TotoNumbers(convertTotoNumbersToLowHighPattern(currentDrawing.copyOf()))
 
                         // Save the pattern in the map
                         patternsCache.merge(lowHighPattern, 1, Int::plus)
 
-                        totoPredict.handleNextLowHighPattern(lowHighPattern.pattern, currentDrawingIndex)
+                        totoPredict.handleNextLowHighPattern(lowHighPattern.numbers, currentDrawingIndex)
 
                         // Reset the tmp array for the next toto drawing
                         currentDrawing.clear()
@@ -141,7 +141,7 @@ class TotoLowHighPatternStats(
 
         // All odd/even patterns should contain 0 or 1 values
         val anyInvalidPatterns = patternsCache.keys.any { oddEvenPattern ->
-            oddEvenPattern.pattern.any { arrayItem -> arrayItem != 0 && arrayItem != 1 }
+            oddEvenPattern.numbers.any { arrayItem -> arrayItem != 0 && arrayItem != 1 }
         }
         if (anyInvalidPatterns)
             throw IllegalArgumentException("Invalid odd/even pattern!")
@@ -174,7 +174,7 @@ class TotoLowHighPatternStats(
      */
     private fun sortTotoLowHighPatternFrequencies() {
         val sortedOccurrences = patternsCache.keys.toList()
-        val sortedFrequencies = mutableMapOf<TotoPattern, MutableList<TotoFrequency>>()
+        val sortedFrequencies = mutableMapOf<TotoNumbers, MutableList<TotoFrequency>>()
 
         sortedOccurrences.forEach { pattern ->
             frequenciesCache[pattern]?.let { frequencies ->

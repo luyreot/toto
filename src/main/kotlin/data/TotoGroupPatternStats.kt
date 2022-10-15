@@ -6,21 +6,21 @@ import model.*
 
 class TotoGroupPatternStats(
     private val totoType: TotoType,
-    private val totoNumbers: TotoNumbers,
+    private val totoNumbers: TotoDrawnNumbers,
     private val groupStrategy: TotoGroupStrategy,
     private val totoPredict: TotoGroupPatternPredict,
     private val fromYear: Int? = null
 ) {
 
-    val patterns: Map<TotoPattern, Int>
+    val patterns: Map<model.TotoNumbers, Int>
         get() = patternsCache
 
-    private val patternsCache = mutableMapOf<TotoPattern, Int>()
+    private val patternsCache = mutableMapOf<model.TotoNumbers, Int>()
 
-    val frequencies: Map<TotoPattern, List<TotoFrequency>>
+    val frequencies: Map<model.TotoNumbers, List<TotoFrequency>>
         get() = frequenciesCache
 
-    private val frequenciesCache = mutableMapOf<TotoPattern, MutableList<TotoFrequency>>()
+    private val frequenciesCache = mutableMapOf<model.TotoNumbers, MutableList<TotoFrequency>>()
 
     private val groupStrategyMethod = groupStrategies[groupStrategy] as? (Int) -> Int
 
@@ -35,7 +35,7 @@ class TotoGroupPatternStats(
             .let { sortedTotoNumbers ->
                 val currentDrawing = IntArray(totoType.drawingSize)
                 var currentDrawingIndex = 0
-                val lastTotoPatternOccurrenceMap = mutableMapOf<TotoPattern, Int>()
+                val lastTotoPatternOccurrenceMap = mutableMapOf<model.TotoNumbers, Int>()
 
                 sortedTotoNumbers.forEach { totoNumber ->
                     if (fromYear != null && totoNumber.year < fromYear) {
@@ -47,11 +47,11 @@ class TotoGroupPatternStats(
                     if (totoNumber.position == totoType.drawingSize - 1) {
                         currentDrawingIndex += 1
 
-                        val groupPattern = TotoPattern(convertTotoNumbersToGroupPattern(currentDrawing.copyOf()))
+                        val groupPattern = TotoNumbers(convertTotoNumbersToGroupPattern(currentDrawing.copyOf()))
 
                         patternsCache.merge(groupPattern, 1, Int::plus)
 
-                        totoPredict.handleNextGroupPattern(groupPattern.pattern, currentDrawingIndex)
+                        totoPredict.handleNextGroupPattern(groupPattern.numbers, currentDrawingIndex)
 
                         currentDrawing.clear()
 
@@ -136,7 +136,7 @@ class TotoGroupPatternStats(
             throw IllegalArgumentException("Invalid Toto Group Strategy!")
 
         val anyInvalidPatterns = patternsCache.keys.any { pattern ->
-            pattern.pattern.any { item ->
+            pattern.numbers.any { item ->
                 item != 0 && item != 1 && item != 2 && item != 3 && item != 4
             }
         }
@@ -171,7 +171,7 @@ class TotoGroupPatternStats(
      */
     private fun sortTotoGroupPatternFrequencies() {
         val sortedOccurrences = patternsCache.keys.toList()
-        val sortedFrequencies = mutableMapOf<TotoPattern, MutableList<TotoFrequency>>()
+        val sortedFrequencies = mutableMapOf<model.TotoNumbers, MutableList<TotoFrequency>>()
 
         sortedOccurrences.forEach { pattern ->
             frequenciesCache[pattern]?.let { frequencies ->

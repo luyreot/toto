@@ -8,7 +8,7 @@ import model.groupStrategies
 
 class TotoNextDrawing(
     private val totoType: TotoType,
-    private val totoNumbers: TotoNumbers,
+    private val totoNumbers: TotoDrawnNumbers,
     private val totoNumberStats: TotoNumberStats,
     private val totoOddEvenPatternStats: TotoOddEvenPatternStats,
     private val totoOddEvenPatternPredict: TotoOddEvenPatternPredict,

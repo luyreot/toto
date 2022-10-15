@@ -51,20 +51,20 @@ import model.*
  */
 class TotoGroupPatternDeltaStats(
     private val totoType: TotoType,
-    private val totoNumbers: TotoNumbers,
+    private val totoNumbers: TotoDrawnNumbers,
     private val totoPredict: TotoGroupPatternDeltaPredict,
     private val fromYear: Int? = null
 ) {
 
-    val patterns: Map<TotoPattern, Int>
+    val patterns: Map<model.TotoNumbers, Int>
         get() = patternsCache
 
-    private val patternsCache = mutableMapOf<TotoPattern, Int>()
+    private val patternsCache = mutableMapOf<model.TotoNumbers, Int>()
 
-    val frequencies: Map<TotoPattern, List<TotoFrequency>>
+    val frequencies: Map<model.TotoNumbers, List<TotoFrequency>>
         get() = frequenciesCache
 
-    private val frequenciesCache = mutableMapOf<TotoPattern, MutableList<TotoFrequency>>()
+    private val frequenciesCache = mutableMapOf<model.TotoNumbers, MutableList<TotoFrequency>>()
 
     private val groupStrategyMethod = groupStrategies[TotoGroupStrategy.DELTA_SUBTRACT] as? (Int, Int) -> Int
 
@@ -79,7 +79,7 @@ class TotoGroupPatternDeltaStats(
             .let { sortedTotoNumbers ->
                 val currentDrawing = IntArray(totoType.drawingSize)
                 var currentDrawingIndex = 0
-                val lastTotoPatternOccurrenceMap = mutableMapOf<TotoPattern, Int>()
+                val lastTotoPatternOccurrenceMap = mutableMapOf<model.TotoNumbers, Int>()
 
                 sortedTotoNumbers.forEach { totoNumber ->
                     if (fromYear != null && totoNumber.year < fromYear) {
@@ -91,11 +91,11 @@ class TotoGroupPatternDeltaStats(
                     if (totoNumber.position == totoType.drawingSize - 1) {
                         currentDrawingIndex += 1
 
-                        val groupPattern = TotoPattern(convertTotoNumbersToGroupPatternDelta(currentDrawing.copyOf()))
+                        val groupPattern = TotoNumbers(convertTotoNumbersToGroupPatternDelta(currentDrawing.copyOf()))
 
                         patternsCache.merge(groupPattern, 1, Int::plus)
 
-                        totoPredict.handleNextGroupDeltaPattern(groupPattern.pattern, currentDrawingIndex)
+                        totoPredict.handleNextGroupDeltaPattern(groupPattern.numbers, currentDrawingIndex)
 
                         currentDrawing.clear()
 

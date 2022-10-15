@@ -8,7 +8,7 @@ class TotoStats(
     private val fromYear: Int? = null
 ) {
 
-    val totoNumbers = TotoNumbers(totoType)
+    val totoNumbers = TotoDrawnNumbers(totoType)
 
     val totoNumberStats = TotoNumberStats(totoType, totoNumbers, fromYear)
 

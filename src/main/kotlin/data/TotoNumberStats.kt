@@ -12,7 +12,7 @@ import model.TotoType
  */
 class TotoNumberStats(
     private val totoType: TotoType,
-    private val totoNumbers: TotoNumbers,
+    private val totoNumbers: TotoDrawnNumbers,
     private val fromYear: Int? = null
 ) {
 
