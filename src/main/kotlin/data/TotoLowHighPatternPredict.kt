@@ -37,14 +37,6 @@ class TotoLowHighPatternPredict(
             return
         }
 
-        // Handle second pattern
-        if (drawingIndex == 2) {
-            pattern.forEachIndexed { index, value ->
-                nextLowHighPattern[index] = (nextLowHighPattern[index] + value).div(drawingIndex).roundToInt().toFloat()
-            }
-            return
-        }
-
         /*
         var didCorrectlyPredictPattern = true
         nextLowHighPattern.map { it.roundToInt() }.forEachIndexed { index, item ->
@@ -67,8 +59,8 @@ class TotoLowHighPatternPredict(
                 // We are getting 1 but we are predicting 0
                 value > nextLowHighPattern[index].roundToInt() -> {
                     nextLowHighPattern[index] = nextLowHighPattern[index] + correctPatternUpwards
-                    if (nextLowHighPattern[index] > 1) {
-                        nextLowHighPattern[index] = 1f
+                    if (nextLowHighPattern[index] > 1.49) {
+                        nextLowHighPattern[index] = 1.49f
                     }
                 }
                 // We are getting 0 but we are predicting 1
@@ -83,8 +75,6 @@ class TotoLowHighPatternPredict(
 //                    correctlyPredictedPatternPart++
                 }
             }
-
-            nextLowHighPattern[index] = ((nextLowHighPattern[index] * (drawingIndex - 1)) + value).div(drawingIndex)
         }
     }
 
