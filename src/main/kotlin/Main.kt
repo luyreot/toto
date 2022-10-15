@@ -12,7 +12,7 @@ object Main {
     fun main(args: Array<String>) {
         println("=== MAIN START ===")
 
-        //fetchNewDrawings()
+//        fetchNewDrawings()
 
         TotoStats(TotoType.D_6X49).apply {
             loadTotoNumbers()
@@ -27,8 +27,9 @@ object Main {
                 thread.join()
             }
 
-            //testOddEventLowHighPredictionAlgo()
-            //testGroupPredictionAlgo()
+//            testOddEventLowHighPredictionAlgo()
+//            testGroupPredictionAlgo()
+//            testGroupPredictionDeltaAlgo()
 
             predictNextDrawing()
 

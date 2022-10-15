@@ -52,6 +52,7 @@ import model.*
 class TotoGroupPatternDeltaStats(
     private val totoType: TotoType,
     private val totoNumbers: TotoNumbers,
+    private val totoPredict: TotoGroupPatternDeltaPredict,
     private val fromYear: Int? = null
 ) {
 
@@ -94,7 +95,7 @@ class TotoGroupPatternDeltaStats(
 
                         patternsCache.merge(groupPattern, 1, Int::plus)
 
-                        // Predict algo call
+                        totoPredict.handleNextGroupDeltaPattern(groupPattern.pattern, currentDrawingIndex)
 
                         currentDrawing.clear()
 
@@ -142,6 +143,8 @@ class TotoGroupPatternDeltaStats(
                     }
                 }
             }
+
+        totoPredict.normalizePrediction()
     }
 
     private fun convertTotoNumbersToGroupPatternDelta(

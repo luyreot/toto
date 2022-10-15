@@ -3,7 +3,7 @@ package data
 import model.TotoType
 import kotlin.math.roundToInt
 
-class TotoGroupPatternPredict(
+class TotoGroupPatternDeltaPredict(
     private val totoType: TotoType,
     private val correctPatternUpwards: Float = CORRECT_UPWARDS_VALUE,
     private val correctPatternDownwards: Float = CORRECT_DOWNWARDS_VALUE
@@ -20,12 +20,7 @@ class TotoGroupPatternPredict(
         }
     }
 
-    /**
-     * Check if the our next group pattern is actually the next pattern.
-     * Correct if any of the indexes are not correct.
-     * Re-calculate our next group pattern.
-     */
-    fun handleNextGroupPattern(pattern: IntArray, drawingIndex: Int) {
+    fun handleNextGroupDeltaPattern(pattern: IntArray, drawingIndex: Int) {
         if (pattern.size != totoType.drawingSize)
             throw IllegalArgumentException("There is something wrong with the group pattern!")
 
@@ -33,14 +28,6 @@ class TotoGroupPatternPredict(
         if (nextGroupPattern.all { index -> index == PATTERN_DEFAULT_VALUE }) {
             pattern.forEachIndexed { index, value ->
                 nextGroupPattern[index] = value.toFloat()
-            }
-            return
-        }
-
-        // Handle second pattern
-        if (drawingIndex == 2) {
-            pattern.forEachIndexed { index, value ->
-                nextGroupPattern[index] = (nextGroupPattern[index] + value).div(drawingIndex).roundToInt().toFloat()
             }
             return
         }
@@ -61,25 +48,18 @@ class TotoGroupPatternPredict(
         }
         */
 
-        // Check and correct whether our next pattern is the one we are getting as a parameter
+        // Handle subsequent patterns
         pattern.forEachIndexed { index, value ->
             when {
                 // We are getting a number that is higher than the prediction
                 value > nextGroupPattern[index].roundToInt() -> {
-                    //nextGroupPattern[index] = nextGroupPattern[index] - correctPatternUpwards
-
-                    // Assuming we are using DIVIDE_BY_10
-                    if (nextGroupPattern[index] > 4.49) {
-                        nextGroupPattern[index] = 4.49f
-                    }
+                    nextGroupPattern[index] = nextGroupPattern[index] + correctPatternUpwards
                 }
                 // We are getting a number that is lower than the prediction
                 value < nextGroupPattern[index].roundToInt() -> {
-                    //nextGroupPattern[index] = nextGroupPattern[index] - correctPatternDownwards
-
-                    // Assuming we are using DIVIDE_BY_10
-                    if (nextGroupPattern[index] < 0) {
-                        nextGroupPattern[index] = 0f
+                    nextGroupPattern[index] = nextGroupPattern[index] - correctPatternUpwards
+                    if (nextGroupPattern[index] < 0.5f) {
+                        nextGroupPattern[index] = 0.5f
                     }
                 }
                 else -> {
@@ -87,8 +67,6 @@ class TotoGroupPatternPredict(
 //                    correctlyPredictedPatternPart++
                 }
             }
-
-            nextGroupPattern[index] = ((nextGroupPattern[index] * (drawingIndex - 1)) + value).div(drawingIndex)
         }
     }
 

@@ -6,13 +6,13 @@ import kotlin.math.roundToInt
 class TotoOddEvenPatternPredict(
     private val totoType: TotoType,
     private val correctPatternUpwards: Float = CORRECT_UPWARDS_VALUE,
-    private val correctPatternDownwards: Float = CORRECT_DOWNWARDS_VALUE,
+    private val correctPatternDownwards: Float = CORRECT_DOWNWARDS_VALUE
 ) {
 
     val nextOddEvenPattern = FloatArray(totoType.drawingSize)
 
-    //var correctlyPredictedPatternPart: Int = 0
-    //var correctlyPredictedPatternFull: Int = 0
+//    var correctlyPredictedPatternPart: Int = 0
+//    var correctlyPredictedPatternFull: Int = 0
 
     init {
         for (i in 0 until totoType.drawingSize) {
@@ -80,7 +80,7 @@ class TotoOddEvenPatternPredict(
                 }
                 else -> {
                     // Value correctly predicted
-                    //correctlyPredictedPatternPart++
+//                    correctlyPredictedPatternPart++
                 }
             }
 
