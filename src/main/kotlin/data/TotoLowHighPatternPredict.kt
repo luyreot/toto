@@ -59,14 +59,14 @@ class TotoLowHighPatternPredict(
                 // We are getting 1 but we are predicting 0
                 value > nextLowHighPattern[index].roundToInt() -> {
                     nextLowHighPattern[index] = nextLowHighPattern[index] + correctPatternUpwards
-                    if (nextLowHighPattern[index] > 1.49) {
+                    if (nextLowHighPattern[index] > 1.49f) {
                         nextLowHighPattern[index] = 1.49f
                     }
                 }
                 // We are getting 0 but we are predicting 1
                 value < nextLowHighPattern[index].roundToInt() -> {
                     nextLowHighPattern[index] = nextLowHighPattern[index] - correctPatternDownwards
-                    if (nextLowHighPattern[index] < 0) {
+                    if (nextLowHighPattern[index] < 0f) {
                         nextLowHighPattern[index] = 0f
                     }
                 }

@@ -74,14 +74,14 @@ class TotoStats(
         var highestCorrectlyPredictedPatternFull = 0
         for (u in 0..9) {
             for (d in 0..9) {
-                val predict = TotoLowHighPatternPredict(totoType, up, down)
-                TotoLowHighPatternStats(totoType, totoNumbers, predict).apply {
-                    calculateTotoLowHighPatternStats()
+                val predict = TotoOddEvenPatternPredict(totoType, up, down)
+                TotoOddEvenPatternStats(totoType, totoNumbers, predict).apply {
+                    calculateTotoOddEvenPatternStats()
 
                     println("UP - $up, DOWN - $down")
                     println("correctlyPredictedPatternPart - ${predict.correctlyPredictedPatternPart}")
                     println("correctlyPredictedPatternFull - ${predict.correctlyPredictedPatternFull}")
-                    println("nextLowHighPattern - ${predict.nextLowHighPattern.map { it }}")
+                    println("nextLowHighPattern - ${predict.nextOddEvenPattern.map { it }}")
                     println("--------")
                 }
 

@@ -37,14 +37,6 @@ class TotoOddEvenPatternPredict(
             return
         }
 
-        // Handle second pattern
-        if (drawingIndex == 2) {
-            pattern.forEachIndexed { index, value ->
-                nextOddEvenPattern[index] = (nextOddEvenPattern[index] + value).div(drawingIndex).roundToInt().toFloat()
-            }
-            return
-        }
-
         /*
         var didCorrectlyPredictPattern = true
         nextOddEvenPattern.map { it.roundToInt() }.forEachIndexed { index, item ->
@@ -67,14 +59,14 @@ class TotoOddEvenPatternPredict(
                 // We are getting 1 but we are predicting 0
                 value > nextOddEvenPattern[index].roundToInt() -> {
                     nextOddEvenPattern[index] = nextOddEvenPattern[index] + correctPatternUpwards
-                    if (nextOddEvenPattern[index] > 1) {
+                    if (nextOddEvenPattern[index] > 1.49f) {
                         nextOddEvenPattern[index] = 1f
                     }
                 }
                 // We are getting 0 but we are predicting 1
                 value < nextOddEvenPattern[index].roundToInt() -> {
                     nextOddEvenPattern[index] = nextOddEvenPattern[index] - correctPatternDownwards
-                    if (nextOddEvenPattern[index] < 0) {
+                    if (nextOddEvenPattern[index] < 0f) {
                         nextOddEvenPattern[index] = 0f
                     }
                 }
@@ -83,8 +75,6 @@ class TotoOddEvenPatternPredict(
 //                    correctlyPredictedPatternPart++
                 }
             }
-
-            nextOddEvenPattern[index] = ((nextOddEvenPattern[index] * (drawingIndex - 1)) + value).div(drawingIndex)
         }
     }
 
