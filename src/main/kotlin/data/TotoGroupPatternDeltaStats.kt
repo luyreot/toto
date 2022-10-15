@@ -90,9 +90,7 @@ class TotoGroupPatternDeltaStats(
                     if (totoNumber.position == totoType.drawingSize - 1) {
                         currentDrawingIndex += 1
 
-                        val groupPattern = TotoPattern(
-                            pattern = convertTotoNumbersToGroupPatternDelta(currentDrawing.copyOf())
-                        )
+                        val groupPattern = TotoPattern(convertTotoNumbersToGroupPatternDelta(currentDrawing.copyOf()))
 
                         patternsCache.merge(groupPattern, 1, Int::plus)
 
@@ -117,16 +115,14 @@ class TotoGroupPatternDeltaStats(
                                 return@forEach
                             }
 
-                            val doesNewFrequencyExist: Boolean =
-                                frequenciesCache[groupPattern]?.any { it.frequency == newFrequency }
-                                    ?: false
+                            val doesNewFrequencyExist: Boolean = frequenciesCache[groupPattern]?.any { it.frequency == newFrequency }
+                                ?: false
                             if (doesNewFrequencyExist.not()) {
                                 frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
                                 return@forEach
                             }
 
-                            val index: Int =
-                                frequenciesCache[groupPattern]?.indexOfFirst { it.frequency == newFrequency } ?: -1
+                            val index: Int = frequenciesCache[groupPattern]?.indexOfFirst { it.frequency == newFrequency } ?: -1
                             if (index == -1) {
                                 frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
                                 return@forEach

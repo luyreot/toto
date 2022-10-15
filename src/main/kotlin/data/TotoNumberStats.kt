@@ -84,8 +84,7 @@ class TotoNumberStats(
                         }
 
                         // Toto number has already some frequencies
-                        val doesNewFrequencyExist: Boolean =
-                            frequenciesCache[number]?.any { it.frequency == newFrequency } ?: false
+                        val doesNewFrequencyExist: Boolean = frequenciesCache[number]?.any { it.frequency == newFrequency } ?: false
 
                         // Add new frequency to number
                         if (doesNewFrequencyExist.not()) {

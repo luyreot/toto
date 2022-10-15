@@ -87,15 +87,18 @@ class TotoNumbers(
     }
 
     private fun validateTotoNumbers() {
-        if (numbersCache.isEmpty()) throw IllegalArgumentException("Drawings are empty!")
+        if (numbersCache.isEmpty())
+            throw IllegalArgumentException("Drawings are empty!")
 
-        if (numbersCache.any { it.issue == 0 }) throw IllegalArgumentException("There is a zero issue drawing!")
+        if (numbersCache.any { it.issue == 0 })
+            throw IllegalArgumentException("There is a zero issue drawing!")
 
         if (numbersCache.any { it.position > totoType.drawingSize - 1 })
             throw IllegalArgumentException("There is an incorrect position for ${totoType.name}!")
 
         val listSize: Int = numbersCache.size
         val setSize: Int = numbersCache.toSet().size
-        if (listSize != setSize) throw IllegalArgumentException("There is an invalid drawing!")
+        if (listSize != setSize)
+            throw IllegalArgumentException("There is an invalid drawing!")
     }
 }

@@ -47,9 +47,7 @@ class TotoGroupPatternStats(
                     if (totoNumber.position == totoType.drawingSize - 1) {
                         currentDrawingIndex += 1
 
-                        val groupPattern = TotoPattern(
-                            pattern = convertTotoNumbersToGroupPattern(currentDrawing.copyOf())
-                        )
+                        val groupPattern = TotoPattern(convertTotoNumbersToGroupPattern(currentDrawing.copyOf()))
 
                         patternsCache.merge(groupPattern, 1, Int::plus)
 
@@ -74,16 +72,14 @@ class TotoGroupPatternStats(
                                 return@forEach
                             }
 
-                            val doesNewFrequencyExist: Boolean =
-                                frequenciesCache[groupPattern]?.any { it.frequency == newFrequency }
-                                    ?: false
+                            val doesNewFrequencyExist: Boolean = frequenciesCache[groupPattern]?.any { it.frequency == newFrequency }
+                                ?: false
                             if (doesNewFrequencyExist.not()) {
                                 frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
                                 return@forEach
                             }
 
-                            val index: Int =
-                                frequenciesCache[groupPattern]?.indexOfFirst { it.frequency == newFrequency } ?: -1
+                            val index: Int = frequenciesCache[groupPattern]?.indexOfFirst { it.frequency == newFrequency } ?: -1
                             if (index == -1) {
                                 frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
                                 return@forEach
@@ -117,7 +113,8 @@ class TotoGroupPatternStats(
         numbers: IntArray
     ): IntArray {
         for (i in numbers.indices) {
-            numbers[i] = groupStrategyMethod?.invoke(numbers[i]) ?: throw IllegalArgumentException("Group strategy method is null!")
+            numbers[i] = groupStrategyMethod?.invoke(numbers[i])
+                ?: throw IllegalArgumentException("Group strategy method is null!")
         }
 
         return numbers
@@ -143,7 +140,8 @@ class TotoGroupPatternStats(
                 item != 0 && item != 1 && item != 2 && item != 3 && item != 4
             }
         }
-        if (anyInvalidPatterns) throw IllegalArgumentException("Invalid group pattern!")
+        if (anyInvalidPatterns)
+            throw IllegalArgumentException("Invalid group pattern!")
     }
 
     private fun validateTotoGroupPatternFrequencies() {

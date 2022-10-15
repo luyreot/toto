@@ -54,9 +54,7 @@ class TotoLowHighPatternStats(
                         currentDrawingIndex += 1
 
                         // Already got the toto numbers of a single drawing
-                        val lowHighPattern = TotoPattern(
-                            pattern = convertTotoNumbersToLowHighPattern(currentDrawing.copyOf())
-                        )
+                        val lowHighPattern = TotoPattern(convertTotoNumbersToLowHighPattern(currentDrawing.copyOf()))
 
                         // Save the pattern in the map
                         patternsCache.merge(lowHighPattern, 1, Int::plus)
@@ -79,21 +77,18 @@ class TotoLowHighPatternStats(
                             lastTotoPatternOccurrenceMap[lowHighPattern] = currentDrawingIndex
 
                             if (frequenciesCache.containsKey(lowHighPattern).not()) {
-                                frequenciesCache[lowHighPattern] =
-                                    mutableListOf(TotoFrequency(frequency = newFrequency))
+                                frequenciesCache[lowHighPattern] = mutableListOf(TotoFrequency(frequency = newFrequency))
                                 return@forEach
                             }
 
-                            val doesNewFrequencyExist: Boolean =
-                                frequenciesCache[lowHighPattern]?.any { it.frequency == newFrequency }
-                                    ?: false
+                            val doesNewFrequencyExist: Boolean = frequenciesCache[lowHighPattern]?.any { it.frequency == newFrequency }
+                                ?: false
                             if (doesNewFrequencyExist.not()) {
                                 frequenciesCache[lowHighPattern]?.add(TotoFrequency(frequency = newFrequency))
                                 return@forEach
                             }
 
-                            val index: Int =
-                                frequenciesCache[lowHighPattern]?.indexOfFirst { it.frequency == newFrequency } ?: -1
+                            val index: Int = frequenciesCache[lowHighPattern]?.indexOfFirst { it.frequency == newFrequency } ?: -1
                             if (index == -1) {
                                 frequenciesCache[lowHighPattern]?.add(TotoFrequency(frequency = newFrequency))
                                 return@forEach
