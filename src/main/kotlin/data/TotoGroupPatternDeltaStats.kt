@@ -46,4 +46,4 @@ package data
  * This algorithm serves the purpose of lowering the total possible numbers that can occur in a drawing.
  * In the case of 6/49 instead of having a total of 49 different numbers we end up with around 15.
  */
-class TotoGroupPatternDelta
+class TotoGroupPatternDeltaStats

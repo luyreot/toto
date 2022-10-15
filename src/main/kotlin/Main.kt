@@ -10,7 +10,7 @@ object Main {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        println("=== START ===")
+        println("=== MAIN START ===")
 
         //fetchNewDrawings()
 
@@ -34,7 +34,7 @@ object Main {
             println()
         }
 
-        println("=== END ===")
+        println("=== MAIN END ===")
     }
 
     private fun fetchNewDrawings(fetchFromBackupSite: Boolean = false) {

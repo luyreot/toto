@@ -22,6 +22,13 @@ class TotoGroupPatternStats(
 
     private val frequenciesCache = mutableMapOf<TotoPattern, MutableList<TotoFrequency>>()
 
+    private val groupStrategyMethod = groupStrategies[groupStrategy] as (Int) -> Int
+
+    init {
+        if (groupStrategyMethod == null)
+            throw IllegalArgumentException("Group strategy method is null!")
+    }
+
     fun calculateTotoGroupPatternStats() {
         totoNumbers.numbers
             .sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
@@ -110,7 +117,7 @@ class TotoGroupPatternStats(
         numbers: IntArray
     ): IntArray {
         for (i in numbers.indices) {
-            numbers[i] = groupStrategy.method.invoke(numbers[i])
+            numbers[i] = groupStrategyMethod.invoke(numbers[i])
         }
 
         return numbers

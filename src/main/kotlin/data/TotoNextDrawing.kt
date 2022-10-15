@@ -4,6 +4,7 @@ import extensions.sortByValueDescending
 import model.TotoGroupStrategy
 import model.TotoNumber
 import model.TotoType
+import model.groupStrategies
 
 class TotoNextDrawing(
     private val totoType: TotoType,
@@ -23,6 +24,13 @@ class TotoNextDrawing(
     lateinit var nextOddEvenPattern: IntArray
     lateinit var nextLowHighPattern: IntArray
     lateinit var nextGroupPattern: IntArray
+
+    private val groupStrategyMethod = groupStrategies[groupStrategy] as (Int) -> Int
+
+    init {
+        if (groupStrategyMethod == null)
+            throw IllegalArgumentException("Group strategy method is null!")
+    }
 
     fun populateArrays() {
         nextOddEvenPattern = totoOddEvenPatternPredict.nextOddEvenPattern.map { it.toInt() }.toIntArray()
@@ -104,7 +112,7 @@ class TotoNextDrawing(
 
     private fun isHigh(number: Int): Boolean = number > totoType.lowHighMidPoint
 
-    private fun isFromSameGroup(group: Int, number: Int): Boolean = group == groupStrategy.method.invoke(number)
+    private fun isFromSameGroup(group: Int, number: Int): Boolean = group == groupStrategyMethod.invoke(number)
 
     /**
      * Currently works for list size of 2.
