@@ -29,14 +29,6 @@ class TotoLowHighPatternPredict(
         if (pattern.size != totoType.drawingSize)
             throw IllegalArgumentException("There is something wrong with the low high pattern!")
 
-        // Handle first pattern ever
-        if (nextLowHighPattern.all { index -> index == PATTERN_DEFAULT_VALUE }) {
-            pattern.forEachIndexed { index, value ->
-                nextLowHighPattern[index] = value.toFloat()
-            }
-            return
-        }
-
         /*
         var didCorrectlyPredictPattern = true
         nextLowHighPattern.map { it.roundToInt() }.forEachIndexed { index, item ->
@@ -86,7 +78,7 @@ class TotoLowHighPatternPredict(
 
     private companion object {
         const val PATTERN_DEFAULT_VALUE = -1f
-        const val CORRECT_UPWARDS_VALUE = 0f
-        const val CORRECT_DOWNWARDS_VALUE = 0f
+        const val CORRECT_UPWARDS_VALUE = 0.1f
+        const val CORRECT_DOWNWARDS_VALUE = 0.1f
     }
 }

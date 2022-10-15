@@ -68,20 +68,20 @@ class TotoStats(
 
     fun testOddEventLowHighPredictionAlgo() {
         /*
-        var up = 0f
-        var down = 0f
+        var up = 0.1f
+        var down = 0.1f
         var highestCorrectlyPredictedPatternPart = 0
         var highestCorrectlyPredictedPatternFull = 0
         for (u in 0..9) {
             for (d in 0..9) {
-                val predict = TotoOddEvenPatternPredict(totoType, up, down)
-                TotoOddEvenPatternStats(totoType, totoNumbers, predict).apply {
-                    calculateTotoOddEvenPatternStats()
+                val predict = TotoLowHighPatternPredict(totoType, up, down)
+                TotoLowHighPatternStats(totoType, totoNumbers, predict).apply {
+                    calculateTotoLowHighPatternStats()
 
                     println("UP - $up, DOWN - $down")
                     println("correctlyPredictedPatternPart - ${predict.correctlyPredictedPatternPart}")
                     println("correctlyPredictedPatternFull - ${predict.correctlyPredictedPatternFull}")
-                    println("nextLowHighPattern - ${predict.nextOddEvenPattern.map { it }}")
+                    println("nextLowHighPattern - ${predict.nextLowHighPattern.map { it }}")
                     println("--------")
                 }
 
@@ -95,7 +95,7 @@ class TotoStats(
                 down += 0.1f
             }
             up += 0.1f
-            down = 0f
+            down = 0.1f
         }
 
         println("highestCorrectlyPredictedPatternPart - $highestCorrectlyPredictedPatternPart")
