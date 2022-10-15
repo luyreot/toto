@@ -22,7 +22,7 @@ class TotoGroupPatternStats(
 
     private val frequenciesCache = mutableMapOf<TotoPattern, MutableList<TotoFrequency>>()
 
-    private val groupStrategyMethod = groupStrategies[groupStrategy] as (Int) -> Int
+    private val groupStrategyMethod = groupStrategies[groupStrategy] as? (Int) -> Int
 
     init {
         if (groupStrategyMethod == null)
@@ -117,7 +117,7 @@ class TotoGroupPatternStats(
         numbers: IntArray
     ): IntArray {
         for (i in numbers.indices) {
-            numbers[i] = groupStrategyMethod.invoke(numbers[i])
+            numbers[i] = groupStrategyMethod?.invoke(numbers[i]) ?: throw IllegalArgumentException("Group strategy method is null!")
         }
 
         return numbers

@@ -21,7 +21,8 @@ object Main {
                 launchThread { calculateTotoNumberStats() },
                 launchThread { calculateTotoOddEvenPatternStats() },
                 launchThread { calculateTotoLowHighPatternStats() },
-                launchThread { calculateTotoGroupPatternStats() }
+                launchThread { calculateTotoGroupPatternStats() },
+                launchThread { calculateTotoGroupPatternDeltaStats() }
             ).forEach { thread ->
                 thread.join()
             }

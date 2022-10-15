@@ -25,7 +25,7 @@ class TotoNextDrawing(
     lateinit var nextLowHighPattern: IntArray
     lateinit var nextGroupPattern: IntArray
 
-    private val groupStrategyMethod = groupStrategies[groupStrategy] as (Int) -> Int
+    private val groupStrategyMethod = groupStrategies[groupStrategy] as? (Int) -> Int
 
     init {
         if (groupStrategyMethod == null)
@@ -112,7 +112,10 @@ class TotoNextDrawing(
 
     private fun isHigh(number: Int): Boolean = number > totoType.lowHighMidPoint
 
-    private fun isFromSameGroup(group: Int, number: Int): Boolean = group == groupStrategyMethod.invoke(number)
+    private fun isFromSameGroup(
+        group: Int,
+        number: Int
+    ): Boolean = group == groupStrategyMethod?.invoke(number)
 
     /**
      * Currently works for list size of 2.

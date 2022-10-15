@@ -1,5 +1,8 @@
 package data
 
+import extensions.clear
+import model.*
+
 /**
  * Alternative way of handling group patterns for drawings.
  *
@@ -46,4 +49,120 @@ package data
  * This algorithm serves the purpose of lowering the total possible numbers that can occur in a drawing.
  * In the case of 6/49 instead of having a total of 49 different numbers we end up with around 15.
  */
-class TotoGroupPatternDeltaStats
+class TotoGroupPatternDeltaStats(
+    private val totoType: TotoType,
+    private val totoNumbers: TotoNumbers,
+    private val fromYear: Int? = null
+) {
+
+    val patterns: Map<TotoPattern, Int>
+        get() = patternsCache
+
+    private val patternsCache = mutableMapOf<TotoPattern, Int>()
+
+    val frequencies: Map<TotoPattern, List<TotoFrequency>>
+        get() = frequenciesCache
+
+    private val frequenciesCache = mutableMapOf<TotoPattern, MutableList<TotoFrequency>>()
+
+    private val groupStrategyMethod = groupStrategies[TotoGroupStrategy.DELTA_SUBTRACT] as? (Int, Int) -> Int
+
+    init {
+        if (groupStrategyMethod == null)
+            throw IllegalArgumentException("Group strategy method is null!")
+    }
+
+    fun calculateTotoGroupPatternDeltaStats() {
+        totoNumbers.numbers
+            .sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
+            .let { sortedTotoNumbers ->
+                val currentDrawing = IntArray(totoType.drawingSize)
+                var currentDrawingIndex = 0
+                val lastTotoPatternOccurrenceMap = mutableMapOf<TotoPattern, Int>()
+
+                sortedTotoNumbers.forEach { totoNumber ->
+                    if (fromYear != null && totoNumber.year < fromYear) {
+                        return@forEach
+                    }
+
+                    currentDrawing[totoNumber.position] = totoNumber.number
+
+                    if (totoNumber.position == totoType.drawingSize - 1) {
+                        currentDrawingIndex += 1
+
+                        val groupPattern = TotoPattern(
+                            pattern = convertTotoNumbersToGroupPatternDelta(currentDrawing.copyOf())
+                        )
+
+                        patternsCache.merge(groupPattern, 1, Int::plus)
+
+                        // Predict algo call
+
+                        currentDrawing.clear()
+
+                        // Frequencies
+
+                        if (lastTotoPatternOccurrenceMap.containsKey(groupPattern).not()) {
+                            lastTotoPatternOccurrenceMap[groupPattern] = currentDrawingIndex
+                            return@forEach
+                        }
+
+                        lastTotoPatternOccurrenceMap[groupPattern]?.let { lastDrawingIndex ->
+                            val newFrequency = currentDrawingIndex - lastDrawingIndex
+
+                            lastTotoPatternOccurrenceMap[groupPattern] = currentDrawingIndex
+
+                            if (frequenciesCache.containsKey(groupPattern).not()) {
+                                frequenciesCache[groupPattern] = mutableListOf(TotoFrequency(frequency = newFrequency))
+                                return@forEach
+                            }
+
+                            val doesNewFrequencyExist: Boolean =
+                                frequenciesCache[groupPattern]?.any { it.frequency == newFrequency }
+                                    ?: false
+                            if (doesNewFrequencyExist.not()) {
+                                frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
+                                return@forEach
+                            }
+
+                            val index: Int =
+                                frequenciesCache[groupPattern]?.indexOfFirst { it.frequency == newFrequency } ?: -1
+                            if (index == -1) {
+                                frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
+                                return@forEach
+                            }
+
+                            val totoFrequency: TotoFrequency? = frequenciesCache[groupPattern]?.get(index)
+                            if (totoFrequency == null) {
+                                frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
+                                return@forEach
+                            }
+
+                            frequenciesCache[groupPattern]?.set(
+                                index,
+                                totoFrequency.copy(count = totoFrequency.count + 1)
+                            )
+                        }
+                    }
+                }
+            }
+    }
+
+    private fun convertTotoNumbersToGroupPatternDelta(
+        numbers: IntArray
+    ): IntArray {
+        val result = IntArray(numbers.size)
+
+        for (i in numbers.indices) {
+            if (i == 0) {
+                result[i] = numbers[i]
+                continue
+            }
+
+            result[i] = groupStrategyMethod?.invoke(numbers[i], numbers[i - 1])
+                ?: throw IllegalArgumentException("Group strategy method is null!")
+        }
+
+        return result
+    }
+}
