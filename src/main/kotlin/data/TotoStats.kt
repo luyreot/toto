@@ -105,8 +105,8 @@ class TotoStats(
 
     fun testGroupPredictionAlgo() {
         /*
-        var up = 0f
-        var down = 0f
+        var up = 0.1f
+        var down = 0.1f
         var highestCorrectlyPredictedPatternPart = 0
         var highestCorrectlyPredictedPatternFull = 0
         for (u in 0..40) {
@@ -132,7 +132,7 @@ class TotoStats(
                 down += 0.1f
             }
             up += 0.1f
-            down = 0f
+            down = 0.1f
         }
 
         println("highestCorrectlyPredictedPatternPart - $highestCorrectlyPredictedPatternPart")

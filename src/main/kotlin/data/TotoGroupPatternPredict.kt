@@ -37,14 +37,6 @@ class TotoGroupPatternPredict(
             return
         }
 
-        // Handle second pattern
-        if (drawingIndex == 2) {
-            pattern.forEachIndexed { index, value ->
-                nextGroupPattern[index] = (nextGroupPattern[index] + value).div(drawingIndex).roundToInt().toFloat()
-            }
-            return
-        }
-
         /*
         var didCorrectlyPredictPattern = true
         nextGroupPattern.map { it.roundToInt() }.forEachIndexed { index, item ->
@@ -66,20 +58,20 @@ class TotoGroupPatternPredict(
             when {
                 // We are getting a number that is higher than the prediction
                 value > nextGroupPattern[index].roundToInt() -> {
-                    //nextGroupPattern[index] = nextGroupPattern[index] - correctPatternUpwards
-
-                    // Assuming we are using DIVIDE_BY_10
-                    if (nextGroupPattern[index] > 4.49) {
-                        nextGroupPattern[index] = 4.49f
-                    }
-                }
-                // We are getting a number that is lower than the prediction
-                value < nextGroupPattern[index].roundToInt() -> {
-                    //nextGroupPattern[index] = nextGroupPattern[index] - correctPatternDownwards
+                    nextGroupPattern[index] = value - correctPatternUpwards
 
                     // Assuming we are using DIVIDE_BY_10
                     if (nextGroupPattern[index] < 0) {
                         nextGroupPattern[index] = 0f
+                    }
+                }
+                // We are getting a number that is lower than the prediction
+                value < nextGroupPattern[index].roundToInt() -> {
+                    nextGroupPattern[index] = value + correctPatternDownwards
+
+                    // Assuming we are using DIVIDE_BY_10
+                    if (nextGroupPattern[index] > 4.49) {
+                        nextGroupPattern[index] = 4.49f
                     }
                 }
                 else -> {
@@ -100,7 +92,7 @@ class TotoGroupPatternPredict(
 
     private companion object {
         const val PATTERN_DEFAULT_VALUE = -1f
-        const val CORRECT_UPWARDS_VALUE = 0f
-        const val CORRECT_DOWNWARDS_VALUE = 0f
+        const val CORRECT_UPWARDS_VALUE = 0.3f
+        const val CORRECT_DOWNWARDS_VALUE = 0.2f
     }
 }
