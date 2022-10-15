@@ -5,7 +5,7 @@ import model.TotoType
 
 class TotoStats(
     private val totoType: TotoType,
-    private val fromYear: Int
+    private val fromYear: Int? = null
 ) {
 
     val totoNumbers = TotoNumbers(totoType)

@@ -14,7 +14,7 @@ object Main {
 
         //fetchNewDrawings()
 
-        TotoStats(TotoType.D_6X49, 2019).apply {
+        TotoStats(TotoType.D_6X49).apply {
             loadTotoNumbers()
 
             listOf(

@@ -13,7 +13,7 @@ import model.TotoType
 class TotoNumberStats(
     private val totoType: TotoType,
     private val totoNumbers: TotoNumbers,
-    private val fromYear: Int
+    private val fromYear: Int? = null
 ) {
 
     val occurrences: Map<Int, Int>
@@ -46,7 +46,7 @@ class TotoNumberStats(
                 val lastTotoNumberOccurrenceMap = mutableMapOf<Int, Int>()
 
                 sortedTotoNumbers.forEach { totoNumber ->
-                    if (totoNumber.year < fromYear) {
+                    if (fromYear != null && totoNumber.year < fromYear) {
                         return@forEach
                     }
 
