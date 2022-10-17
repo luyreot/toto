@@ -1,10 +1,7 @@
 package data
 
 import extensions.sortByValueDescending
-import model.TotoGroupStrategy
-import model.TotoNumber
-import model.TotoType
-import model.groupStrategies
+import model.*
 
 class TotoNextDrawing(
     private val totoType: TotoType,
@@ -47,7 +44,6 @@ class TotoNextDrawing(
     }
 
     fun predictNextDrawing() {
-        val numberOfResults = 2 // get # different numbers for each slot
         val predictionNumbers = Array<List<Int>>(totoType.drawingSize) { emptyList() }
 
         for (i in 0 until totoType.drawingSize) {
@@ -57,8 +53,7 @@ class TotoNextDrawing(
             predictionNumbers[i] = getPredictedNumbers(
                 isOdd = isOdd,
                 isLow = isLow,
-                group = group,
-                numberOfResults = numberOfResults
+                group = group
             )
         }
 
@@ -81,8 +76,7 @@ class TotoNextDrawing(
     private fun getPredictedNumbers(
         isOdd: Boolean,
         isLow: Boolean,
-        group: Int,
-        numberOfResults: Int
+        group: Int
     ): List<Int> {
         val results = mutableListOf<Int>()
 
@@ -93,17 +87,10 @@ class TotoNextDrawing(
 
             if (isOddEvenCriteriaFulfilled && isLowHighCriteriaFulfilled && isGroupCriteriaFulfilled)
                 results.add(number)
-
-            if (results.size == numberOfResults)
-                return results
         }
 
         if (results.isEmpty())
             throw IllegalArgumentException("Empty number prediction results!")
-
-        // There are only 2 even / odd numbers from group 2 that are high - 26, 28 and 27, 29
-        if (results.size != numberOfResults && (group == 2 && isLow.not()).not())
-            throw IllegalArgumentException("Something is wrong with the number prediction results!")
 
         return results
     }
@@ -117,37 +104,25 @@ class TotoNextDrawing(
         number: Int
     ): Boolean = group == groupStrategyMethod?.invoke(number)
 
-    /**
-     * Currently works for list size of 2.
-     */
-    private fun getPredictionCombinations(appPossibleNumbers: Array<List<Int>>): MutableList<IntArray> {
-        val combinations = mutableListOf<IntArray>()
-        val numberOfCombinations = appPossibleNumbers
-            .map { list -> list.size }
-            .reduce { acc, size -> acc * size } // 2 x 2 x 2 x 2 x 2 x 2 = 64
 
-        for (i in 0 until numberOfCombinations) {
-            combinations.add(IntArray(totoType.drawingSize))
-        }
+    private fun getPredictionCombinations(allPossibleNumbers: Array<List<Int>>): MutableList<IntArray> {
+        val combinations = mutableSetOf<TotoNumbers>()
 
-        appPossibleNumbers.forEachIndexed { arrayIndex, possibleNumbersList ->
-            combinations.forEachIndexed { combinationIndex, combinationArray ->
-                // Must be either 0 or 1
-                val possibleNumberIndex = when (arrayIndex) {
-                    0 -> combinationIndex / 32 % 2
-                    1 -> combinationIndex / 16 % 2
-                    2 -> combinationIndex / 8 % 2
-                    3 -> combinationIndex / 4 % 2
-                    4 -> combinationIndex / 2 % 2
-                    5 -> combinationIndex % 2
-                    else -> 0
-                }
-                combinationArray[arrayIndex] = possibleNumbersList[possibleNumberIndex]
+        val arraySize = allPossibleNumbers.size
+        val array = IntArray(arraySize)
+
+        for (i in allPossibleNumbers.indices) {
+            allPossibleNumbers[i].forEach {
+
             }
         }
 
-        return combinations
+        return combinations.map { it.numbers }.toMutableList()
     }
+
+     private fun generateCombination() {
+
+     }
 
     fun doesDrawingExists(drawing: IntArray): Boolean {
         totoNumbers.numbers
