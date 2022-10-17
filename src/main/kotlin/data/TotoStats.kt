@@ -66,32 +66,101 @@ class TotoStats(
         totoNextDrawing.predictNextDrawing()
     }
 
-    fun testOddEventLowHighPredictionAlgo() {
+    fun testOddEvenPredictionAlgo() {
         /*
         var up = 0.1f
         var down = 0.1f
+        var divisorUp = 2
+        var divisorDown = 2
+        var highestCorrectlyPredictedPatternPart = 0
+        var highestCorrectlyPredictedPatternFull = 0
+        var sUp = 0f
+        var sDown = 0f
+        var sDivisorUp = 0
+        var sDivisorDown = 0
+        for (u in 0..9) {
+            for (d in 0..9) {
+                divisorUp = 2
+                divisorDown = 2
+
+                for (ud in 0..10) {
+                    for (dd in 0..10) {
+                        val predict = TotoOddEvenPatternPredict(totoType, up, down, divisorUp, divisorDown)
+                        TotoOddEvenPatternStats(totoType, totoNumbers, predict).apply {
+                            calculateTotoOddEvenPatternStats()
+
+                            println("UP - $up, DOWN - $down")
+                            println("Div UP - $divisorUp, Div DOWN - $divisorDown")
+                            println("correctlyPredictedPatternPart - ${predict.correctlyPredictedPatternPart}")
+                            println("correctlyPredictedPatternFull - ${predict.correctlyPredictedPatternFull}")
+                            println("nextOddEvenPattern - ${predict.nextOddEvenPattern.map { it }}")
+                            println("--------")
+                        }
+
+                        if (predict.correctlyPredictedPatternPart > highestCorrectlyPredictedPatternPart) {
+                            highestCorrectlyPredictedPatternPart = predict.correctlyPredictedPatternPart
+                        }
+                        if (predict.correctlyPredictedPatternFull > highestCorrectlyPredictedPatternFull) {
+                            highestCorrectlyPredictedPatternFull = predict.correctlyPredictedPatternFull
+                            sUp = up
+                            sDown = down
+                            sDivisorUp = divisorUp
+                            sDivisorDown = divisorDown
+                        }
+                        divisorDown += 1
+                    }
+                    divisorUp += 1
+                    divisorDown = 2
+                }
+                down += 0.1f
+            }
+            up += 0.1f
+            down = 0.1f
+        }
+
+        println("highestCorrectlyPredictedPatternPart - $highestCorrectlyPredictedPatternPart")
+        println("highestCorrectlyPredictedPatternFull - $highestCorrectlyPredictedPatternFull")
+        */
+    }
+
+    fun testLowHighPredictionAlgo() {
+        /*
+        var up = 0.1f
+        var down = 0.1f
+        var divisorUp = 2
+        var divisorDown = 2
         var highestCorrectlyPredictedPatternPart = 0
         var highestCorrectlyPredictedPatternFull = 0
         for (u in 0..9) {
             for (d in 0..9) {
-                val predict = TotoLowHighPatternPredict(totoType, up, down)
-                TotoLowHighPatternStats(totoType, totoNumbers, predict).apply {
-                    calculateTotoLowHighPatternStats()
+                divisorUp = 2
+                divisorDown = 2
 
-                    println("UP - $up, DOWN - $down")
-                    println("correctlyPredictedPatternPart - ${predict.correctlyPredictedPatternPart}")
-                    println("correctlyPredictedPatternFull - ${predict.correctlyPredictedPatternFull}")
-                    println("nextLowHighPattern - ${predict.nextLowHighPattern.map { it }}")
-                    println("--------")
-                }
+                for (ud in 0..10) {
+                    for (dd in 0..10) {
+                        val predict = TotoLowHighPatternPredict(totoType, up, down, divisorUp, divisorDown)
+                        TotoLowHighPatternStats(totoType, totoNumbers, predict).apply {
+                            calculateTotoLowHighPatternStats()
 
-                if (predict.correctlyPredictedPatternPart > highestCorrectlyPredictedPatternPart) {
-                    highestCorrectlyPredictedPatternPart = predict.correctlyPredictedPatternPart
-                }
-                if (predict.correctlyPredictedPatternFull > highestCorrectlyPredictedPatternFull) {
-                    highestCorrectlyPredictedPatternFull = predict.correctlyPredictedPatternFull
-                }
+                            println("UP - $up, DOWN - $down")
+                            println("Div UP - $divisorUp, Div DOWN - $divisorDown")
+                            println("correctlyPredictedPatternPart - ${predict.correctlyPredictedPatternPart}")
+                            println("correctlyPredictedPatternFull - ${predict.correctlyPredictedPatternFull}")
+                            println("nextLowHighPattern - ${predict.nextLowHighPattern.map { it }}")
+                            println("--------")
+                        }
 
+                        if (predict.correctlyPredictedPatternPart > highestCorrectlyPredictedPatternPart) {
+                            highestCorrectlyPredictedPatternPart = predict.correctlyPredictedPatternPart
+                        }
+                        if (predict.correctlyPredictedPatternFull > highestCorrectlyPredictedPatternFull) {
+                            highestCorrectlyPredictedPatternFull = predict.correctlyPredictedPatternFull
+                        }
+                        divisorDown += 1
+                    }
+                    divisorUp += 1
+                    divisorDown = 2
+                }
                 down += 0.1f
             }
             up += 0.1f
@@ -107,28 +176,48 @@ class TotoStats(
         /*
         var up = 0.1f
         var down = 0.1f
+        var divisorUp = 2
+        var divisorDown = 2
         var highestCorrectlyPredictedPatternPart = 0
         var highestCorrectlyPredictedPatternFull = 0
+        var sUp = 0f
+        var sDown = 0f
+        var sDivisorUp = 0
+        var sDivisorDown = 0
         for (u in 0..40) {
             for (d in 0..40) {
-                val predict = TotoGroupPatternPredict(totoType, up, down)
-                TotoGroupPatternStats(totoType, totoNumbers, DIVIDE_BY_10, predict).apply {
-                    calculateTotoGroupPatternStats()
+                divisorUp = 2
+                divisorDown = 2
 
-                    println("UP - $up, DOWN - $down")
-                    println("correctlyPredictedPatternPart - ${predict.correctlyPredictedPatternPart}")
-                    println("correctlyPredictedPatternFull - ${predict.correctlyPredictedPatternFull}")
-                    println("nextGroupPattern - ${predict.nextGroupPattern.map { it }}")
-                    println("--------")
-                }
+                for (ud in 0..10) {
+                    for (dd in 0..10) {
+                        val predict = TotoGroupPatternPredict(totoType, up, down, divisorUp, divisorDown)
+                        TotoGroupPatternStats(totoType, totoNumbers, DIVIDE_BY_10, predict).apply {
+                            calculateTotoGroupPatternStats()
 
-                if (predict.correctlyPredictedPatternPart > highestCorrectlyPredictedPatternPart) {
-                    highestCorrectlyPredictedPatternPart = predict.correctlyPredictedPatternPart
-                }
-                if (predict.correctlyPredictedPatternFull > highestCorrectlyPredictedPatternFull) {
-                    highestCorrectlyPredictedPatternFull = predict.correctlyPredictedPatternFull
-                }
+                            println("UP - $up, DOWN - $down")
+                            println("Div UP - $divisorUp, Div DOWN - $divisorDown")
+                            println("correctlyPredictedPatternPart - ${predict.correctlyPredictedPatternPart}")
+                            println("correctlyPredictedPatternFull - ${predict.correctlyPredictedPatternFull}")
+                            println("nextGroupPattern - ${predict.nextGroupPattern.map { it }}")
+                            println("--------")
+                        }
 
+                        if (predict.correctlyPredictedPatternPart > highestCorrectlyPredictedPatternPart) {
+                            highestCorrectlyPredictedPatternPart = predict.correctlyPredictedPatternPart
+                        }
+                        if (predict.correctlyPredictedPatternFull > highestCorrectlyPredictedPatternFull) {
+                            highestCorrectlyPredictedPatternFull = predict.correctlyPredictedPatternFull
+                            sUp = up
+                            sDown = down
+                            sDivisorUp = divisorUp
+                            sDivisorDown = divisorDown
+                        }
+                        divisorDown += 1
+                    }
+                    divisorUp += 1
+                    divisorDown = 2
+                }
                 down += 0.1f
             }
             up += 0.1f

@@ -56,10 +56,14 @@ class TotoLowHighPatternStats(
                         // Already got the toto numbers of a single drawing
                         val lowHighPattern = TotoNumbers(convertTotoNumbersToLowHighPattern(currentDrawing.copyOf()))
 
+                        totoPredict.handleNextLowHighPattern(
+                            lowHighPattern.numbers,
+                            currentDrawingIndex,
+                            didLowHighPatternOccurMoreThanAverage(lowHighPattern)
+                        )
+
                         // Save the pattern in the map
                         patternsCache.merge(lowHighPattern, 1, Int::plus)
-
-                        totoPredict.handleNextLowHighPattern(lowHighPattern.numbers, currentDrawingIndex)
 
                         // Reset the tmp array for the next toto drawing
                         currentDrawing.clear()
@@ -127,6 +131,9 @@ class TotoLowHighPatternStats(
 
         return numbers
     }
+
+    private fun didLowHighPatternOccurMoreThanAverage(pattern: TotoNumbers): Boolean =
+        patternsCache[pattern]?.let { it > patternsCache.values.sum() / patternsCache.size } ?: false
 
     private fun validateTotoLowHighPatternOccurrences() {
         // Size of the toto numbers should be the same as the total sum of the patterns

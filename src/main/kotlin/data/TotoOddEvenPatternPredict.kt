@@ -6,7 +6,9 @@ import kotlin.math.roundToInt
 class TotoOddEvenPatternPredict(
     private val totoType: TotoType,
     private val correctPatternUpwards: Float = CORRECT_UPWARDS_VALUE,
-    private val correctPatternDownwards: Float = CORRECT_DOWNWARDS_VALUE
+    private val correctPatternDownwards: Float = CORRECT_DOWNWARDS_VALUE,
+    private val averageDivisorUpwards: Int = AVERAGE_DIVISOR_UPWARDS_VALUE,
+    private val averageDivisorDownwards: Int = AVERAGE_DIVISOR_DOWNWARDS_VALUE
 ) {
 
     val nextOddEvenPattern = FloatArray(totoType.drawingSize)
@@ -25,7 +27,7 @@ class TotoOddEvenPatternPredict(
      * Correct if any of the indexes are not correct.
      * Re-calculate our next odd even pattern.
      */
-    fun handleNextOddEvenPattern(pattern: IntArray, drawingIndex: Int) {
+    fun handleNextOddEvenPattern(pattern: IntArray, drawingIndex: Int, occurredMoreThanAverage: Boolean) {
         if (pattern.size != totoType.drawingSize)
             throw IllegalArgumentException("There is something wrong with the odd even pattern!")
 
@@ -58,13 +60,22 @@ class TotoOddEvenPatternPredict(
             when {
                 // We are getting 1 but we are predicting 0
                 value > nextOddEvenPattern[index].roundToInt() -> {
-                    nextOddEvenPattern[index] = nextOddEvenPattern[index] + correctPatternUpwards
+                    nextOddEvenPattern[index] = nextOddEvenPattern[index] + if (occurredMoreThanAverage)
+                        correctPatternUpwards
+                    else
+                        correctPatternUpwards / averageDivisorUpwards
+
                     if (nextOddEvenPattern[index] > 1.49f) {
                         nextOddEvenPattern[index] = 1f
                     }
                 }
                 // We are getting 0 but we are predicting 1
                 value < nextOddEvenPattern[index].roundToInt() -> {
+                    nextOddEvenPattern[index] = nextOddEvenPattern[index] - if (occurredMoreThanAverage)
+                        correctPatternDownwards
+                    else
+                        correctPatternDownwards / averageDivisorDownwards
+
                     nextOddEvenPattern[index] = nextOddEvenPattern[index] - correctPatternDownwards
                     if (nextOddEvenPattern[index] < 0f) {
                         nextOddEvenPattern[index] = 0f
@@ -87,6 +98,8 @@ class TotoOddEvenPatternPredict(
     private companion object {
         const val PATTERN_DEFAULT_VALUE = -1f
         const val CORRECT_UPWARDS_VALUE = 0.4f
-        const val CORRECT_DOWNWARDS_VALUE = 0.2f
+        const val CORRECT_DOWNWARDS_VALUE = 0.1f
+        const val AVERAGE_DIVISOR_UPWARDS_VALUE = 5
+        const val AVERAGE_DIVISOR_DOWNWARDS_VALUE = 10
     }
 }

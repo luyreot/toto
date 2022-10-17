@@ -49,9 +49,13 @@ class TotoGroupPatternStats(
 
                         val groupPattern = TotoNumbers(convertTotoNumbersToGroupPattern(currentDrawing.copyOf()))
 
-                        patternsCache.merge(groupPattern, 1, Int::plus)
+                        totoPredict.handleNextGroupPattern(
+                            groupPattern.numbers,
+                            currentDrawingIndex,
+                            didGroupPatternOccurMoreThanAverage(groupPattern)
+                        )
 
-                        totoPredict.handleNextGroupPattern(groupPattern.numbers, currentDrawingIndex)
+                        patternsCache.merge(groupPattern, 1, Int::plus)
 
                         currentDrawing.clear()
 
@@ -119,6 +123,9 @@ class TotoGroupPatternStats(
 
         return numbers
     }
+
+    private fun didGroupPatternOccurMoreThanAverage(pattern: TotoNumbers): Boolean =
+        patternsCache[pattern]?.let { it > patternsCache.values.sum() / patternsCache.size } ?: false
 
     private fun validateTotoGroupPatternOccurrences() {
         // Size of the toto numbers should be the same as the total sum of the patterns

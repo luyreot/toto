@@ -56,10 +56,14 @@ class TotoOddEvenPatternStats(
                         // Already got the toto numbers of a single drawing
                         val oddEvenPattern = TotoNumbers(convertTotoNumbersToOddEvenPattern(currentDrawing.copyOf()))
 
+                        totoPredict.handleNextOddEvenPattern(
+                            oddEvenPattern.numbers,
+                            currentDrawingIndex,
+                            didOddEvenPatternOccurMoreThanAverage(oddEvenPattern)
+                        )
+
                         // Save the pattern in the map
                         patternsCache.merge(oddEvenPattern, 1, Int::plus)
-
-                        totoPredict.handleNextOddEvenPattern(oddEvenPattern.numbers, currentDrawingIndex)
 
                         // Reset the tmp array for the next toto drawing
                         currentDrawing.clear()
@@ -127,6 +131,9 @@ class TotoOddEvenPatternStats(
 
         return numbers
     }
+
+    private fun didOddEvenPatternOccurMoreThanAverage(pattern: TotoNumbers): Boolean =
+        patternsCache[pattern]?.let { it > patternsCache.values.sum() / patternsCache.size } ?: false
 
     private fun validateTotoOddEvenPatternOccurrences() {
         // Size of the toto numbers should be the same as the total sum of the patterns

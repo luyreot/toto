@@ -27,7 +27,8 @@ object Main {
                 thread.join()
             }
 
-//            testOddEventLowHighPredictionAlgo()
+//            testOddEvenPredictionAlgo()
+//            testLowHighPredictionAlgo()
 //            testGroupPredictionAlgo()
 //            testGroupPredictionDeltaAlgo()
 

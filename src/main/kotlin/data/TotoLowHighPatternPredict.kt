@@ -6,7 +6,9 @@ import kotlin.math.roundToInt
 class TotoLowHighPatternPredict(
     private val totoType: TotoType,
     private val correctPatternUpwards: Float = CORRECT_UPWARDS_VALUE,
-    private val correctPatternDownwards: Float = CORRECT_DOWNWARDS_VALUE
+    private val correctPatternDownwards: Float = CORRECT_DOWNWARDS_VALUE,
+    private val averageDivisorUpwards: Int = AVERAGE_DIVISOR_UPWARDS_VALUE,
+    private val averageDivisorDownwards: Int = AVERAGE_DIVISOR_DOWNWARDS_VALUE
 ) {
 
     val nextLowHighPattern = FloatArray(totoType.drawingSize)
@@ -25,7 +27,7 @@ class TotoLowHighPatternPredict(
      * Correct if any of the indexes are not correct.
      * Re-calculate our next low high pattern.
      */
-    fun handleNextLowHighPattern(pattern: IntArray, drawingIndex: Int) {
+    fun handleNextLowHighPattern(pattern: IntArray, drawingIndex: Int, occurredMoreThanAverage: Boolean) {
         if (pattern.size != totoType.drawingSize)
             throw IllegalArgumentException("There is something wrong with the low high pattern!")
 
@@ -50,14 +52,22 @@ class TotoLowHighPatternPredict(
             when {
                 // We are getting 1 but we are predicting 0
                 value > nextLowHighPattern[index].roundToInt() -> {
-                    nextLowHighPattern[index] = nextLowHighPattern[index] + correctPatternUpwards
+                    nextLowHighPattern[index] = nextLowHighPattern[index] + if (occurredMoreThanAverage)
+                        correctPatternUpwards
+                    else
+                        correctPatternUpwards / averageDivisorUpwards
+
                     if (nextLowHighPattern[index] > 1.49f) {
                         nextLowHighPattern[index] = 1.49f
                     }
                 }
                 // We are getting 0 but we are predicting 1
                 value < nextLowHighPattern[index].roundToInt() -> {
-                    nextLowHighPattern[index] = nextLowHighPattern[index] - correctPatternDownwards
+                    nextLowHighPattern[index] = nextLowHighPattern[index] - if (occurredMoreThanAverage)
+                        correctPatternDownwards
+                    else
+                        correctPatternDownwards / averageDivisorDownwards
+
                     if (nextLowHighPattern[index] < 0f) {
                         nextLowHighPattern[index] = 0f
                     }
@@ -78,7 +88,9 @@ class TotoLowHighPatternPredict(
 
     private companion object {
         const val PATTERN_DEFAULT_VALUE = -1f
-        const val CORRECT_UPWARDS_VALUE = 0.1f
-        const val CORRECT_DOWNWARDS_VALUE = 0.1f
+        const val CORRECT_UPWARDS_VALUE = 0.7f
+        const val CORRECT_DOWNWARDS_VALUE = 0.6f
+        const val AVERAGE_DIVISOR_UPWARDS_VALUE = 11
+        const val AVERAGE_DIVISOR_DOWNWARDS_VALUE = 10
     }
 }
