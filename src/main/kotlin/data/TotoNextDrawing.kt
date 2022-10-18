@@ -107,22 +107,35 @@ class TotoNextDrawing(
 
     private fun getPredictionCombinations(allPossibleNumbers: Array<List<Int>>): MutableList<IntArray> {
         val combinations = mutableSetOf<TotoNumbers>()
-
-        val arraySize = allPossibleNumbers.size
-        val array = IntArray(arraySize)
-
-        for (i in allPossibleNumbers.indices) {
-            allPossibleNumbers[i].forEach {
-
-            }
-        }
-
+        generateCombination(0, IntArray(allPossibleNumbers.size), allPossibleNumbers, combinations)
         return combinations.map { it.numbers }.toMutableList()
     }
 
-     private fun generateCombination() {
+    private fun generateCombination(
+        arrayIndex: Int,
+        array: IntArray,
+        input: Array<List<Int>>,
+        output: MutableSet<TotoNumbers>
+    ) {
+        for (i in 0 until input[arrayIndex].size) {
+            if (arrayIndex > 0 && array[arrayIndex - 1] == input[arrayIndex][i]) {
+                continue
+            }
 
-     }
+            array[arrayIndex] = input[arrayIndex][i]
+
+            if (arrayIndex == input.size - 1) {
+                output.add(TotoNumbers(array.copyOf().sortedArray()))
+            } else {
+                generateCombination(
+                    arrayIndex = arrayIndex + 1,
+                    array = array,
+                    input = input,
+                    output = output
+                )
+            }
+        }
+    }
 
     fun doesDrawingExists(drawing: IntArray): Boolean {
         totoNumbers.numbers
