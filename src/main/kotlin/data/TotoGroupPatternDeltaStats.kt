@@ -93,9 +93,9 @@ class TotoGroupPatternDeltaStats(
 
                         val groupPattern = TotoNumbers(convertTotoNumbersToGroupPatternDelta(currentDrawing.copyOf()))
 
-                        patternsCache.merge(groupPattern, 1, Int::plus)
-
                         totoPredict.handleNextGroupDeltaPattern(groupPattern.numbers, currentDrawingIndex)
+
+                        patternsCache.merge(groupPattern, 1, Int::plus)
 
                         currentDrawing.clear()
 
