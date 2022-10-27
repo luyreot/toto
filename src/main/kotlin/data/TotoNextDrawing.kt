@@ -24,6 +24,10 @@ class TotoNextDrawing(
 
     private val groupStrategyMethod = groupStrategies[groupStrategy] as? (Int) -> Int
 
+    private val sortedTotoNumbers = totoNumbers.numbers.sortedWith(
+        compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position }
+    )
+
     init {
         if (groupStrategyMethod == null)
             throw IllegalArgumentException("Group strategy method is null!")
@@ -137,24 +141,20 @@ class TotoNextDrawing(
         }
     }
 
-    fun doesDrawingExists(drawing: IntArray): Boolean {
-        totoNumbers.numbers
-            .sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
-            .let { sortedTotoNumbers ->
-                val currentDrawing = IntArray(totoType.drawingSize)
+    private fun doesDrawingExists(drawing: IntArray): Boolean {
+        val currentDrawing = IntArray(totoType.drawingSize)
 
-                sortedTotoNumbers.forEach { totoNumber ->
-                    currentDrawing[totoNumber.position] = totoNumber.number
-                    if (totoNumber.position == totoType.drawingSize - 1) {
-                        currentDrawing.forEachIndexed { index, number ->
-                            if (drawing[index] != number) {
-                                return@forEach
-                            }
-                        }
-                        return true
+        sortedTotoNumbers.forEach { totoNumber ->
+            currentDrawing[totoNumber.position] = totoNumber.number
+            if (totoNumber.position == totoType.drawingSize - 1) {
+                currentDrawing.forEachIndexed { index, number ->
+                    if (drawing[index] != number) {
+                        return@forEach
                     }
                 }
+                return true
             }
+        }
 
         return false
     }
