@@ -23,7 +23,7 @@ class TotoLowHighPatternPredict(
     }
 
     /**
-     * Check if the our next low high pattern is actually the next pattern.
+     * Check if the next low high pattern is actually the next pattern.
      * Correct if any of the indexes are not correct.
      * Re-calculate our next low high pattern.
      */

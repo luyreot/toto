@@ -18,7 +18,10 @@ object Main {
             loadTotoNumbers()
 
             listOf(
-                launchThread { calculateTotoNumberStats() },
+                launchThread {
+                    calculateTotoNumberStats()
+                    calculateTotoDrawingScoreStats()
+                },
                 launchThread { calculateTotoOddEvenPatternStats() },
                 launchThread { calculateTotoLowHighPatternStats() },
                 launchThread { calculateTotoGroupPatternStats() },

@@ -12,6 +12,8 @@ class TotoStats(
 
     val totoNumberStats = TotoNumberStats(totoType, totoNumbers, fromYear)
 
+    val totoDrawingScoreStats = TotoDrawingScoreStats(totoType, totoNumbers, totoNumberStats)
+
     val totoOddEvenPatternPredict = TotoOddEvenPatternPredict(totoType)
     val totoOddEvenPatternStats = TotoOddEvenPatternStats(totoType, totoNumbers, totoOddEvenPatternPredict, fromYear)
 
@@ -34,7 +36,8 @@ class TotoStats(
         totoLowHighPatternPredict,
         totoGroupPatternStats,
         totoGroupPatternPredict,
-        DIVIDE_BY_10
+        DIVIDE_BY_10,
+        totoDrawingScoreStats
     )
 
     fun loadTotoNumbers(vararg years: Int) {
@@ -43,6 +46,10 @@ class TotoStats(
 
     fun calculateTotoNumberStats() {
         totoNumberStats.calculateStats()
+    }
+
+    fun calculateTotoDrawingScoreStats() {
+        totoDrawingScoreStats.calculateTotoDrawingScoreStats()
     }
 
     fun calculateTotoOddEvenPatternStats() {
