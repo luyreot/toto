@@ -1,5 +1,6 @@
 package data
 
+import extensions.clearAfter
 import extensions.sortByValueDescending
 import model.*
 import util.Helper.doesDrawingExists
@@ -57,7 +58,12 @@ class TotoNextDrawing(
         for (i in 0 until totoType.drawingSize) {
             val isOdd = nextOddEvenPattern[i] == 0
             val isLow = nextLowHighPattern[i] == 0
-            val group = nextGroupPattern[i]
+            val group = when {
+                isLow && nextGroupPattern[i] > 2 -> 2
+                isLow.not() && nextGroupPattern[i] < 2 -> 2
+                else -> nextGroupPattern[i]
+            }
+
             predictionNumbers[i] = getPredictedNumbers(
                 isOdd = isOdd,
                 isLow = isLow,
@@ -132,7 +138,9 @@ class TotoNextDrawing(
         output: MutableSet<TotoNumbers>
     ) {
         for (i in 0 until input[arrayIndex].size) {
-            if (arrayIndex > 0 && array[arrayIndex - 1] == input[arrayIndex][i]) {
+            array.clearAfter(arrayIndex)
+
+            if (arrayIndex > 0 && array.any { it == input[arrayIndex][i] }) {
                 continue
             }
 
