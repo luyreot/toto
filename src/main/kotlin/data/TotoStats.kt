@@ -8,11 +8,11 @@ class TotoStats(
     private val fromYear: Int? = null
 ) {
 
-    val totoNumbers = TotoDrawnNumbers(totoType)
+    val totoNumbers = TotoDrawnNumbers(totoType, fromYear)
 
     val totoNumberStats = TotoNumberStats(totoType, totoNumbers, fromYear)
 
-    val totoDrawingScoreStats = TotoDrawingScoreStats(totoType, totoNumbers, totoNumberStats)
+    val totoDrawingScoreStats = TotoDrawingScoreStats(totoType, totoNumbers, totoNumberStats, fromYear)
 
     val totoOddEvenPatternPredict = TotoOddEvenPatternPredict(totoType)
     val totoOddEvenPatternStats = TotoOddEvenPatternStats(totoType, totoNumbers, totoOddEvenPatternPredict, fromYear)
@@ -42,6 +42,7 @@ class TotoStats(
 
     fun loadTotoNumbers(vararg years: Int) {
         totoNumbers.loadTotoNumbers(*years)
+        totoNumbers.extractDrawings()
     }
 
     fun calculateTotoNumberStats() {

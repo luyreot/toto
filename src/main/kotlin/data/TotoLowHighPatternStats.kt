@@ -1,9 +1,7 @@
 package data
 
-import extensions.clear
 import extensions.sortByValueDescending
 import model.TotoFrequency
-import model.TotoNumber
 import model.TotoNumbers
 import model.TotoType
 
@@ -34,84 +32,67 @@ class TotoLowHighPatternStats(
     private val frequenciesCache = mutableMapOf<TotoNumbers, MutableList<TotoFrequency>>()
 
     fun calculateTotoLowHighPatternStats() {
-        totoNumbers.numbers
-            .sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
-            .let { sortedTotoNumbers ->
-                val currentDrawing = IntArray(totoType.drawingSize)
-                var currentDrawingIndex = 0
-                val lastTotoPatternOccurrenceMap = mutableMapOf<TotoNumbers, Int>()
+        val drawings = if (fromYear == null) totoNumbers.allDrawings else totoNumbers.drawingsSubset
+        val lastTotoPatternOccurrenceMap = mutableMapOf<TotoNumbers, Int>()
 
-                sortedTotoNumbers.forEach { totoNumber ->
-                    if (fromYear != null && totoNumber.year < fromYear) {
-                        return@forEach
-                    }
+        drawings.forEachIndexed { index, totoNumbers ->
+            // Already got the toto numbers of a single drawing
+            val lowHighPattern = TotoNumbers(convertTotoNumbersToLowHighPattern(totoNumbers.numbers.copyOf()))
 
-                    // Fill the array with the numbers corresponding to the individual drawing
-                    currentDrawing[totoNumber.position] = totoNumber.number
+            totoPredict.handleNextLowHighPattern(
+                lowHighPattern.numbers,
+                index,
+                didLowHighPatternOccurMoreThanAverage(lowHighPattern)
+            )
 
-                    // Add the odd even pattern on the last number from the current issue
-                    if (totoNumber.position == totoType.drawingSize - 1) {
-                        currentDrawingIndex += 1
+            // Save the pattern in the map
+            patternsCache.merge(lowHighPattern, 1, Int::plus)
 
-                        // Already got the toto numbers of a single drawing
-                        val lowHighPattern = TotoNumbers(convertTotoNumbersToLowHighPattern(currentDrawing.copyOf()))
+            // Frequencies
 
-                        totoPredict.handleNextLowHighPattern(
-                            lowHighPattern.numbers,
-                            currentDrawingIndex,
-                            didLowHighPatternOccurMoreThanAverage(lowHighPattern)
-                        )
-
-                        // Save the pattern in the map
-                        patternsCache.merge(lowHighPattern, 1, Int::plus)
-
-                        // Reset the tmp array for the next toto drawing
-                        currentDrawing.clear()
-
-                        // Frequencies
-
-                        if (lastTotoPatternOccurrenceMap.containsKey(lowHighPattern).not()) {
-                            lastTotoPatternOccurrenceMap[lowHighPattern] = currentDrawingIndex
-                            return@forEach
-                        }
-
-                        lastTotoPatternOccurrenceMap[lowHighPattern]?.let { lastDrawingIndex ->
-                            val newFrequency = currentDrawingIndex - lastDrawingIndex
-
-                            lastTotoPatternOccurrenceMap[lowHighPattern] = currentDrawingIndex
-
-                            if (frequenciesCache.containsKey(lowHighPattern).not()) {
-                                frequenciesCache[lowHighPattern] = mutableListOf(TotoFrequency(frequency = newFrequency))
-                                return@forEach
-                            }
-
-                            val doesNewFrequencyExist: Boolean = frequenciesCache[lowHighPattern]?.any { it.frequency == newFrequency }
-                                ?: false
-                            if (doesNewFrequencyExist.not()) {
-                                frequenciesCache[lowHighPattern]?.add(TotoFrequency(frequency = newFrequency))
-                                return@forEach
-                            }
-
-                            val index: Int = frequenciesCache[lowHighPattern]?.indexOfFirst { it.frequency == newFrequency } ?: -1
-                            if (index == -1) {
-                                frequenciesCache[lowHighPattern]?.add(TotoFrequency(frequency = newFrequency))
-                                return@forEach
-                            }
-
-                            val totoFrequency: TotoFrequency? = frequenciesCache[lowHighPattern]?.get(index)
-                            if (totoFrequency == null) {
-                                frequenciesCache[lowHighPattern]?.add(TotoFrequency(frequency = newFrequency))
-                                return@forEach
-                            }
-
-                            frequenciesCache[lowHighPattern]?.set(
-                                index,
-                                totoFrequency.copy(count = totoFrequency.count + 1)
-                            )
-                        }
-                    }
-                }
+            if (lastTotoPatternOccurrenceMap.containsKey(lowHighPattern).not()) {
+                lastTotoPatternOccurrenceMap[lowHighPattern] = index
+                return@forEachIndexed
             }
+
+            lastTotoPatternOccurrenceMap[lowHighPattern]?.let { lastDrawingIndex ->
+                val newFrequency = index - lastDrawingIndex
+
+                lastTotoPatternOccurrenceMap[lowHighPattern] = index
+
+                if (frequenciesCache.containsKey(lowHighPattern).not()) {
+                    frequenciesCache[lowHighPattern] = mutableListOf(TotoFrequency(frequency = newFrequency))
+                    return@forEachIndexed
+                }
+
+                val doesNewFrequencyExist: Boolean = frequenciesCache[lowHighPattern]
+                    ?.any { it.frequency == newFrequency }
+                    ?: false
+                if (doesNewFrequencyExist.not()) {
+                    frequenciesCache[lowHighPattern]?.add(TotoFrequency(frequency = newFrequency))
+                    return@forEachIndexed
+                }
+
+                val frequencyIndex: Int = frequenciesCache[lowHighPattern]
+                    ?.indexOfFirst { it.frequency == newFrequency }
+                    ?: -1
+                if (frequencyIndex == -1) {
+                    frequenciesCache[lowHighPattern]?.add(TotoFrequency(frequency = newFrequency))
+                    return@forEachIndexed
+                }
+
+                val totoFrequency: TotoFrequency? = frequenciesCache[lowHighPattern]?.get(frequencyIndex)
+                if (totoFrequency == null) {
+                    frequenciesCache[lowHighPattern]?.add(TotoFrequency(frequency = newFrequency))
+                    return@forEachIndexed
+                }
+
+                frequenciesCache[lowHighPattern]?.set(
+                    frequencyIndex,
+                    totoFrequency.copy(count = totoFrequency.count + 1)
+                )
+            }
+        }
 
         totoPredict.normalizePrediction()
 
@@ -142,16 +123,16 @@ class TotoLowHighPatternStats(
         if (lowHighPatternSize != totoNumberSize)
             throw IllegalArgumentException("Pattern size is incorrect!")
 
-        // No odd/even pattern should have an occurrence of 0
+        // No low/high pattern should have an occurrence of 0
         if (patternsCache.values.any { it == 0 })
             throw IllegalArgumentException("Invalid pattern occurrence value!")
 
-        // All odd/even patterns should contain 0 or 1 values
-        val anyInvalidPatterns = patternsCache.keys.any { oddEvenPattern ->
-            oddEvenPattern.numbers.any { arrayItem -> arrayItem != 0 && arrayItem != 1 }
+        // All low/high patterns should contain 0 or 1 values
+        val anyInvalidPatterns = patternsCache.keys.any { lowHighPattern ->
+            lowHighPattern.numbers.any { arrayItem -> arrayItem != 0 && arrayItem != 1 }
         }
         if (anyInvalidPatterns)
-            throw IllegalArgumentException("Invalid odd/even pattern!")
+            throw IllegalArgumentException("Invalid low/high pattern!")
     }
 
     private fun validateTotoLowHighPatternFrequencies() {

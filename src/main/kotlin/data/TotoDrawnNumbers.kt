@@ -1,6 +1,8 @@
 package data
 
+import extensions.clear
 import model.TotoNumber
+import model.TotoNumbers
 import model.TotoType
 import util.IO
 import util.PATH_TXT_6x49
@@ -9,13 +11,24 @@ import util.PATH_TXT_6x49
  * Holds a list of all drawn numbers.
  */
 class TotoDrawnNumbers(
-    private val totoType: TotoType
+    private val totoType: TotoType,
+    private val fromYear: Int? = null
 ) {
 
     val numbers: List<TotoNumber>
         get() = numbersCache
 
     private val numbersCache = mutableListOf<TotoNumber>()
+
+    val allDrawings: List<TotoNumbers>
+        get() = allDrawingsCache
+
+    private val allDrawingsCache = mutableListOf<TotoNumbers>()
+
+    val drawingsSubset: List<TotoNumbers>
+        get() = drawingsSubsetCache
+
+    private val drawingsSubsetCache = mutableListOf<TotoNumbers>()
 
     fun loadTotoNumbers(
         vararg years: Int
@@ -30,6 +43,26 @@ class TotoDrawnNumbers(
         }
 
         validateTotoNumbers()
+    }
+
+    fun extractDrawings() {
+        numbersCache.sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position }).let { sortedTotoNumbers ->
+            val drawing = IntArray(totoType.drawingSize)
+
+            sortedTotoNumbers.forEach { totoNumber ->
+                drawing[totoNumber.position] = totoNumber.number
+
+                if (totoNumber.position != totoType.drawingSize - 1) return@forEach
+
+                allDrawingsCache.add(TotoNumbers((drawing.clone())))
+
+                if (fromYear != null && totoNumber.year >= fromYear) {
+                    drawingsSubsetCache.add(TotoNumbers((drawing.clone())))
+                }
+
+                drawing.clear()
+            }
+        }
     }
 
     private fun loadAllTotoNumbers() {

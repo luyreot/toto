@@ -3,7 +3,6 @@ package data
 import extensions.clearAfter
 import extensions.sortByValueDescending
 import model.*
-import util.Helper.doesDrawingExists
 import util.Helper.getDrawingScore
 
 class TotoNextDrawing(
@@ -28,10 +27,6 @@ class TotoNextDrawing(
     lateinit var nextGroupPattern: IntArray
 
     private val groupStrategyMethod = groupStrategies[groupStrategy] as? (Int) -> Int
-
-    private val sortedTotoNumbers = totoNumbers.numbers.sortedWith(
-        compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position }
-    )
 
     init {
         if (groupStrategyMethod == null)
@@ -74,10 +69,11 @@ class TotoNextDrawing(
         val numberCombinations: MutableList<IntArray> = getPredictionCombinations(predictionNumbers)
 
         // Remove already existing drawings
+        val drawings = totoNumbers.allDrawings.toMutableSet()
         for (i in numberCombinations.size - 1 downTo 0) {
-            if (doesDrawingExists(totoType, sortedTotoNumbers, numberCombinations[i])) {
-                numberCombinations.removeAt(i)
-            }
+            if (drawings.add(TotoNumbers(numberCombinations[i]))) continue
+
+            numberCombinations.removeAt(i)
         }
 
         // Calculate prediction score
@@ -86,6 +82,7 @@ class TotoNextDrawing(
         }
         predictionCombinationsTopScore.sortByValueDescending()
 
+        // Store top scores that are between the average score and the possible jump in the positive and negative
         predictionCombinationsAverageScore.putAll(
             predictionCombinationsTopScore.filter { entry ->
                 entry.value < totoDrawingScoreStats.averageSore + totoDrawingScoreStats.averageJump &&

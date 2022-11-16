@@ -1,7 +1,5 @@
 package data
 
-import extensions.clear
-import model.TotoNumber
 import model.TotoType
 import util.Helper.getDrawingScore
 import kotlin.math.abs
@@ -24,41 +22,26 @@ class TotoDrawingScoreStats(
     private var jump: Int = 0
 
     fun calculateTotoDrawingScoreStats() {
-        totoNumbers.numbers
-            .sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
-            .let { sortedTotoNumbers ->
-                val currentDrawing = IntArray(totoType.drawingSize)
-                var currentDrawingIndex = 0
-                var totalScore = 0.0
-                var previousScore = 0
+        val drawings = if (fromYear == null) totoNumbers.allDrawings else totoNumbers.drawingsSubset
+        var totalScore = 0.0
+        var previousScore = 0
 
-                sortedTotoNumbers.forEach { totoNumber ->
-                    if (fromYear != null && totoNumber.year < fromYear) {
-                        return@forEach
-                    }
+        drawings.forEachIndexed { index, totoNumbers ->
+            getDrawingScore(totoNumberStats.occurrences, totoNumbers.numbers).let { score ->
+                // Add drawing's score to overall score count
+                totalScore += score
 
-                    currentDrawing[totoNumber.position] = totoNumber.number
-
-                    if (totoNumber.position == totoType.drawingSize - 1) {
-                        currentDrawingIndex += 1
-
-                        currentDrawing.copyOf()
-
-                        getDrawingScore(totoNumberStats.occurrences, currentDrawing).let { score ->
-                            totalScore += score
-
-                            if (currentDrawingIndex > 1) {
-                                jump = abs(score - previousScore)
-                            }
-
-                            previousScore = score
-                        }
-
-                        currentDrawing.clear()
-                    }
+                // Calculate the average jump between two consecutive drawings
+                if (index > 1) {
+                    jump = abs(score - previousScore)
                 }
 
-                score = totalScore.div(currentDrawingIndex).toInt()
+                // Cache the score for next round of calculations
+                previousScore = score
             }
+        }
+
+        // Calculate the average score between all drawings
+        score = totalScore.div(drawings.size).toInt()
     }
 }

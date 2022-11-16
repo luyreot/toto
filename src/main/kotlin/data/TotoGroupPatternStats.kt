@@ -1,6 +1,5 @@
 package data
 
-import extensions.clear
 import extensions.sortByValueDescending
 import model.*
 
@@ -12,15 +11,15 @@ class TotoGroupPatternStats(
     private val fromYear: Int? = null
 ) {
 
-    val patterns: Map<model.TotoNumbers, Int>
+    val patterns: Map<TotoNumbers, Int>
         get() = patternsCache
 
-    private val patternsCache = mutableMapOf<model.TotoNumbers, Int>()
+    private val patternsCache = mutableMapOf<TotoNumbers, Int>()
 
-    val frequencies: Map<model.TotoNumbers, List<TotoFrequency>>
+    val frequencies: Map<TotoNumbers, List<TotoFrequency>>
         get() = frequenciesCache
 
-    private val frequenciesCache = mutableMapOf<model.TotoNumbers, MutableList<TotoFrequency>>()
+    private val frequenciesCache = mutableMapOf<TotoNumbers, MutableList<TotoFrequency>>()
 
     private val groupStrategyMethod = groupStrategies[groupStrategy] as? (Int) -> Int
 
@@ -30,79 +29,65 @@ class TotoGroupPatternStats(
     }
 
     fun calculateTotoGroupPatternStats() {
-        totoNumbers.numbers
-            .sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position })
-            .let { sortedTotoNumbers ->
-                val currentDrawing = IntArray(totoType.drawingSize)
-                var currentDrawingIndex = 0
-                val lastTotoPatternOccurrenceMap = mutableMapOf<model.TotoNumbers, Int>()
+        val drawings = if (fromYear == null) totoNumbers.allDrawings else totoNumbers.drawingsSubset
+        val lastTotoPatternOccurrenceMap = mutableMapOf<TotoNumbers, Int>()
 
-                sortedTotoNumbers.forEach { totoNumber ->
-                    if (fromYear != null && totoNumber.year < fromYear) {
-                        return@forEach
-                    }
+        drawings.forEachIndexed { index, totoNumbers ->
+            val groupPattern = TotoNumbers(convertTotoNumbersToGroupPattern(totoNumbers.numbers.copyOf()))
 
-                    currentDrawing[totoNumber.position] = totoNumber.number
+            totoPredict.handleNextGroupPattern(
+                groupPattern.numbers,
+                index,
+                didGroupPatternOccurMoreThanAverage(groupPattern)
+            )
 
-                    if (totoNumber.position == totoType.drawingSize - 1) {
-                        currentDrawingIndex += 1
+            patternsCache.merge(groupPattern, 1, Int::plus)
 
-                        val groupPattern = TotoNumbers(convertTotoNumbersToGroupPattern(currentDrawing.copyOf()))
+            // Frequencies
 
-                        totoPredict.handleNextGroupPattern(
-                            groupPattern.numbers,
-                            currentDrawingIndex,
-                            didGroupPatternOccurMoreThanAverage(groupPattern)
-                        )
-
-                        patternsCache.merge(groupPattern, 1, Int::plus)
-
-                        currentDrawing.clear()
-
-                        // Frequencies
-
-                        if (lastTotoPatternOccurrenceMap.containsKey(groupPattern).not()) {
-                            lastTotoPatternOccurrenceMap[groupPattern] = currentDrawingIndex
-                            return@forEach
-                        }
-
-                        lastTotoPatternOccurrenceMap[groupPattern]?.let { lastDrawingIndex ->
-                            val newFrequency = currentDrawingIndex - lastDrawingIndex
-
-                            lastTotoPatternOccurrenceMap[groupPattern] = currentDrawingIndex
-
-                            if (frequenciesCache.containsKey(groupPattern).not()) {
-                                frequenciesCache[groupPattern] = mutableListOf(TotoFrequency(frequency = newFrequency))
-                                return@forEach
-                            }
-
-                            val doesNewFrequencyExist: Boolean = frequenciesCache[groupPattern]?.any { it.frequency == newFrequency }
-                                ?: false
-                            if (doesNewFrequencyExist.not()) {
-                                frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
-                                return@forEach
-                            }
-
-                            val index: Int = frequenciesCache[groupPattern]?.indexOfFirst { it.frequency == newFrequency } ?: -1
-                            if (index == -1) {
-                                frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
-                                return@forEach
-                            }
-
-                            val totoFrequency: TotoFrequency? = frequenciesCache[groupPattern]?.get(index)
-                            if (totoFrequency == null) {
-                                frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
-                                return@forEach
-                            }
-
-                            frequenciesCache[groupPattern]?.set(
-                                index,
-                                totoFrequency.copy(count = totoFrequency.count + 1)
-                            )
-                        }
-                    }
-                }
+            if (lastTotoPatternOccurrenceMap.containsKey(groupPattern).not()) {
+                lastTotoPatternOccurrenceMap[groupPattern] = index
+                return@forEachIndexed
             }
+
+            lastTotoPatternOccurrenceMap[groupPattern]?.let { lastDrawingIndex ->
+                val newFrequency = index - lastDrawingIndex
+
+                lastTotoPatternOccurrenceMap[groupPattern] = index
+
+                if (frequenciesCache.containsKey(groupPattern).not()) {
+                    frequenciesCache[groupPattern] = mutableListOf(TotoFrequency(frequency = newFrequency))
+                    return@forEachIndexed
+                }
+
+                val doesNewFrequencyExist: Boolean = frequenciesCache[groupPattern]
+                    ?.any { it.frequency == newFrequency }
+                    ?: false
+                if (doesNewFrequencyExist.not()) {
+                    frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
+                    return@forEachIndexed
+                }
+
+                val frequencyIndex: Int = frequenciesCache[groupPattern]
+                    ?.indexOfFirst { it.frequency == newFrequency }
+                    ?: -1
+                if (frequencyIndex == -1) {
+                    frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
+                    return@forEachIndexed
+                }
+
+                val totoFrequency: TotoFrequency? = frequenciesCache[groupPattern]?.get(frequencyIndex)
+                if (totoFrequency == null) {
+                    frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
+                    return@forEachIndexed
+                }
+
+                frequenciesCache[groupPattern]?.set(
+                    frequencyIndex,
+                    totoFrequency.copy(count = totoFrequency.count + 1)
+                )
+            }
+        }
 
         totoPredict.normalizePrediction()
 
@@ -178,7 +163,7 @@ class TotoGroupPatternStats(
      */
     private fun sortTotoGroupPatternFrequencies() {
         val sortedOccurrences = patternsCache.keys.toList()
-        val sortedFrequencies = mutableMapOf<model.TotoNumbers, MutableList<TotoFrequency>>()
+        val sortedFrequencies = mutableMapOf<TotoNumbers, MutableList<TotoFrequency>>()
 
         sortedOccurrences.forEach { pattern ->
             frequenciesCache[pattern]?.let { frequencies ->

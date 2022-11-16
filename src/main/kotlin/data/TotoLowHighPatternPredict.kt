@@ -31,6 +31,15 @@ class TotoLowHighPatternPredict(
         if (pattern.size != totoType.drawingSize)
             throw IllegalArgumentException("There is something wrong with the low high pattern!")
 
+
+        // Handle first pattern
+        if (nextLowHighPattern.all { index -> index == PATTERN_DEFAULT_VALUE }) {
+            pattern.forEachIndexed { index, value ->
+                nextLowHighPattern[index] = value.toFloat()
+            }
+            return
+        }
+
         /*
         var didCorrectlyPredictPattern = true
         nextLowHighPattern.map { it.roundToInt() }.forEachIndexed { index, item ->
@@ -57,6 +66,7 @@ class TotoLowHighPatternPredict(
                     else
                         correctPatternUpwards / averageDivisorUpwards
 
+                    // Correct for too high values
                     if (nextLowHighPattern[index] > 1.49f) {
                         nextLowHighPattern[index] = 1.49f
                     }
@@ -68,6 +78,7 @@ class TotoLowHighPatternPredict(
                     else
                         correctPatternDownwards / averageDivisorDownwards
 
+                    // Correct for negative values
                     if (nextLowHighPattern[index] < 0f) {
                         nextLowHighPattern[index] = 0f
                     }

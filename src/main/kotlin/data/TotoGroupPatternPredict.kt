@@ -31,7 +31,7 @@ class TotoGroupPatternPredict(
         if (pattern.size != totoType.drawingSize)
             throw IllegalArgumentException("There is something wrong with the group pattern!")
 
-        // Handle first pattern ever
+        // Handle first pattern
         if (nextGroupPattern.all { index -> index == PATTERN_DEFAULT_VALUE }) {
             pattern.forEachIndexed { index, value ->
                 nextGroupPattern[index] = value.toFloat()
@@ -65,7 +65,8 @@ class TotoGroupPatternPredict(
                     else
                         correctPatternUpwards / averageDivisorUpwards
 
-                    // Assuming we are using DIVIDE_BY_10
+                    // Correct for too high values
+                    // TODO Assuming we are using DIVIDE_BY_10
                     if (nextGroupPattern[index] > 4.49) {
                         nextGroupPattern[index] = 4.49f
                     }
@@ -77,7 +78,8 @@ class TotoGroupPatternPredict(
                     else
                         correctPatternDownwards / averageDivisorDownwards
 
-                    // Assuming we are using DIVIDE_BY_10
+                    // Correct for negative values
+                    // TODO Assuming we are using DIVIDE_BY_10
                     if (nextGroupPattern[index] < 0) {
                         nextGroupPattern[index] = 0f
                     }

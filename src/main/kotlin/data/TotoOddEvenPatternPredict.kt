@@ -31,7 +31,7 @@ class TotoOddEvenPatternPredict(
         if (pattern.size != totoType.drawingSize)
             throw IllegalArgumentException("There is something wrong with the odd even pattern!")
 
-        // Handle first pattern ever
+        // Handle first pattern
         if (nextOddEvenPattern.all { index -> index == PATTERN_DEFAULT_VALUE }) {
             pattern.forEachIndexed { index, value ->
                 nextOddEvenPattern[index] = value.toFloat()
@@ -65,6 +65,7 @@ class TotoOddEvenPatternPredict(
                     else
                         correctPatternUpwards / averageDivisorUpwards
 
+                    // Correct for too high values
                     if (nextOddEvenPattern[index] > 1.49f) {
                         nextOddEvenPattern[index] = 1f
                     }
@@ -77,6 +78,8 @@ class TotoOddEvenPatternPredict(
                         correctPatternDownwards / averageDivisorDownwards
 
                     nextOddEvenPattern[index] = nextOddEvenPattern[index] - correctPatternDownwards
+
+                    // Correct for negative values
                     if (nextOddEvenPattern[index] < 0f) {
                         nextOddEvenPattern[index] = 0f
                     }
