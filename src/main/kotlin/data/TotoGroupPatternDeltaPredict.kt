@@ -54,10 +54,15 @@ class TotoGroupPatternDeltaPredict(
                 // We are getting a number that is higher than the prediction
                 value > nextGroupPattern[index].roundToInt() -> {
                     nextGroupPattern[index] = nextGroupPattern[index] + correctPatternUpwards
+                    // Cannot be greater than 49, because this would mean that will exceed the possible number values.
+                    if (nextGroupPattern[index] >= 48.45f) {
+                        nextGroupPattern[index] = 48.49f
+                    }
                 }
                 // We are getting a number that is lower than the prediction
                 value < nextGroupPattern[index].roundToInt() -> {
                     nextGroupPattern[index] = nextGroupPattern[index] - correctPatternDownwards
+                    // Cannot be less than 1. We will round to 1.
                     if (nextGroupPattern[index] < 0.5f) {
                         nextGroupPattern[index] = 0.5f
                     }
