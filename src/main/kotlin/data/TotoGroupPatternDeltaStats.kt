@@ -1,5 +1,6 @@
 package data
 
+import extensions.sortByValueDescending
 import model.*
 
 /**
@@ -130,6 +131,10 @@ class TotoGroupPatternDeltaStats(
         }
 
         totoPredict.normalizePrediction()
+        totoPredict.unwrapPattern()
+
+        sortTotoGroupPatternOccurrences()
+        sortTotoGroupPatternFrequencies()
     }
 
     private fun convertTotoNumbersToGroupPatternDelta(
@@ -148,5 +153,32 @@ class TotoGroupPatternDeltaStats(
         }
 
         return result
+    }
+
+    /**
+     * Sort by how ofter the pattern has appeared.
+     */
+    private fun sortTotoGroupPatternOccurrences() {
+        patternsCache.sortByValueDescending()
+    }
+
+    /**
+     * Sort by the same sort order that is used for the [patternsCache].
+     * See [sortTotoGroupPatternOccurrences].
+     */
+    private fun sortTotoGroupPatternFrequencies() {
+        val sortedOccurrences = patternsCache.keys.toList()
+        val sortedFrequencies = mutableMapOf<TotoNumbers, MutableList<TotoFrequency>>()
+
+        sortedOccurrences.forEach { pattern ->
+            frequenciesCache[pattern]?.let { frequencies ->
+                sortedFrequencies[pattern] = frequencies
+            }
+        }
+
+        frequenciesCache.apply {
+            clear()
+            putAll(sortedFrequencies)
+        }
     }
 }

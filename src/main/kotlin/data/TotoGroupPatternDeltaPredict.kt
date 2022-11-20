@@ -10,6 +10,7 @@ class TotoGroupPatternDeltaPredict(
 ) {
 
     val nextGroupPattern = FloatArray(totoType.drawingSize)
+    val nextUnwrappedGroupPattern = FloatArray(totoType.drawingSize)
 
 //    var correctlyPredictedPatternPart: Int = 0
 //    var correctlyPredictedPatternFull: Int = 0
@@ -81,9 +82,30 @@ class TotoGroupPatternDeltaPredict(
         }
     }
 
+    // TODO create as a TotoGroupStrategy
+    fun unwrapPattern() {
+        for (i in 0 until totoType.drawingSize) {
+            if (i == 0) {
+                nextUnwrappedGroupPattern[i] = nextGroupPattern[i]
+                continue
+            }
+            nextUnwrappedGroupPattern[i] = nextUnwrappedGroupPattern[i - 1] + nextGroupPattern[i]
+        }
+
+    }
+
+    /**
+     * BestPattern(up=1.3000002, down=1.5000002, highestPart=7125, highestFull=1)
+     * BestPattern(up=3.0999992, down=4.9999976, highestPart=7125, highestFull=1)
+     * BestPattern(up=3.0999992, down=5.0999975, highestPart=7125, highestFull=1)
+     * BestPattern(up=3.0999992, down=5.1999974, highestPart=7125, highestFull=1)
+     * BestPattern(up=3.199999, down=5.2999973, highestPart=7125, highestFull=1)
+     * BestPattern(up=3.199999, down=5.399997, highestPart=7125, highestFull=1)
+     * BestPattern(up=3.299999, down=5.599997, highestPart=7125, highestFull=1)
+     */
     private companion object {
         const val PATTERN_DEFAULT_VALUE = -1f
-        const val CORRECT_UPWARDS_VALUE = 0f
-        const val CORRECT_DOWNWARDS_VALUE = 0f
+        const val CORRECT_UPWARDS_VALUE = 3.1f
+        const val CORRECT_DOWNWARDS_VALUE = 5.1f
     }
 }

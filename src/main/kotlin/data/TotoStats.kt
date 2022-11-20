@@ -1,5 +1,6 @@
 package data
 
+import model.BestPatternPredictStats
 import model.TotoGroupStrategy.DIVIDE_BY_10
 import model.TotoType
 
@@ -239,12 +240,13 @@ class TotoStats(
 
     fun testGroupPredictionDeltaAlgo() {
         /*
+        val bestPatterns = mutableListOf<BestPatternPredictStats>()
         var up = 0f
         var down = 0f
         var highestCorrectlyPredictedPatternPart = 0
         var highestCorrectlyPredictedPatternFull = 0
-        for (u in 0..40) {
-            for (d in 0..40) {
+        for (u in 0..490) {
+            for (d in 0..490) {
                 val predict = TotoGroupPatternDeltaPredict(totoType, up, down)
                 TotoGroupPatternDeltaStats(totoType, totoNumbers, predict).apply {
                     calculateTotoGroupPatternDeltaStats()
@@ -258,9 +260,20 @@ class TotoStats(
 
                 if (predict.correctlyPredictedPatternPart > highestCorrectlyPredictedPatternPart) {
                     highestCorrectlyPredictedPatternPart = predict.correctlyPredictedPatternPart
+
+                    bestPatterns.clear()
+                    bestPatterns.add(BestPattern(up, down, highestCorrectlyPredictedPatternPart, highestCorrectlyPredictedPatternFull))
+                } else if (predict.correctlyPredictedPatternPart == highestCorrectlyPredictedPatternPart) {
+                    bestPatterns.add(BestPattern(up, down, highestCorrectlyPredictedPatternPart, highestCorrectlyPredictedPatternFull))
                 }
+
                 if (predict.correctlyPredictedPatternFull > highestCorrectlyPredictedPatternFull) {
                     highestCorrectlyPredictedPatternFull = predict.correctlyPredictedPatternFull
+
+                    bestPatterns.clear()
+                    bestPatterns.add(BestPattern(up, down, highestCorrectlyPredictedPatternPart, highestCorrectlyPredictedPatternFull))
+                } else if (predict.correctlyPredictedPatternFull == highestCorrectlyPredictedPatternFull) {
+                    bestPatterns.add(BestPattern(up, down, highestCorrectlyPredictedPatternPart, highestCorrectlyPredictedPatternFull))
                 }
 
                 down += 0.1f
@@ -271,6 +284,7 @@ class TotoStats(
 
         println("highestCorrectlyPredictedPatternPart - $highestCorrectlyPredictedPatternPart")
         println("highestCorrectlyPredictedPatternFull - $highestCorrectlyPredictedPatternFull")
-        */
+        println()
+//        */
     }
 }
