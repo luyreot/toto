@@ -61,6 +61,11 @@ class TotoGroupPatternDeltaStats(
 
     private val patternsCache = mutableMapOf<TotoNumbers, Int>()
 
+    val patternsGrouped: Map<Int, Map<TotoNumbers, Int>>
+        get() = patternsGroupedCache
+
+    private val patternsGroupedCache = mutableMapOf<Int, MutableMap<TotoNumbers, Int>>()
+
     val frequencies: Map<TotoNumbers, List<TotoFrequency>>
         get() = frequenciesCache
 
@@ -135,6 +140,8 @@ class TotoGroupPatternDeltaStats(
 
         sortTotoGroupPatternOccurrences()
         sortTotoGroupPatternFrequencies()
+
+        groupPatterns()
     }
 
     private fun convertTotoNumbersToGroupPatternDelta(
@@ -179,6 +186,26 @@ class TotoGroupPatternDeltaStats(
         frequenciesCache.apply {
             clear()
             putAll(sortedFrequencies)
+        }
+    }
+
+    private fun groupPatterns() {
+        patternsCache.map { it.key.numbers[0] }.toSet().forEach { mapGroupKey ->
+            val patternsList = patternsCache.keys.filter { it.numbers[0] == mapGroupKey }
+            patternsList.forEach { pattern ->
+                if (pattern.numbers[0] != mapGroupKey) return@forEach
+                if (patternsGroupedCache[mapGroupKey] == null) {
+                    patternsGroupedCache[mapGroupKey] = mutableMapOf()
+                }
+
+                if (patternsGroupedCache[mapGroupKey]?.get(pattern) != null) {
+                    patternsGroupedCache[mapGroupKey]?.apply {
+                        set(pattern, get(pattern)?.plus(1) ?: 1)
+                    }
+                } else {
+                    patternsGroupedCache[mapGroupKey]?.set(pattern, 1)
+                }
+            }
         }
     }
 }
