@@ -28,7 +28,7 @@ package model
  */
 data class TotoNumbers(
     val numbers: IntArray
-) {
+) : CompareDeltaPattern {
 
     override fun equals(
         other: Any?
@@ -41,4 +41,30 @@ data class TotoNumbers(
     }
 
     override fun hashCode(): Int = numbers.contentHashCode()
+
+    override fun compareDeltaPatternTo(other: TotoNumbers): Int {
+        for (i in 1 until numbers.size) {
+            if (numbers[i] == other.numbers[i]) {
+                if (i == numbers.size - 1) {
+                    return 0
+                } else {
+                    continue
+                }
+            }
+
+            if (numbers[i] < other.numbers[i]) return -1
+
+            return 1
+        }
+
+        return 1
+    }
+}
+
+interface CompareDeltaPattern : Comparable<TotoNumbers> {
+
+    // TODO change to be more dynamic - return other methods
+    override fun compareTo(other: TotoNumbers): Int = compareDeltaPatternTo(other)
+
+    fun compareDeltaPatternTo(other: TotoNumbers): Int
 }

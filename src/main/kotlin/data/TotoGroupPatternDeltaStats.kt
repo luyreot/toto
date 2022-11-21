@@ -207,5 +207,15 @@ class TotoGroupPatternDeltaStats(
                 }
             }
         }
+
+        val sorted = patternsGroupedCache.toList().sortedBy { it.first }.toMap()
+        patternsGroupedCache.clear()
+        patternsGroupedCache.putAll(sorted)
+
+        patternsGroupedCache.forEach { (number, patterns) ->
+            val sortedPatterns = patterns.toList().sortedBy { it.first }
+            patterns.clear()
+            patterns.putAll(sortedPatterns)
+        }
     }
 }
