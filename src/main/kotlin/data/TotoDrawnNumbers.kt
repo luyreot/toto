@@ -1,6 +1,7 @@
 package data
 
 import extensions.clear
+import extensions.greaterOrEqual
 import model.TotoNumber
 import model.TotoNumbers
 import model.TotoType
@@ -56,7 +57,7 @@ class TotoDrawnNumbers(
 
                 allDrawingsCache.add(TotoNumbers((drawing.clone())))
 
-                if (fromYear != null && totoNumber.year >= fromYear) {
+                if (totoNumber.year.greaterOrEqual(fromYear, false)) {
                     drawingsSubsetCache.add(TotoNumbers((drawing.clone())))
                 }
 

@@ -1,5 +1,6 @@
 package data
 
+import extensions.greaterOrEqual
 import extensions.sortByValueDescending
 import model.*
 
@@ -115,7 +116,9 @@ class TotoGroupPatternStats(
     private fun validateTotoGroupPatternOccurrences() {
         // Size of the toto numbers should be the same as the total sum of the patterns
         val groupPatternSize = patternsCache.values.sum()
-        val totoNumberSize = totoNumbers.numbers.count { it.position == 0 }
+        val totoNumberSize = totoNumbers.numbers.count {
+            it.position == 0 && it.year.greaterOrEqual(fromYear, true)
+        }
         if (groupPatternSize != totoNumberSize)
             throw IllegalArgumentException("Pattern size is incorrect!")
 

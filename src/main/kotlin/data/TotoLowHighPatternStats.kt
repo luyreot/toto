@@ -1,5 +1,6 @@
 package data
 
+import extensions.greaterOrEqual
 import extensions.sortByValueDescending
 import model.TotoFrequency
 import model.TotoNumbers
@@ -119,7 +120,9 @@ class TotoLowHighPatternStats(
     private fun validateTotoLowHighPatternOccurrences() {
         // Size of the toto numbers should be the same as the total sum of the patterns
         val lowHighPatternSize = patternsCache.values.sum()
-        val totoNumberSize = totoNumbers.numbers.count { it.position == 0 }
+        val totoNumberSize = totoNumbers.numbers.count {
+            it.position == 0 && it.year.greaterOrEqual(fromYear, true)
+        }
         if (lowHighPatternSize != totoNumberSize)
             throw IllegalArgumentException("Pattern size is incorrect!")
 
