@@ -1,11 +1,9 @@
 import crawler.WebCrawler649
 import crawler.WebCrawler649Backup
 import data.TotoStats
-import kotlinx.coroutines.DelicateCoroutinesApi
 import model.TotoType
 import kotlin.concurrent.thread
 
-@DelicateCoroutinesApi
 object Main {
 
     @JvmStatic
