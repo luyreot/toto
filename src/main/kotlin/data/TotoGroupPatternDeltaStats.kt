@@ -144,7 +144,7 @@ class TotoGroupPatternDeltaStats(
         groupPatterns()
     }
 
-    private fun convertTotoNumbersToGroupPatternDelta(
+    fun convertTotoNumbersToGroupPatternDelta(
         numbers: IntArray
     ): IntArray {
         val result = IntArray(numbers.size)
@@ -190,20 +190,31 @@ class TotoGroupPatternDeltaStats(
     }
 
     private fun groupPatterns() {
+        // Iterate over all patterns and create a set from their 0 index value (KEY)
         patternsCache.map { it.key.numbers[0] }.toSet().forEach { mapGroupKey ->
+            // Iterate over all patterns and filter for ones that start with that KEY
             val patternsList = patternsCache.keys.filter { it.numbers[0] == mapGroupKey }
+            // Iterate over that subset
             patternsList.forEach { pattern ->
+                // Small defensive coding if the pattern does not start with the KEY
                 if (pattern.numbers[0] != mapGroupKey) return@forEach
+
+                // Create an empty map for the KEY if it does not exist
                 if (patternsGroupedCache[mapGroupKey] == null) {
                     patternsGroupedCache[mapGroupKey] = mutableMapOf()
                 }
 
+                // Check if the pattern has been already saved against the KEY
+                // If the pattern DOES exist, increment its occurrence value OR set to 1
                 if (patternsGroupedCache[mapGroupKey]?.get(pattern) != null) {
                     patternsGroupedCache[mapGroupKey]?.apply {
-                        set(pattern, get(pattern)?.plus(1) ?: 1)
+                        val currentOccurrenceValue: Int? = get(pattern)?.plus(1)
+                        set(pattern, currentOccurrenceValue ?: 1)
                     }
                 } else {
-                    patternsGroupedCache[mapGroupKey]?.set(pattern, 1)
+                    // If the pattern DOES NOT exist, add it and set its occurrence value to the
+                    // number of occurrences that it already has OR set it to 1
+                    patternsGroupedCache[mapGroupKey]?.set(pattern, patternsCache[pattern] ?: 1)
                 }
             }
         }

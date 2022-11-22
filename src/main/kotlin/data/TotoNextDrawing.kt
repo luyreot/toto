@@ -2,7 +2,10 @@ package data
 
 import extensions.clearAfter
 import extensions.sortByValueDescending
-import model.*
+import model.TotoGroupStrategy
+import model.TotoNumbers
+import model.TotoType
+import model.groupStrategies
 import util.Helper.getDrawingScore
 
 class TotoNextDrawing(
@@ -15,6 +18,8 @@ class TotoNextDrawing(
     private val totoLowHighPatternPredict: TotoLowHighPatternPredict,
     private val totoGroupPatternStats: TotoGroupPatternStats,
     private val totoGroupPatternPredict: TotoGroupPatternPredict,
+    private val totoGroupPatternDeltaStats: TotoGroupPatternDeltaStats,
+    private val totoGroupPatternDeltaPredict: TotoGroupPatternDeltaPredict,
     private val groupStrategy: TotoGroupStrategy,
     private val totoDrawingScoreStats: TotoDrawingScoreStats
 ) {
@@ -68,12 +73,28 @@ class TotoNextDrawing(
 
         val numberCombinations: MutableList<IntArray> = getPredictionCombinations(predictionNumbers)
 
-        // Remove already existing drawings
-        val drawings = totoNumbers.allDrawings.toMutableSet()
+        val drawings = totoNumbers.allDrawings.toSet()
         for (i in numberCombinations.size - 1 downTo 0) {
-            if (drawings.add(TotoNumbers(numberCombinations[i]))) continue
+            // Remove already existing drawings
+            if (drawings.contains(TotoNumbers(numberCombinations[i]))) {
+                numberCombinations.removeAt(i)
+            }
 
-            numberCombinations.removeAt(i)
+            // Remove drawings that have occurred as delta pattern
+            val doesDeltaPatternExist = totoGroupPatternDeltaStats
+                .patterns
+                .keys
+                .contains(
+                    TotoNumbers(
+                        totoGroupPatternDeltaStats
+                            .convertTotoNumbersToGroupPatternDelta(
+                                numberCombinations[i].copyOf()
+                            )
+                    )
+                )
+            if (doesDeltaPatternExist) {
+                numberCombinations.removeAt(i)
+            }
         }
 
         // Calculate prediction score

@@ -1,6 +1,5 @@
 package data
 
-import model.BestPatternPredictStats
 import model.TotoGroupStrategy.DIVIDE_BY_10
 import model.TotoType
 
@@ -37,6 +36,8 @@ class TotoStats(
         totoLowHighPatternPredict,
         totoGroupPatternStats,
         totoGroupPatternPredict,
+        totoGroupPatternDeltaStats,
+        totoGroupPatternDeltaPredict,
         DIVIDE_BY_10,
         totoDrawingScoreStats
     )
