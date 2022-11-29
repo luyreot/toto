@@ -26,9 +26,9 @@ package model
  *
  * The size of the array depends on the toto type - 6x49, 6x42 or 5x35.
  */
-data class TotoNumbers(
-    val numbers: IntArray
-) : CompareDeltaPattern<TotoNumbers> {
+data class TotoNumbersFloat(
+    val numbers: FloatArray
+) : CompareDeltaPattern<TotoNumbersFloat> {
 
     override fun equals(
         other: Any?
@@ -37,12 +37,12 @@ data class TotoNumbers(
 
         javaClass != other?.javaClass -> false
 
-        else -> numbers.contentEquals((other as? TotoNumbers)?.numbers)
+        else -> numbers.contentEquals((other as? TotoNumbersFloat)?.numbers)
     }
 
     override fun hashCode(): Int = numbers.contentHashCode()
 
-    override fun compareDeltaPatternTo(other: TotoNumbers): Int {
+    override fun compareDeltaPatternTo(other: TotoNumbersFloat): Int {
         for (i in 1 until numbers.size) {
             if (numbers[i] == other.numbers[i]) {
                 if (i == numbers.size - 1) {
@@ -59,12 +59,4 @@ data class TotoNumbers(
 
         return 1
     }
-}
-
-interface CompareDeltaPattern<T> : Comparable<T> {
-
-    // TODO change to be more dynamic - return other methods
-    override fun compareTo(other: T): Int = compareDeltaPatternTo(other)
-
-    fun compareDeltaPatternTo(other: T): Int
 }

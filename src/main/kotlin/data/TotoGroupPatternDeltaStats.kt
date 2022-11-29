@@ -71,6 +71,11 @@ class TotoGroupPatternDeltaStats(
 
     private val frequenciesCache = mutableMapOf<TotoNumbers, MutableList<TotoFrequency>>()
 
+    val averageDeltaPatterns: Map<Int, TotoNumbersFloat>
+        get() = averageDeltaPatternsCache
+
+    private val averageDeltaPatternsCache = mutableMapOf<Int, TotoNumbersFloat>()
+
     private val groupStrategyMethod = groupStrategies[TotoGroupStrategy.DELTA_SUBTRACT] as? (Int, Int) -> Int
 
     init {
@@ -142,6 +147,7 @@ class TotoGroupPatternDeltaStats(
         sortTotoGroupPatternFrequencies()
 
         groupPatterns()
+        averagePatterns()
     }
 
     fun convertTotoNumbersToGroupPatternDelta(
@@ -227,6 +233,23 @@ class TotoGroupPatternDeltaStats(
             val sortedPatterns = patterns.toList().sortedBy { it.first }
             patterns.clear()
             patterns.putAll(sortedPatterns)
+        }
+    }
+
+    // TODO: Can produce existing delta pattern
+    // TODO: Hardcoded for 6x49. Optimize
+    private fun averagePatterns() {
+        patternsGroupedCache.forEach { (number, patterns) ->
+            averageDeltaPatternsCache[number] = TotoNumbersFloat(
+                floatArrayOf(
+                    number.toFloat(),
+                    patterns.map { it.key.numbers[1] }.sum().toFloat().div(patterns.size),
+                    patterns.map { it.key.numbers[2] }.sum().toFloat().div(patterns.size),
+                    patterns.map { it.key.numbers[3] }.sum().toFloat().div(patterns.size),
+                    patterns.map { it.key.numbers[4] }.sum().toFloat().div(patterns.size),
+                    patterns.map { it.key.numbers[5] }.sum().toFloat().div(patterns.size)
+                )
+            )
         }
     }
 }
