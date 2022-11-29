@@ -197,13 +197,13 @@ class TotoGroupPatternDeltaStats(
 
     private fun groupPatterns() {
         // Iterate over all patterns and create a set from their 0 index value (KEY)
-        patternsCache.map { it.key.numbers[0] }.toSet().forEach { mapGroupKey ->
+        patternsCache.map { it.key.numbers[0] }.toSet().forEach Pattern@{ mapGroupKey ->
             // Iterate over all patterns and filter for ones that start with that KEY
             val patternsList = patternsCache.keys.filter { it.numbers[0] == mapGroupKey }
             // Iterate over that subset
-            patternsList.forEach { pattern ->
+            patternsList.forEach PatternList@{ pattern ->
                 // Small defensive coding if the pattern does not start with the KEY
-                if (pattern.numbers[0] != mapGroupKey) return@forEach
+                if (pattern.numbers[0] != mapGroupKey) return@PatternList
 
                 // Create an empty map for the KEY if it does not exist
                 if (patternsGroupedCache[mapGroupKey] == null) {
@@ -229,15 +229,15 @@ class TotoGroupPatternDeltaStats(
         patternsGroupedCache.clear()
         patternsGroupedCache.putAll(sorted)
 
-        patternsGroupedCache.forEach { (number, patterns) ->
+        patternsGroupedCache.forEach { (_, patterns) ->
             val sortedPatterns = patterns.toList().sortedBy { it.first }
             patterns.clear()
             patterns.putAll(sortedPatterns)
         }
     }
 
-    // TODO: Can produce existing delta pattern
-    // TODO: Hardcoded for 6x49. Optimize
+    // TODO: Can produce an existing delta pattern
+    // TODO: Hardcoded for 6x49 -> Optimize
     private fun averagePatterns() {
         patternsGroupedCache.forEach { (number, patterns) ->
             averageDeltaPatternsCache[number] = TotoNumbersFloat(
