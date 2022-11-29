@@ -110,6 +110,19 @@ class TotoNextDrawing(
                         entry.value > totoDrawingScoreStats.averageSore - totoDrawingScoreStats.averageJump
             }
         )
+
+        // Get the frequencies into the mix
+        // Start with the toto number stats
+        // 1. Get all predicted drawings
+        // 2. Calculate the frequency of each number based on its previous occurrence
+        // 3. Get that frequency count
+        // 3.1 If that frequency does not exits -> Discard that drawing / Lower its score
+        // 3.2 If that frequency does exist
+        // 3.2.1 If that frequency is above the average frequency for that number -> Increase its score
+        // 3.2.1 If that frequency is lower that the average frequency for that number -> Do not touch the score
+
+
+
     }
 
     private fun getPredictedNumbers(

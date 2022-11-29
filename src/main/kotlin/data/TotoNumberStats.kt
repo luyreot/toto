@@ -25,6 +25,11 @@ class TotoNumberStats(
 
     private val frequenciesCache = mutableMapOf<Int, MutableList<TotoFrequency>>()
 
+    val averageFrequencies: Map<Int, Float>
+        get() = averageFrequenciesCache
+
+    private val averageFrequenciesCache = mutableMapOf<Int, Float>()
+
     /**
      * Calculate number occurrences.
      * Calculate number frequencies.
@@ -98,6 +103,8 @@ class TotoNumberStats(
 
         sortTotoNumberOccurrences()
         sortTotoNumberFrequencies()
+
+        averageFrequencies()
     }
 
     private fun validateTotoNumberOccurrences() {
@@ -149,6 +156,14 @@ class TotoNumberStats(
         frequenciesCache.apply {
             clear()
             putAll(sortedFrequencies)
+        }
+    }
+
+    private fun averageFrequencies() {
+        frequenciesCache.forEach { (number, frequencies) ->
+            val totalCount: Int = frequencies.fold(0) { acc, frequency -> acc + frequency.count }
+            val totalSum: Int = frequencies.fold(0) { acc, frequency -> acc + frequency.frequency * frequency.count }
+            averageFrequenciesCache[number] = totalSum.div(totalCount.toFloat())
         }
     }
 }
