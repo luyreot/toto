@@ -29,6 +29,7 @@ class TotoStats(
     val totoNextDrawing = TotoNextDrawing(
         totoType,
         totoNumbers,
+        fromYear,
         totoNumberStats,
         totoOddEvenPatternStats,
         totoOddEvenPatternPredict,

@@ -27,7 +27,14 @@ class TotoDrawingScoreStats(
         var previousScore = 0
 
         drawings.forEachIndexed { index, totoNumbers ->
-            getDrawingScore(totoNumberStats.occurrences, totoNumbers.numbers).let { score ->
+            getDrawingScore(
+                index,
+                totoNumbers.numbers,
+                totoNumberStats.occurrences,
+                totoNumberStats.frequencies,
+                totoNumberStats.averageFrequencies,
+                drawings
+            ).let { score ->
                 // Add drawing's score to overall score count
                 totalScore += score
 

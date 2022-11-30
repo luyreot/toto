@@ -11,6 +11,7 @@ import util.Helper.getDrawingScore
 class TotoNextDrawing(
     private val totoType: TotoType,
     private val totoNumbers: TotoDrawnNumbers,
+    private val fromYear: Int? = null,
     private val totoNumberStats: TotoNumberStats,
     private val totoOddEvenPatternStats: TotoOddEvenPatternStats,
     private val totoOddEvenPatternPredict: TotoOddEvenPatternPredict,
@@ -73,10 +74,10 @@ class TotoNextDrawing(
 
         val numberCombinations: MutableList<IntArray> = getPredictionCombinations(predictionNumbers)
 
-        val drawings = totoNumbers.allDrawings.toSet()
+        val allDrawings = totoNumbers.allDrawings.toSet()
         for (i in numberCombinations.size - 1 downTo 0) {
             // Remove already existing drawings
-            if (drawings.contains(TotoNumbers(numberCombinations[i]))) {
+            if (allDrawings.contains(TotoNumbers(numberCombinations[i]))) {
                 numberCombinations.removeAt(i)
             }
 
@@ -97,9 +98,18 @@ class TotoNextDrawing(
             }
         }
 
+        val drawings = if (fromYear == null) totoNumbers.allDrawings else totoNumbers.drawingsSubset
+
         // Calculate prediction score
         numberCombinations.forEach { drawing ->
-            predictionCombinationsTopScore[drawing] = getDrawingScore(totoNumberStats.occurrences, drawing)
+            predictionCombinationsTopScore[drawing] = getDrawingScore(
+                drawings.size,
+                drawing,
+                totoNumberStats.occurrences,
+                totoNumberStats.frequencies,
+                totoNumberStats.averageFrequencies,
+                drawings
+            )
         }
         predictionCombinationsTopScore.sortByValueDescending()
 
@@ -110,19 +120,6 @@ class TotoNextDrawing(
                         entry.value > totoDrawingScoreStats.averageSore - totoDrawingScoreStats.averageJump
             }
         )
-
-        // Get the frequencies into the mix
-        // Start with the toto number stats
-        // 1. Get all predicted drawings
-        // 2. Calculate the frequency of each number based on its previous occurrence
-        // 3. Get that frequency count
-        // 3.1 If that frequency does not exits -> Discard that drawing / Lower its score
-        // 3.2 If that frequency does exist
-        // 3.2.1 If that frequency is above the average frequency for that number -> Increase its score
-        // 3.2.1 If that frequency is lower that the average frequency for that number -> Do not touch the score
-
-
-
     }
 
     private fun getPredictedNumbers(
