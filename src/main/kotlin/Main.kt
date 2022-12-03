@@ -22,7 +22,9 @@ object Main {
                 launchThread { calculateTotoOddEvenPatternStats() },
                 launchThread { calculateTotoLowHighPatternStats() },
                 launchThread { calculateTotoGroupPatternStats() },
-                launchThread { calculateTotoGroupPatternDeltaStats() }
+                launchThread { calculateTotoGroupPatternDeltaStats() },
+
+                launchThread { calculateCombinedPatternStats() }
             ).forEach { thread ->
                 thread.join()
             }

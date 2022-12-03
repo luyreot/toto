@@ -61,14 +61,32 @@ class TotoDrawnNumbers(
 
                 if (totoNumber.position != totoType.drawingSize - 1) return@forEach
 
-                allDrawingsCache.add(TotoNumbers((drawing.clone())))
+                allDrawingsCache.add(TotoNumbers(drawing.clone()))
 
                 if (totoNumber.year.greaterOrEqual(fromYear, false)) {
-                    drawingsSubsetCache.add(TotoNumbers((drawing.clone())))
+                    drawingsSubsetCache.add(TotoNumbers(drawing.clone()))
                 }
 
                 drawing.clear()
             }
+        }
+    }
+
+    fun checkForDuplicateDrawings() {
+        val allDrawingsSize = allDrawingsCache.size
+        val allDrawingsSetSize = allDrawingsCache.toSet().size
+        if (allDrawingsSize != allDrawingsSetSize) {
+            println("All > There is at least one duplicate drawing!")
+            printDuplicatedDrawings(allDrawingsCache)
+        }
+
+        if (drawingsSubsetCache.isEmpty()) return
+        val drawingsSubsetSize = drawingsSubsetCache.size
+        val drawingsSubsetSetSize = drawingsSubsetCache.toSet().size
+        if (drawingsSubsetSize != drawingsSubsetSetSize) {
+            println()
+            println("Subset > There is at least one duplicate drawing!")
+            printDuplicatedDrawings(drawingsSubsetCache)
         }
     }
 
@@ -112,5 +130,26 @@ class TotoDrawnNumbers(
         val setSize: Int = numbersCache.toSet().size
         if (listSize != setSize)
             throw IllegalArgumentException("There is an invalid drawing!")
+    }
+
+    private fun printDuplicatedDrawings(drawings: List<TotoNumbers>) {
+        val duplicateDrawings: Set<TotoNumbers> = drawings.groupingBy { it }.eachCount().filter { it.value > 1 }.keys
+        println("${duplicateDrawings.size} duplicated drawings.")
+
+        numbersCache.sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position }).let { sortedTotoNumbers ->
+            val drawingArray = IntArray(totoType.drawingSize)
+
+            sortedTotoNumbers.forEach { totoNumber ->
+                drawingArray[totoNumber.position] = totoNumber.number
+
+                if (totoNumber.position != totoType.drawingSize - 1) return@forEach
+
+                val drawing = TotoNumbers(drawingArray)
+
+                if (duplicateDrawings.contains(drawing).not()) return@forEach
+
+                println("$drawing, year=${totoNumber.year}, issue=${totoNumber.issue}")
+            }
+        }
     }
 }

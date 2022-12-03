@@ -23,6 +23,8 @@ class TotoStats(
     val totoGroupPatternPredict = TotoGroupPatternPredict(totoType)
     val totoGroupPatternStats = TotoGroupPatternStats(totoType, totoNumbers, DIVIDE_BY_10, totoGroupPatternPredict, fromYear)
 
+    val totoCombinedPatternStats = TotoCombinedPatternStats(totoType, totoNumbers, DIVIDE_BY_10, fromYear)
+
     val totoGroupPatternDeltaPredict = TotoGroupPatternDeltaPredict(totoType)
     val totoGroupPatternDeltaStats = TotoGroupPatternDeltaStats(totoType, totoNumbers, totoGroupPatternDeltaPredict, fromYear)
 
@@ -46,6 +48,7 @@ class TotoStats(
     fun loadTotoNumbers() {
         totoNumbers.loadTotoNumbers()
         totoNumbers.extractDrawings()
+        totoNumbers.checkForDuplicateDrawings()
     }
 
     fun calculateTotoNumberStats() {
@@ -66,6 +69,10 @@ class TotoStats(
 
     fun calculateTotoGroupPatternStats() {
         totoGroupPatternStats.calculateTotoGroupPatternStats()
+    }
+
+    fun calculateCombinedPatternStats() {
+        totoCombinedPatternStats.calculateCombinedPatternStats()
     }
 
     fun calculateTotoGroupPatternDeltaStats() {

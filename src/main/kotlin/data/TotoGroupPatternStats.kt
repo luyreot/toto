@@ -3,6 +3,8 @@ package data
 import extensions.greaterOrEqual
 import extensions.sortByValueDescending
 import model.*
+import util.PatternUtils.convertTotoNumbersToGroupPattern
+import util.PatternUtils.didPatternOccurMoreThanAverage
 
 class TotoGroupPatternStats(
     private val totoType: TotoType,
@@ -34,12 +36,14 @@ class TotoGroupPatternStats(
         val lastTotoPatternOccurrenceMap = mutableMapOf<TotoNumbers, Int>()
 
         drawings.forEachIndexed { index, totoNumbers ->
-            val groupPattern = TotoNumbers(convertTotoNumbersToGroupPattern(totoNumbers.numbers.copyOf()))
+            val groupPattern = TotoNumbers(
+                convertTotoNumbersToGroupPattern(totoNumbers.numbers.copyOf(), groupStrategyMethod)
+            )
 
             totoPredict.handleNextGroupPattern(
                 groupPattern.numbers,
                 index,
-                didGroupPatternOccurMoreThanAverage(groupPattern)
+                didPatternOccurMoreThanAverage(patternsCache, groupPattern)
             )
 
             patternsCache.merge(groupPattern, 1, Int::plus)
@@ -98,20 +102,6 @@ class TotoGroupPatternStats(
         sortTotoGroupPatternOccurrences()
         sortTotoGroupPatternFrequencies()
     }
-
-    private fun convertTotoNumbersToGroupPattern(
-        numbers: IntArray
-    ): IntArray {
-        for (i in numbers.indices) {
-            numbers[i] = groupStrategyMethod?.invoke(numbers[i])
-                ?: throw IllegalArgumentException("Group strategy method is null!")
-        }
-
-        return numbers
-    }
-
-    private fun didGroupPatternOccurMoreThanAverage(pattern: TotoNumbers): Boolean =
-        patternsCache[pattern]?.let { it > patternsCache.values.sum() / patternsCache.size } ?: false
 
     private fun validateTotoGroupPatternOccurrences() {
         // Size of the toto numbers should be the same as the total sum of the patterns
