@@ -16,7 +16,7 @@ data class CombinedPattern(
 
         javaClass != other?.javaClass -> false
 
-        else -> groupPattern.equals((other as? CombinedPattern)?.groupPattern)
+        else -> groupPattern == (other as? CombinedPattern)?.groupPattern
     }
 
     override fun hashCode(): Int = groupPattern.hashCode()

@@ -57,7 +57,7 @@ class TotoCombinedPatternStats(
             }
 
             // Merge existing combined pattern
-            patternsCache.find { it.equals(combinedPattern) }?.let { existingPattern ->
+            patternsCache.find { it == combinedPattern }?.let { existingPattern ->
                 // Increment group pattern occurrence count
                 existingPattern.count += 1
 
