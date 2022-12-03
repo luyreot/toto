@@ -58,14 +58,14 @@ class TotoCombinedPatternStats(
 
             // Merge existing combined pattern
             patternsCache.find { it == combinedPattern }?.let { existingPattern ->
-                // Increment group pattern occurrence count
-                existingPattern.count += 1
-
-                // Merge low high pattern
-                existingPattern.lowHighs.merge(lowHighPattern, 1, Int::plus)
-
-                // Merge odd even pattern
-                existingPattern.oddEvens.merge(oddEvenPattern, 1, Int::plus)
+                existingPattern.apply {
+                    // Increment group pattern occurrence count
+                    count += 1
+                    // Merge low high pattern
+                    lowHighs.merge(lowHighPattern, 1, Int::plus)
+                    // Merge odd even pattern
+                    oddEvens.merge(oddEvenPattern, 1, Int::plus)
+                }
             }
         }
 
@@ -80,8 +80,10 @@ class TotoCombinedPatternStats(
 
         // Sort low/high and odd/even patterns
         patternsCache.forEach { pattern ->
-            pattern.lowHighs.sortByValueDescending()
-            pattern.oddEvens.sortByValueDescending()
+            pattern.apply {
+                lowHighs.sortByValueDescending()
+                oddEvens.sortByValueDescending()
+            }
         }
     }
 }
