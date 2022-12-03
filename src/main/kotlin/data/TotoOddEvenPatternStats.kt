@@ -5,6 +5,8 @@ import extensions.sortByValueDescending
 import model.TotoFrequency
 import model.TotoNumbers
 import model.TotoType
+import util.PatternUtils.convertTotoNumbersToOddEvenPattern
+import util.PatternUtils.didPatternOccurMoreThanAverage
 
 /**
  * Holds information about:
@@ -43,7 +45,7 @@ class TotoOddEvenPatternStats(
             totoPredict.handleNextOddEvenPattern(
                 oddEvenPattern.numbers,
                 index,
-                didOddEvenPatternOccurMoreThanAverage(oddEvenPattern)
+                didPatternOccurMoreThanAverage(patternsCache, oddEvenPattern)
             )
 
             // Save the pattern in the map
@@ -103,19 +105,6 @@ class TotoOddEvenPatternStats(
         sortTotoOddEvenPatternOccurrences()
         sortTotoOddEvenPatternFrequencies()
     }
-
-    private fun convertTotoNumbersToOddEvenPattern(
-        numbers: IntArray
-    ): IntArray {
-        for (i in numbers.indices) {
-            numbers[i] = if ((numbers[i] and 1) == 0) 1 else 0
-        }
-
-        return numbers
-    }
-
-    private fun didOddEvenPatternOccurMoreThanAverage(pattern: TotoNumbers): Boolean =
-        patternsCache[pattern]?.let { it > patternsCache.values.sum() / patternsCache.size } ?: false
 
     private fun validateTotoOddEvenPatternOccurrences() {
         // Size of the toto numbers should be the same as the total sum of the patterns

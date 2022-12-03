@@ -5,6 +5,8 @@ import extensions.sortByValueDescending
 import model.TotoFrequency
 import model.TotoNumbers
 import model.TotoType
+import util.PatternUtils.convertTotoNumbersToLowHighPattern
+import util.PatternUtils.didPatternOccurMoreThanAverage
 
 /**
  * Holds information about:
@@ -38,12 +40,17 @@ class TotoLowHighPatternStats(
 
         drawings.forEachIndexed { index, totoNumbers ->
             // Already got the toto numbers of a single drawing
-            val lowHighPattern = TotoNumbers(convertTotoNumbersToLowHighPattern(totoNumbers.numbers.copyOf()))
+            val lowHighPattern = TotoNumbers(
+                convertTotoNumbersToLowHighPattern(
+                    totoNumbers.numbers.copyOf(),
+                    totoType.lowHighMidPoint
+                )
+            )
 
             totoPredict.handleNextLowHighPattern(
                 lowHighPattern.numbers,
                 index,
-                didLowHighPatternOccurMoreThanAverage(lowHighPattern)
+                didPatternOccurMoreThanAverage(patternsCache, lowHighPattern)
             )
 
             // Save the pattern in the map
@@ -103,19 +110,6 @@ class TotoLowHighPatternStats(
         sortTotoLowHighPatternOccurrences()
         sortTotoLowHighPatternFrequencies()
     }
-
-    private fun convertTotoNumbersToLowHighPattern(
-        numbers: IntArray
-    ): IntArray {
-        for (i in numbers.indices) {
-            numbers[i] = if (numbers[i] <= totoType.lowHighMidPoint) 0 else 1
-        }
-
-        return numbers
-    }
-
-    private fun didLowHighPatternOccurMoreThanAverage(pattern: TotoNumbers): Boolean =
-        patternsCache[pattern]?.let { it > patternsCache.values.sum() / patternsCache.size } ?: false
 
     private fun validateTotoLowHighPatternOccurrences() {
         // Size of the toto numbers should be the same as the total sum of the patterns
