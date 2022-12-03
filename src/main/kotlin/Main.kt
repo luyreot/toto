@@ -1,6 +1,7 @@
 import data.TotoStats
 import model.TotoType
 import util.ThreadUtils.launchThread
+import util.TotoUtils.fetchNewDrawings
 
 object Main {
 
