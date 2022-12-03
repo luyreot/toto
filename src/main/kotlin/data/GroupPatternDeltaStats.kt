@@ -2,6 +2,7 @@ package data
 
 import extensions.sortByValueDescending
 import model.*
+import util.PatternUtils.convertToGroupPatternDelta
 
 /**
  * Alternative way of handling group patterns for drawings.
@@ -49,139 +50,111 @@ import model.*
  * This algorithm serves the purpose of lowering the total possible numbers that can occur in a drawing.
  * In the case of 6/49 instead of having a total of 49 different numbers we end up with around 15.
  */
-class TotoGroupPatternDeltaStats(
+class GroupPatternDeltaStats(
     private val totoType: TotoType,
-    private val totoNumbers: TotoDrawnNumbers,
-    private val totoPredict: TotoGroupPatternDeltaPredict,
+    private val drawings: Drawings,
     private val fromYear: Int? = null
 ) {
 
-    val patterns: Map<TotoNumbers, Int>
+    val patterns: Map<Numbers, Int>
         get() = patternsCache
+    private val patternsCache = mutableMapOf<Numbers, Int>()
 
-    private val patternsCache = mutableMapOf<TotoNumbers, Int>()
-
-    val patternsGrouped: Map<Int, Map<TotoNumbers, Int>>
+    val patternsGrouped: Map<Int, Map<Numbers, Int>>
         get() = patternsGroupedCache
+    private val patternsGroupedCache = mutableMapOf<Int, MutableMap<Numbers, Int>>()
 
-    private val patternsGroupedCache = mutableMapOf<Int, MutableMap<TotoNumbers, Int>>()
-
-    val frequencies: Map<TotoNumbers, List<TotoFrequency>>
+    val frequencies: Map<Numbers, List<Frequency>>
         get() = frequenciesCache
+    private val frequenciesCache = mutableMapOf<Numbers, MutableList<Frequency>>()
 
-    private val frequenciesCache = mutableMapOf<TotoNumbers, MutableList<TotoFrequency>>()
-
-    val averageDeltaPatterns: Map<Int, TotoNumbersFloat>
+    val averageDeltaPatterns: Map<Int, NumbersFloat>
         get() = averageDeltaPatternsCache
+    private val averageDeltaPatternsCache = mutableMapOf<Int, NumbersFloat>()
 
-    private val averageDeltaPatternsCache = mutableMapOf<Int, TotoNumbersFloat>()
-
-    private val groupStrategyMethod = groupStrategies[TotoGroupStrategy.DELTA_SUBTRACT] as? (Int, Int) -> Int
+    private val groupStrategyMethod = groupStrategies[GroupStrategy.DELTA_SUBTRACT] as? (Int, Int) -> Int
 
     init {
         if (groupStrategyMethod == null)
             throw IllegalArgumentException("Group strategy method is null!")
     }
 
-    fun calculateTotoGroupPatternDeltaStats() {
-        val drawings = if (fromYear == null) totoNumbers.allDrawings else totoNumbers.drawingsSubset
-        val lastTotoPatternOccurrenceMap = mutableMapOf<TotoNumbers, Int>()
+    fun calculateStats() {
+        val drawings = if (fromYear == null) drawings.drawings else drawings.drawingsSubset
+        val lastPatternOccurrenceMap = mutableMapOf<Numbers, Int>()
 
         drawings.forEachIndexed { index, totoNumbers ->
-            val groupPattern = TotoNumbers(convertTotoNumbersToGroupPatternDelta(totoNumbers.numbers.copyOf()))
+            val pattern = Numbers(convertToGroupPatternDelta(totoNumbers.numbers.copyOf(), groupStrategyMethod))
 
-            totoPredict.handleNextGroupDeltaPattern(groupPattern.numbers, index)
-
-            patternsCache.merge(groupPattern, 1, Int::plus)
+            patternsCache.merge(pattern, 1, Int::plus)
 
             // Frequencies
 
-            if (lastTotoPatternOccurrenceMap.containsKey(groupPattern).not()) {
-                lastTotoPatternOccurrenceMap[groupPattern] = index
+            if (lastPatternOccurrenceMap.containsKey(pattern).not()) {
+                lastPatternOccurrenceMap[pattern] = index
                 return@forEachIndexed
             }
 
-            lastTotoPatternOccurrenceMap[groupPattern]?.let { lastDrawingIndex ->
+            lastPatternOccurrenceMap[pattern]?.let { lastDrawingIndex ->
                 val newFrequency = index - lastDrawingIndex
 
-                lastTotoPatternOccurrenceMap[groupPattern] = index
+                lastPatternOccurrenceMap[pattern] = index
 
-                if (frequenciesCache.containsKey(groupPattern).not()) {
-                    frequenciesCache[groupPattern] = mutableListOf(TotoFrequency(frequency = newFrequency))
+                if (frequenciesCache.containsKey(pattern).not()) {
+                    frequenciesCache[pattern] = mutableListOf(Frequency(frequency = newFrequency))
                     return@forEachIndexed
                 }
 
-                val doesNewFrequencyExist: Boolean = frequenciesCache[groupPattern]
+                val doesNewFrequencyExist: Boolean = frequenciesCache[pattern]
                     ?.any { it.frequency == newFrequency }
                     ?: false
                 if (doesNewFrequencyExist.not()) {
-                    frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
+                    frequenciesCache[pattern]?.add(Frequency(frequency = newFrequency))
                     return@forEachIndexed
                 }
 
-                val frequencyIndex: Int = frequenciesCache[groupPattern]
+                val frequencyIndex: Int = frequenciesCache[pattern]
                     ?.indexOfFirst { it.frequency == newFrequency }
                     ?: -1
                 if (frequencyIndex == -1) {
-                    frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
+                    frequenciesCache[pattern]?.add(Frequency(frequency = newFrequency))
                     return@forEachIndexed
                 }
 
-                val totoFrequency: TotoFrequency? = frequenciesCache[groupPattern]?.get(frequencyIndex)
-                if (totoFrequency == null) {
-                    frequenciesCache[groupPattern]?.add(TotoFrequency(frequency = newFrequency))
+                val frequency: Frequency? = frequenciesCache[pattern]?.get(frequencyIndex)
+                if (frequency == null) {
+                    frequenciesCache[pattern]?.add(Frequency(frequency = newFrequency))
                     return@forEachIndexed
                 }
 
-                frequenciesCache[groupPattern]?.set(
+                frequenciesCache[pattern]?.set(
                     frequencyIndex,
-                    totoFrequency.copy(count = totoFrequency.count + 1)
+                    frequency.copy(count = frequency.count + 1)
                 )
             }
         }
 
-        totoPredict.normalizePrediction()
-        totoPredict.unwrapPattern()
-
-        sortTotoGroupPatternOccurrences()
-        sortTotoGroupPatternFrequencies()
+        sortOccurrences()
+        sortFrequencies()
 
         groupPatterns()
         averagePatterns()
     }
 
-    fun convertTotoNumbersToGroupPatternDelta(
-        numbers: IntArray
-    ): IntArray {
-        val result = IntArray(numbers.size)
-
-        for (i in numbers.indices) {
-            if (i == 0) {
-                result[i] = numbers[i]
-                continue
-            }
-
-            result[i] = groupStrategyMethod?.invoke(numbers[i], numbers[i - 1])
-                ?: throw IllegalArgumentException("Group strategy method is null!")
-        }
-
-        return result
-    }
-
     /**
      * Sort by how ofter the pattern has appeared.
      */
-    private fun sortTotoGroupPatternOccurrences() {
+    private fun sortOccurrences() {
         patternsCache.sortByValueDescending()
     }
 
     /**
      * Sort by the same sort order that is used for the [patternsCache].
-     * See [sortTotoGroupPatternOccurrences].
+     * See [sortOccurrences].
      */
-    private fun sortTotoGroupPatternFrequencies() {
+    private fun sortFrequencies() {
         val sortedOccurrences = patternsCache.keys.toList()
-        val sortedFrequencies = mutableMapOf<TotoNumbers, MutableList<TotoFrequency>>()
+        val sortedFrequencies = mutableMapOf<Numbers, MutableList<Frequency>>()
 
         sortedOccurrences.forEach { pattern ->
             frequenciesCache[pattern]?.let { frequencies ->
@@ -240,7 +213,7 @@ class TotoGroupPatternDeltaStats(
     // TODO: Hardcoded for 6x49 -> Optimize
     private fun averagePatterns() {
         patternsGroupedCache.forEach { (number, patterns) ->
-            averageDeltaPatternsCache[number] = TotoNumbersFloat(
+            averageDeltaPatternsCache[number] = NumbersFloat(
                 floatArrayOf(
                     number.toFloat(),
                     patterns.map { it.key.numbers[1] }.sum().toFloat().div(patterns.size),

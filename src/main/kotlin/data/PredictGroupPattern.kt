@@ -3,7 +3,7 @@ package data
 import model.TotoType
 import kotlin.math.roundToInt
 
-class TotoGroupPatternPredict(
+class PredictGroupPattern(
     private val totoType: TotoType,
     private val correctPatternUpwards: Float = CORRECT_UPWARDS_VALUE,
     private val correctPatternDownwards: Float = CORRECT_DOWNWARDS_VALUE,
@@ -11,14 +11,14 @@ class TotoGroupPatternPredict(
     private val averageDivisorDownwards: Int = AVERAGE_DIVISOR_DOWNWARDS_VALUE
 ) {
 
-    val nextGroupPattern = FloatArray(totoType.drawingSize)
+    val nextPattern = FloatArray(totoType.size)
 
-//    var correctlyPredictedPatternPart: Int = 0
-//    var correctlyPredictedPatternFull: Int = 0
+//    var correctlyPredictedIndexCount: Int = 0
+//    var correctlyPredictedCount: Int = 0
 
     init {
-        for (i in 0 until totoType.drawingSize) {
-            nextGroupPattern[i] = PATTERN_DEFAULT_VALUE
+        for (i in 0 until totoType.size) {
+            nextPattern[i] = PATTERN_DEFAULT_VALUE
         }
     }
 
@@ -27,21 +27,21 @@ class TotoGroupPatternPredict(
      * Correct if any of the indexes are not correct.
      * Re-calculate our next group pattern.
      */
-    fun handleNextGroupPattern(pattern: IntArray, drawingIndex: Int, occurredMoreThanAverage: Boolean) {
-        if (pattern.size != totoType.drawingSize)
+    fun handleNextPattern(pattern: IntArray, drawingIndex: Int, didOccurMoreThanAverage: Boolean) {
+        if (pattern.size != totoType.size)
             throw IllegalArgumentException("There is something wrong with the group pattern!")
 
         // Handle first pattern
-        if (nextGroupPattern.all { index -> index == PATTERN_DEFAULT_VALUE }) {
+        if (nextPattern.all { index -> index == PATTERN_DEFAULT_VALUE }) {
             pattern.forEachIndexed { index, value ->
-                nextGroupPattern[index] = value.toFloat()
+                nextPattern[index] = value.toFloat()
             }
             return
         }
 
         /*
         var didCorrectlyPredictPattern = true
-        nextGroupPattern.map { it.roundToInt() }.forEachIndexed { index, item ->
+        nextPattern.map { it.roundToInt() }.forEachIndexed { index, item ->
             if (didCorrectlyPredictPattern.not()) {
                 return@forEachIndexed
             }
@@ -51,7 +51,7 @@ class TotoGroupPatternPredict(
             }
         }
         if (didCorrectlyPredictPattern) {
-            correctlyPredictedPatternFull++
+            correctlyPredictedCount++
         }
         */
 
@@ -59,45 +59,45 @@ class TotoGroupPatternPredict(
         pattern.forEachIndexed { index, value ->
             when {
                 // We are getting a number that is higher than the prediction
-                value > nextGroupPattern[index].roundToInt() -> {
-                    nextGroupPattern[index] = nextGroupPattern[index] + if (occurredMoreThanAverage)
+                value > nextPattern[index].roundToInt() -> {
+                    nextPattern[index] = nextPattern[index] + if (didOccurMoreThanAverage)
                         correctPatternUpwards
                     else
                         correctPatternUpwards / averageDivisorUpwards
 
                     // Correct for too high values
                     // TODO Assuming we are using DIVIDE_BY_10
-                    if (nextGroupPattern[index] > 4.49) {
-                        nextGroupPattern[index] = 4.49f
+                    if (nextPattern[index] > 4.49) {
+                        nextPattern[index] = 4.49f
                     }
                 }
                 // We are getting a number that is lower than the prediction
-                value < nextGroupPattern[index].roundToInt() -> {
-                    nextGroupPattern[index] = nextGroupPattern[index] - if (occurredMoreThanAverage)
+                value < nextPattern[index].roundToInt() -> {
+                    nextPattern[index] = nextPattern[index] - if (didOccurMoreThanAverage)
                         correctPatternDownwards
                     else
                         correctPatternDownwards / averageDivisorDownwards
 
                     // Correct for negative values
                     // TODO Assuming we are using DIVIDE_BY_10
-                    if (nextGroupPattern[index] < 0) {
-                        nextGroupPattern[index] = 0f
+                    if (nextPattern[index] < 0) {
+                        nextPattern[index] = 0f
                     }
                 }
 
                 else -> {
                     // Value correctly predicted
-//                    correctlyPredictedPatternPart++
+//                    correctlyPredictedIndexCount++
                 }
             }
 
-            nextGroupPattern[index] = ((nextGroupPattern[index] * (drawingIndex - 1)) + value).div(drawingIndex)
+            nextPattern[index] = ((nextPattern[index] * (drawingIndex - 1)) + value).div(drawingIndex)
         }
     }
 
     fun normalizePrediction() {
-        nextGroupPattern.forEachIndexed { index, value ->
-            nextGroupPattern[index] = value.roundToInt().toFloat()
+        nextPattern.forEachIndexed { index, value ->
+            nextPattern[index] = value.roundToInt().toFloat()
         }
     }
 

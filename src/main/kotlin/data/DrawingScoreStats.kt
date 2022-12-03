@@ -4,35 +4,33 @@ import model.TotoType
 import util.TotoUtils.getDrawingScore
 import kotlin.math.abs
 
-class TotoDrawingScoreStats(
+class DrawingScoreStats(
     private val totoType: TotoType,
-    private val totoNumbers: TotoDrawnNumbers,
-    private val totoNumberStats: TotoNumberStats,
+    private val drawings: Drawings,
+    private val numberStats: NumberStats,
     private val fromYear: Int? = null
 ) {
 
     val averageSore: Int
         get() = score
-
     private var score: Int = 0
 
     val averageJump: Int
         get() = jump
-
     private var jump: Int = 0
 
-    fun calculateTotoDrawingScoreStats() {
-        val drawings = if (fromYear == null) totoNumbers.allDrawings else totoNumbers.drawingsSubset
+    fun calculateStats() {
+        val drawings = if (fromYear == null) drawings.drawings else drawings.drawingsSubset
         var totalScore = 0.0
         var previousScore = 0
 
-        drawings.forEachIndexed { index, totoNumbers ->
+        drawings.forEachIndexed { index, numbers ->
             getDrawingScore(
                 index,
-                totoNumbers.numbers,
-                totoNumberStats.occurrences,
-                totoNumberStats.frequencies,
-                totoNumberStats.averageFrequencies,
+                numbers.numbers,
+                numberStats.occurrences,
+                numberStats.frequencies,
+                numberStats.averageFrequencies,
                 drawings
             ).let { score ->
                 // Add drawing's score to overall score count

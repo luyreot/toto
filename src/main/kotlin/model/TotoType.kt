@@ -4,26 +4,26 @@ package model
  * Holds information about the different types of toto drawings - 6x49, etc.
  */
 enum class TotoType(
-    val numberCount: Int,
-    val drawingSize: Int,
+    val totalNumbers: Int,
+    val size: Int,
     val lowHighMidPoint: Int
 ) {
-    D_6X49(
-        numberCount = 49,
-        drawingSize = 6,
+    T_6X49(
+        totalNumbers = 49,
+        size = 6,
         // Can also be 24, but with 25 we achieve the correct probability % from the LottoMetrix website
         lowHighMidPoint = 25
     ),
 
-    D_6X42(
-        numberCount = 42,
-        drawingSize = 6,
+    T_6X42(
+        totalNumbers = 42,
+        size = 6,
         lowHighMidPoint = 21
     ),
 
-    D_5X35(
-        numberCount = 35,
-        drawingSize = 5,
+    T_5X35(
+        totalNumbers = 35,
+        size = 5,
         lowHighMidPoint = 18
     )
 }

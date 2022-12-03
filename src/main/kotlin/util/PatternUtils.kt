@@ -1,10 +1,10 @@
 package util
 
-import model.TotoNumbers
+import model.Numbers
 
 object PatternUtils {
 
-    fun convertTotoNumbersToGroupPattern(
+    fun convertToGroupPattern(
         numbers: IntArray,
         groupStrategyMethod: ((Int) -> Int)?,
     ): IntArray {
@@ -16,7 +16,7 @@ object PatternUtils {
         return numbers
     }
 
-    fun convertTotoNumbersToLowHighPattern(
+    fun convertToLowHighPattern(
         numbers: IntArray,
         lowHighMidPoint: Int
     ): IntArray {
@@ -27,7 +27,7 @@ object PatternUtils {
         return numbers
     }
 
-    fun convertTotoNumbersToOddEvenPattern(
+    fun convertOddEvenPattern(
         numbers: IntArray
     ): IntArray {
         for (i in numbers.indices) {
@@ -38,8 +38,43 @@ object PatternUtils {
     }
 
     fun didPatternOccurMoreThanAverage(
-        patternsCache: Map<TotoNumbers, Int>,
-        pattern: TotoNumbers
-    ): Boolean =
-        patternsCache[pattern]?.let { it > patternsCache.values.sum() / patternsCache.size } ?: false
+        patternsCache: Map<Numbers, Int>,
+        pattern: Numbers,
+    ): Boolean = patternsCache[pattern]?.let { it > patternsCache.values.sum() / patternsCache.size } ?: false
+
+    fun convertToGroupPatternDelta(
+        numbers: IntArray,
+        groupStrategyMethod: ((Int, Int) -> Int)?,
+    ): IntArray {
+        val result = IntArray(numbers.size)
+
+        for (i in numbers.indices) {
+            if (i == 0) {
+                result[i] = numbers[i]
+                continue
+            }
+
+            result[i] = groupStrategyMethod?.invoke(numbers[i], numbers[i - 1])
+                ?: throw IllegalArgumentException("Group strategy method is null!")
+        }
+
+        return result
+    }
+
+    fun unconvertGroupPatternDelta(
+        drawingSize: Int,
+        pattern: IntArray
+    ): IntArray {
+        val drawing = IntArray(drawingSize)
+
+        for (i in 0 until drawingSize) {
+            if (i == 0) {
+                drawing[i] = pattern[i]
+                continue
+            }
+            drawing[i] = drawing[i - 1] + pattern[i]
+        }
+
+        return drawing
+    }
 }

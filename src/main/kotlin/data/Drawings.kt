@@ -2,8 +2,8 @@ package data
 
 import extensions.clear
 import extensions.greaterOrEqual
-import model.TotoNumber
-import model.TotoNumbers
+import model.Number
+import model.Numbers
 import model.TotoType
 import util.FileConstants.PATH_TXT_6x49
 import util.IO
@@ -11,34 +11,31 @@ import util.IO
 /**
  * Holds a list of all drawn numbers.
  */
-class TotoDrawnNumbers(
+class Drawings(
     private val totoType: TotoType,
     private val fromYear: Int? = null
 ) {
 
-    val numbers: List<TotoNumber>
+    val numbers: List<Number>
         get() = numbersCache
+    private val numbersCache = mutableListOf<Number>()
 
-    private val numbersCache = mutableListOf<TotoNumber>()
+    val drawings: List<Numbers>
+        get() = drawingsCache
+    private val drawingsCache = mutableListOf<Numbers>()
 
-    val allDrawings: List<TotoNumbers>
-        get() = allDrawingsCache
-
-    private val allDrawingsCache = mutableListOf<TotoNumbers>()
-
-    val drawingsSubset: List<TotoNumbers>
+    val drawingsSubset: List<Numbers>
         get() = drawingsSubsetCache
+    private val drawingsSubsetCache = mutableListOf<Numbers>()
 
-    private val drawingsSubsetCache = mutableListOf<TotoNumbers>()
-
-    fun loadTotoNumbers() {
+    fun loadNumbers() {
         if (numbersCache.isNotEmpty()) numbersCache.clear()
 
         when (totoType) {
-            TotoType.D_6X49 -> {
+            TotoType.T_6X49 -> {
                 IO.getFiles(PATH_TXT_6x49)?.let { files ->
                     files.forEach { file ->
-                        addTotoNumbers(
+                        addNumbers(
                             year = file.name.toInt(),
                             fileContents = IO.getTxtFileContents(file)
                         )
@@ -49,22 +46,22 @@ class TotoDrawnNumbers(
             else -> throw IllegalArgumentException("${totoType.name} is not supported!")
         }
 
-        validateTotoNumbers()
+        validateNumbers()
     }
 
     fun extractDrawings() {
-        numbersCache.sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position }).let { sortedTotoNumbers ->
-            val drawing = IntArray(totoType.drawingSize)
+        numbersCache.sortedWith(compareBy<Number> { it.year }.thenBy { it.issue }.thenBy { it.position }).let { sortedNumbers ->
+            val drawing = IntArray(totoType.size)
 
-            sortedTotoNumbers.forEach { totoNumber ->
-                drawing[totoNumber.position] = totoNumber.number
+            sortedNumbers.forEach { number ->
+                drawing[number.position] = number.number
 
-                if (totoNumber.position != totoType.drawingSize - 1) return@forEach
+                if (number.position != totoType.size - 1) return@forEach
 
-                allDrawingsCache.add(TotoNumbers(drawing.clone()))
+                drawingsCache.add(Numbers(drawing.clone()))
 
-                if (totoNumber.year.greaterOrEqual(fromYear, false)) {
-                    drawingsSubsetCache.add(TotoNumbers(drawing.clone()))
+                if (number.year.greaterOrEqual(fromYear, false)) {
+                    drawingsSubsetCache.add(Numbers(drawing.clone()))
                 }
 
                 drawing.clear()
@@ -73,11 +70,11 @@ class TotoDrawnNumbers(
     }
 
     fun checkForDuplicateDrawings() {
-        val allDrawingsSize = allDrawingsCache.size
-        val allDrawingsSetSize = allDrawingsCache.toSet().size
+        val allDrawingsSize = drawingsCache.size
+        val allDrawingsSetSize = drawingsCache.toSet().size
         if (allDrawingsSize != allDrawingsSetSize) {
             println("All > There is at least one duplicate drawing!")
-            printDuplicatedDrawings(allDrawingsCache)
+            printDuplicatedDrawings(drawingsCache)
         }
 
         if (drawingsSubsetCache.isEmpty()) return
@@ -90,7 +87,7 @@ class TotoDrawnNumbers(
         }
     }
 
-    private fun addTotoNumbers(
+    private fun addNumbers(
         year: Int,
         fileContents: List<String>
     ) {
@@ -100,12 +97,12 @@ class TotoDrawnNumbers(
         fileContents.forEachIndexed { issue, drawing ->
             val drawnNumbers: List<String> = drawing.split(",")
 
-            if (drawnNumbers.size != totoType.drawingSize)
+            if (drawnNumbers.size != totoType.size)
                 throw IllegalArgumentException("Drawing is not ${totoType.name}!")
 
             drawnNumbers.forEachIndexed { position, number ->
                 numbersCache.add(
-                    TotoNumber(
+                    Number(
                         number = number.toInt(),
                         position = position,
                         year = year,
@@ -116,14 +113,14 @@ class TotoDrawnNumbers(
         }
     }
 
-    private fun validateTotoNumbers() {
+    private fun validateNumbers() {
         if (numbersCache.isEmpty())
             throw IllegalArgumentException("Drawings are empty!")
 
         if (numbersCache.any { it.issue == 0 })
             throw IllegalArgumentException("There is a zero issue drawing!")
 
-        if (numbersCache.any { it.position > totoType.drawingSize - 1 })
+        if (numbersCache.any { it.position > totoType.size - 1 })
             throw IllegalArgumentException("There is an incorrect position for ${totoType.name}!")
 
         val listSize: Int = numbersCache.size
@@ -132,23 +129,23 @@ class TotoDrawnNumbers(
             throw IllegalArgumentException("There is an invalid drawing!")
     }
 
-    private fun printDuplicatedDrawings(drawings: List<TotoNumbers>) {
-        val duplicateDrawings: Set<TotoNumbers> = drawings.groupingBy { it }.eachCount().filter { it.value > 1 }.keys
-        println("${duplicateDrawings.size} duplicated drawings.")
+    private fun printDuplicatedDrawings(drawings: List<Numbers>) {
+        val duplicateNumbers: Set<Numbers> = drawings.groupingBy { it }.eachCount().filter { it.value > 1 }.keys
+        println("${duplicateNumbers.size} duplicated drawings.")
 
-        numbersCache.sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position }).let { sortedTotoNumbers ->
-            val drawingArray = IntArray(totoType.drawingSize)
+        numbersCache.sortedWith(compareBy<Number> { it.year }.thenBy { it.issue }.thenBy { it.position }).let { sortedNumbers ->
+            val drawingArray = IntArray(totoType.size)
 
-            sortedTotoNumbers.forEach { totoNumber ->
-                drawingArray[totoNumber.position] = totoNumber.number
+            sortedNumbers.forEach { number ->
+                drawingArray[number.position] = number.number
 
-                if (totoNumber.position != totoType.drawingSize - 1) return@forEach
+                if (number.position != totoType.size - 1) return@forEach
 
-                val drawing = TotoNumbers(drawingArray)
+                val drawing = Numbers(drawingArray)
 
-                if (duplicateDrawings.contains(drawing).not()) return@forEach
+                if (duplicateNumbers.contains(drawing).not()) return@forEach
 
-                println("$drawing, year=${totoNumber.year}, issue=${totoNumber.issue}")
+                println("$drawing, year=${number.year}, issue=${number.issue}")
             }
         }
     }

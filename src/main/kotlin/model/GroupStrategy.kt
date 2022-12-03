@@ -1,16 +1,16 @@
 package model
 
-val groupStrategies = mapOf<TotoGroupStrategy, Any>(
-    TotoGroupStrategy.DIVIDE_BY_10 to ::divideBy10,
-    TotoGroupStrategy.DELTA_SUBTRACT to Int::deltaSubtract,
-    TotoGroupStrategy.DELTA_ADD to Int::deltaAdd
+val groupStrategies = mapOf<GroupStrategy, Any>(
+    GroupStrategy.DIVIDE_BY_10 to ::divideBy10,
+    GroupStrategy.DELTA_SUBTRACT to Int::deltaSubtract,
+    GroupStrategy.DELTA_ADD to Int::deltaAdd
 )
 
 /**
  * Enum for various methods for creating group patterns.
  * Each one converts a drawing number to a number used for group pattens.
  */
-enum class TotoGroupStrategy {
+enum class GroupStrategy {
     DIVIDE_BY_10,
     DELTA_SUBTRACT,
     DELTA_ADD

@@ -1,4 +1,4 @@
-import data.TotoStats
+import data.Stats
 import model.TotoType
 import util.ThreadUtils.launchThread
 import util.TotoUtils.fetchNewDrawings
@@ -11,18 +11,18 @@ object Main {
 
 //        fetchNewDrawings()
 
-        TotoStats(TotoType.D_6X49).apply {
-            loadTotoNumbers()
+        Stats(TotoType.T_6X49).apply {
+            loadNumbers()
 
             listOf(
                 launchThread {
-                    calculateTotoNumberStats()
-                    calculateTotoDrawingScoreStats()
+                    calculateNumberStats()
+                    calculateDrawingScore()
                 },
-                launchThread { calculateTotoOddEvenPatternStats() },
-                launchThread { calculateTotoLowHighPatternStats() },
-                launchThread { calculateTotoGroupPatternStats() },
-                launchThread { calculateTotoGroupPatternDeltaStats() },
+                launchThread { calculateOddEvenPatternStats() },
+                launchThread { calculateLowHighPatternStats() },
+                launchThread { calculateGroupPatternStats() },
+                launchThread { calculateGroupPatternDeltaStats() },
 
                 launchThread { calculateCombinedPatternStats() }
             ).forEach { thread ->
@@ -32,7 +32,6 @@ object Main {
 //            testOddEvenPredictionAlgo()
 //            testLowHighPredictionAlgo()
 //            testGroupPredictionAlgo()
-//            testGroupPredictionDeltaAlgo()
 
             predictNextDrawing()
 

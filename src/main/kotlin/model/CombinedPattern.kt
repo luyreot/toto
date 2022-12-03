@@ -1,13 +1,13 @@
 package model
 
 data class CombinedPattern(
-    val groupPattern: TotoNumbers,
+    val groupPattern: Numbers,
     var count: Int
 ) {
 
-    val lowHighs = mutableMapOf<TotoNumbers, Int>()
+    val lowHighs = mutableMapOf<Numbers, Int>()
 
-    val oddEvens = mutableMapOf<TotoNumbers, Int>()
+    val oddEvens = mutableMapOf<Numbers, Int>()
 
     override fun equals(
         other: Any?

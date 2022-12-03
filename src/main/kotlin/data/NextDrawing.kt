@@ -2,61 +2,66 @@ package data
 
 import extensions.clearAfter
 import extensions.sortByValueDescending
-import model.TotoGroupStrategy
-import model.TotoNumbers
+import model.GroupStrategy
+import model.Numbers
 import model.TotoType
 import model.groupStrategies
+import util.PatternUtils.convertToGroupPatternDelta
 import util.TotoUtils.getDrawingScore
 
-class TotoNextDrawing(
+class NextDrawing(
     private val totoType: TotoType,
-    private val totoNumbers: TotoDrawnNumbers,
+    private val drawings: Drawings,
     private val fromYear: Int? = null,
-    private val totoNumberStats: TotoNumberStats,
-    private val totoOddEvenPatternStats: TotoOddEvenPatternStats,
-    private val totoOddEvenPatternPredict: TotoOddEvenPatternPredict,
-    private val totoLowHighPatternStats: TotoLowHighPatternStats,
-    private val totoLowHighPatternPredict: TotoLowHighPatternPredict,
-    private val totoGroupPatternStats: TotoGroupPatternStats,
-    private val totoGroupPatternPredict: TotoGroupPatternPredict,
-    private val totoGroupPatternDeltaStats: TotoGroupPatternDeltaStats,
-    private val totoGroupPatternDeltaPredict: TotoGroupPatternDeltaPredict,
-    private val groupStrategy: TotoGroupStrategy,
-    private val totoDrawingScoreStats: TotoDrawingScoreStats
+    private val numberStats: NumberStats,
+    private val oddEvenPatternStats: OddEvenPatternStats,
+    private val predictOddEvenPattern: PredictOddEvenPattern,
+    private val lowHighPatternStats: LowHighPatternStats,
+    private val predictLowHighPattern: PredictLowHighPattern,
+    private val groupPatternStats: GroupPatternStats,
+    private val predictGroupPattern: PredictGroupPattern,
+    private val groupPatternDeltaStats: GroupPatternDeltaStats,
+    private val groupStrategy: GroupStrategy,
+    private val groupDeltaStrategy: GroupStrategy,
+    private val drawingScoreStats: DrawingScoreStats
 ) {
 
-    val predictionCombinationsTopScore = mutableMapOf<IntArray, Int>()
-    val predictionCombinationsAverageScore = mutableMapOf<IntArray, Int>()
+    val nextDrawingsTopScore = mutableMapOf<IntArray, Int>()
+    val nextDrawingsAverageScore = mutableMapOf<IntArray, Int>()
 
     lateinit var nextOddEvenPattern: IntArray
     lateinit var nextLowHighPattern: IntArray
     lateinit var nextGroupPattern: IntArray
 
     private val groupStrategyMethod = groupStrategies[groupStrategy] as? (Int) -> Int
+    private val groupDeltaStrategyMethod = groupStrategies[groupDeltaStrategy] as? (Int, Int) -> Int
 
     init {
         if (groupStrategyMethod == null)
             throw IllegalArgumentException("Group strategy method is null!")
+
+        if (groupDeltaStrategyMethod == null)
+            throw IllegalArgumentException("Group Delta strategy method is null!")
     }
 
-    fun populateArrays() {
-        nextOddEvenPattern = totoOddEvenPatternPredict.nextOddEvenPattern.map { it.toInt() }.toIntArray()
-        if (nextOddEvenPattern.size != totoType.drawingSize)
+    fun populatePatternArrays() {
+        nextOddEvenPattern = predictOddEvenPattern.nextPattern.map { it.toInt() }.toIntArray()
+        if (nextOddEvenPattern.size != totoType.size)
             throw IllegalArgumentException("Something wrong with the predicted odd even pattern!")
 
-        nextLowHighPattern = totoLowHighPatternPredict.nextLowHighPattern.map { it.toInt() }.toIntArray()
-        if (nextLowHighPattern.size != totoType.drawingSize)
+        nextLowHighPattern = predictLowHighPattern.nextPattern.map { it.toInt() }.toIntArray()
+        if (nextLowHighPattern.size != totoType.size)
             throw IllegalArgumentException("Something wrong with the predicted low high pattern!")
 
-        nextGroupPattern = totoGroupPatternPredict.nextGroupPattern.map { it.toInt() }.toIntArray()
-        if (nextGroupPattern.size != totoType.drawingSize)
+        nextGroupPattern = predictGroupPattern.nextPattern.map { it.toInt() }.toIntArray()
+        if (nextGroupPattern.size != totoType.size)
             throw IllegalArgumentException("Something wrong with the predicted group pattern!")
     }
 
     fun predictNextDrawing() {
-        val predictionNumbers = Array<List<Int>>(totoType.drawingSize) { emptyList() }
+        val predictionNumbers = Array<List<Int>>(totoType.size) { emptyList() }
 
-        for (i in 0 until totoType.drawingSize) {
+        for (i in 0 until totoType.size) {
             val isOdd = nextOddEvenPattern[i] == 0
             val isLow = nextLowHighPattern[i] == 0
             val group = when {
@@ -65,83 +70,76 @@ class TotoNextDrawing(
                 else -> nextGroupPattern[i]
             }
 
-            predictionNumbers[i] = getPredictedNumbers(
+            predictionNumbers[i] = getPredictionNumbers(
                 isOdd = isOdd,
                 isLow = isLow,
                 group = group
             )
         }
 
-        val numberCombinations: MutableList<IntArray> = getPredictionCombinations(predictionNumbers)
+        val numberCombinations: MutableList<IntArray> = generateDrawings(predictionNumbers)
 
-        val allDrawings = totoNumbers.allDrawings.toSet()
+        val allDrawings = drawings.drawings.toSet()
         for (i in numberCombinations.size - 1 downTo 0) {
             // Remove already existing drawings
-            if (allDrawings.contains(TotoNumbers(numberCombinations[i]))) {
+            if (allDrawings.contains(Numbers(numberCombinations[i]))) {
                 numberCombinations.removeAt(i)
             }
 
             // Remove drawings that have occurred as delta pattern
-            val doesDeltaPatternExist = totoGroupPatternDeltaStats
+            val doesDeltaPatternExist = groupPatternDeltaStats
                 .patterns
                 .keys
-                .contains(
-                    TotoNumbers(
-                        totoGroupPatternDeltaStats
-                            .convertTotoNumbersToGroupPatternDelta(
-                                numberCombinations[i].copyOf()
-                            )
-                    )
-                )
+                .contains(Numbers(convertToGroupPatternDelta(numberCombinations[i].copyOf(), groupDeltaStrategyMethod)))
             if (doesDeltaPatternExist) {
                 numberCombinations.removeAt(i)
             }
         }
 
-        val drawings = if (fromYear == null) totoNumbers.allDrawings else totoNumbers.drawingsSubset
+        val drawings = if (fromYear == null) drawings.drawings else drawings.drawingsSubset
 
         // Calculate prediction score
         numberCombinations.forEach { drawing ->
-            predictionCombinationsTopScore[drawing] = getDrawingScore(
+            nextDrawingsTopScore[drawing] = getDrawingScore(
                 drawings.size,
                 drawing,
-                totoNumberStats.occurrences,
-                totoNumberStats.frequencies,
-                totoNumberStats.averageFrequencies,
+                numberStats.occurrences,
+                numberStats.frequencies,
+                numberStats.averageFrequencies,
                 drawings
             )
         }
-        predictionCombinationsTopScore.sortByValueDescending()
+        nextDrawingsTopScore.sortByValueDescending()
 
         // Store top scores that are between the average score and the possible jump in the positive and negative
-        predictionCombinationsAverageScore.putAll(
-            predictionCombinationsTopScore.filter { entry ->
-                entry.value < totoDrawingScoreStats.averageSore + totoDrawingScoreStats.averageJump &&
-                        entry.value > totoDrawingScoreStats.averageSore - totoDrawingScoreStats.averageJump
+        nextDrawingsAverageScore.putAll(
+            nextDrawingsTopScore.filter { entry ->
+                entry.value < drawingScoreStats.averageSore + drawingScoreStats.averageJump &&
+                        entry.value > drawingScoreStats.averageSore - drawingScoreStats.averageJump
             }
         )
     }
 
-    private fun getPredictedNumbers(
+    private fun getPredictionNumbers(
         isOdd: Boolean,
         isLow: Boolean,
         group: Int
     ): List<Int> {
-        val results = mutableListOf<Int>()
+        val numbers = mutableListOf<Int>()
 
-        totoNumberStats.occurrences.forEach { (number, _) ->
+        numberStats.occurrences.forEach { (number, _) ->
             val isOddEvenCriteriaFulfilled = (isOdd.not() && isEven(number)) || (isOdd && isEven(number).not())
             val isLowHighCriteriaFulfilled = (isLow.not() && isHigh(number)) || (isLow && isHigh(number).not())
             val isGroupCriteriaFulfilled = isFromSameGroup(group, number)
 
             if (isOddEvenCriteriaFulfilled && isLowHighCriteriaFulfilled && isGroupCriteriaFulfilled)
-                results.add(number)
+                numbers.add(number)
         }
 
-        if (results.isEmpty())
+        if (numbers.isEmpty())
             throw IllegalArgumentException("Empty number prediction results!")
 
-        return results
+        return numbers
     }
 
     private fun isEven(number: Int): Boolean = number and 1 == 0
@@ -153,8 +151,8 @@ class TotoNextDrawing(
         number: Int
     ): Boolean = group == groupStrategyMethod?.invoke(number)
 
-    private fun getPredictionCombinations(allPossibleNumbers: Array<List<Int>>): MutableList<IntArray> {
-        val combinations = mutableSetOf<TotoNumbers>()
+    private fun generateDrawings(allPossibleNumbers: Array<List<Int>>): MutableList<IntArray> {
+        val combinations = mutableSetOf<Numbers>()
         generateCombination(0, IntArray(allPossibleNumbers.size), allPossibleNumbers, combinations)
         return combinations.map { it.numbers }.toMutableList()
     }
@@ -163,7 +161,7 @@ class TotoNextDrawing(
         arrayIndex: Int,
         array: IntArray,
         input: Array<List<Int>>,
-        output: MutableSet<TotoNumbers>
+        output: MutableSet<Numbers>
     ) {
         for (i in 0 until input[arrayIndex].size) {
             array.clearAfter(arrayIndex)
@@ -175,7 +173,7 @@ class TotoNextDrawing(
             array[arrayIndex] = input[arrayIndex][i]
 
             if (arrayIndex == input.size - 1) {
-                output.add(TotoNumbers(array.copyOf().sortedArray()))
+                output.add(Numbers(array.copyOf().sortedArray()))
             } else {
                 generateCombination(
                     arrayIndex = arrayIndex + 1,

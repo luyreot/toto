@@ -22,13 +22,13 @@ package model
  *
  * A delta group pattern for a toto drawing will look like this:
  * 4, 6, 9, 21, 36, 46 -> 4, 2, 3, 12, 15, 10
- * Check [data.TotoGroupPatternDeltaStats] for more info on the algorithm.
+ * Check [data.GroupPatternDeltaStats] for more info on the algorithm.
  *
  * The size of the array depends on the toto type - 6x49, 6x42 or 5x35.
  */
-data class TotoNumbersFloat(
-    val numbers: FloatArray
-) : CompareDeltaPattern<TotoNumbersFloat> {
+data class Numbers(
+    val numbers: IntArray
+) : CompareDeltaPattern<Numbers> {
 
     override fun equals(
         other: Any?
@@ -37,12 +37,12 @@ data class TotoNumbersFloat(
 
         javaClass != other?.javaClass -> false
 
-        else -> numbers.contentEquals((other as? TotoNumbersFloat)?.numbers)
+        else -> numbers.contentEquals((other as? Numbers)?.numbers)
     }
 
     override fun hashCode(): Int = numbers.contentHashCode()
 
-    override fun compareDeltaPatternTo(other: TotoNumbersFloat): Int {
+    override fun compareDeltaPatternTo(other: Numbers): Int {
         for (i in 1 until numbers.size) {
             if (numbers[i] == other.numbers[i]) {
                 if (i == numbers.size - 1) {
@@ -59,4 +59,12 @@ data class TotoNumbersFloat(
 
         return 1
     }
+}
+
+interface CompareDeltaPattern<T> : Comparable<T> {
+
+    // TODO change to be more dynamic - return other methods
+    override fun compareTo(other: T): Int = compareDeltaPatternTo(other)
+
+    fun compareDeltaPatternTo(other: T): Int
 }

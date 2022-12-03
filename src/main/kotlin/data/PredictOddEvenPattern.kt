@@ -3,7 +3,7 @@ package data
 import model.TotoType
 import kotlin.math.roundToInt
 
-class TotoOddEvenPatternPredict(
+class PredictOddEvenPattern(
     private val totoType: TotoType,
     private val correctPatternUpwards: Float = CORRECT_UPWARDS_VALUE,
     private val correctPatternDownwards: Float = CORRECT_DOWNWARDS_VALUE,
@@ -11,14 +11,14 @@ class TotoOddEvenPatternPredict(
     private val averageDivisorDownwards: Int = AVERAGE_DIVISOR_DOWNWARDS_VALUE
 ) {
 
-    val nextOddEvenPattern = FloatArray(totoType.drawingSize)
+    val nextPattern = FloatArray(totoType.size)
 
-//    var correctlyPredictedPatternPart: Int = 0
-//    var correctlyPredictedPatternFull: Int = 0
+//    var correctlyPredictedIndexCount: Int = 0
+//    var correctlyPredictedCount: Int = 0
 
     init {
-        for (i in 0 until totoType.drawingSize) {
-            nextOddEvenPattern[i] = PATTERN_DEFAULT_VALUE
+        for (i in 0 until totoType.size) {
+            nextPattern[i] = PATTERN_DEFAULT_VALUE
         }
     }
 
@@ -27,21 +27,21 @@ class TotoOddEvenPatternPredict(
      * Correct if any of the indexes are not correct.
      * Re-calculate our next odd even pattern.
      */
-    fun handleNextOddEvenPattern(pattern: IntArray, drawingIndex: Int, occurredMoreThanAverage: Boolean) {
-        if (pattern.size != totoType.drawingSize)
+    fun handleNextPattern(pattern: IntArray, drawingIndex: Int, didOccurMoreThanAverage: Boolean) {
+        if (pattern.size != totoType.size)
             throw IllegalArgumentException("There is something wrong with the odd even pattern!")
 
         // Handle first pattern
-        if (nextOddEvenPattern.all { index -> index == PATTERN_DEFAULT_VALUE }) {
+        if (nextPattern.all { index -> index == PATTERN_DEFAULT_VALUE }) {
             pattern.forEachIndexed { index, value ->
-                nextOddEvenPattern[index] = value.toFloat()
+                nextPattern[index] = value.toFloat()
             }
             return
         }
 
         /*
         var didCorrectlyPredictPattern = true
-        nextOddEvenPattern.map { it.roundToInt() }.forEachIndexed { index, item ->
+        nextPattern.map { it.roundToInt() }.forEachIndexed { index, item ->
             if (didCorrectlyPredictPattern.not()) {
                 return@forEachIndexed
             }
@@ -51,7 +51,7 @@ class TotoOddEvenPatternPredict(
             }
         }
         if (didCorrectlyPredictPattern) {
-            correctlyPredictedPatternFull++
+            correctlyPredictedCount++
         }
         */
 
@@ -59,42 +59,43 @@ class TotoOddEvenPatternPredict(
         pattern.forEachIndexed { index, value ->
             when {
                 // We are getting 1 but we are predicting 0
-                value > nextOddEvenPattern[index].roundToInt() -> {
-                    nextOddEvenPattern[index] = nextOddEvenPattern[index] + if (occurredMoreThanAverage)
+                value > nextPattern[index].roundToInt() -> {
+                    nextPattern[index] = nextPattern[index] + if (didOccurMoreThanAverage)
                         correctPatternUpwards
                     else
                         correctPatternUpwards / averageDivisorUpwards
 
                     // Correct for too high values
-                    if (nextOddEvenPattern[index] > 1.49f) {
-                        nextOddEvenPattern[index] = 1f
+                    if (nextPattern[index] > 1.49f) {
+                        nextPattern[index] = 1f
                     }
                 }
                 // We are getting 0 but we are predicting 1
-                value < nextOddEvenPattern[index].roundToInt() -> {
-                    nextOddEvenPattern[index] = nextOddEvenPattern[index] - if (occurredMoreThanAverage)
+                value < nextPattern[index].roundToInt() -> {
+                    nextPattern[index] = nextPattern[index] - if (didOccurMoreThanAverage)
                         correctPatternDownwards
                     else
                         correctPatternDownwards / averageDivisorDownwards
 
-                    nextOddEvenPattern[index] = nextOddEvenPattern[index] - correctPatternDownwards
+                    nextPattern[index] = nextPattern[index] - correctPatternDownwards
 
                     // Correct for negative values
-                    if (nextOddEvenPattern[index] < 0f) {
-                        nextOddEvenPattern[index] = 0f
+                    if (nextPattern[index] < 0f) {
+                        nextPattern[index] = 0f
                     }
                 }
+
                 else -> {
                     // Value correctly predicted
-//                    correctlyPredictedPatternPart++
+//                    correctlyPredictedIndexCount++
                 }
             }
         }
     }
 
     fun normalizePrediction() {
-        nextOddEvenPattern.forEachIndexed { index, value ->
-            nextOddEvenPattern[index] = value.roundToInt().toFloat()
+        nextPattern.forEachIndexed { index, value ->
+            nextPattern[index] = value.roundToInt().toFloat()
         }
     }
 

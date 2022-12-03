@@ -2,8 +2,8 @@ package util
 
 import crawler.WebCrawler649
 import crawler.WebCrawler649Backup
-import model.TotoFrequency
-import model.TotoNumbers
+import model.Frequency
+import model.Numbers
 
 object TotoUtils {
 
@@ -19,9 +19,9 @@ object TotoUtils {
         drawingIndex: Int,
         drawing: IntArray,
         totoNumberOccurrences: Map<Int, Int>,
-        frequencies: Map<Int, List<TotoFrequency>>,
+        frequencies: Map<Int, List<Frequency>>,
         averageFrequencies: Map<Int, Float>,
-        drawings: List<TotoNumbers>
+        drawings: List<Numbers>
     ): Int {
         var score = 0
 

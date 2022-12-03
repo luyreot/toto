@@ -3,7 +3,7 @@ package data
 import model.TotoType
 import kotlin.math.roundToInt
 
-class TotoLowHighPatternPredict(
+class PredictLowHighPattern(
     private val totoType: TotoType,
     private val correctPatternUpwards: Float = CORRECT_UPWARDS_VALUE,
     private val correctPatternDownwards: Float = CORRECT_DOWNWARDS_VALUE,
@@ -11,14 +11,14 @@ class TotoLowHighPatternPredict(
     private val averageDivisorDownwards: Int = AVERAGE_DIVISOR_DOWNWARDS_VALUE
 ) {
 
-    val nextLowHighPattern = FloatArray(totoType.drawingSize)
+    val nextPattern = FloatArray(totoType.size)
 
-//    var correctlyPredictedPatternPart: Int = 0
-//    var correctlyPredictedPatternFull: Int = 0
+//    var correctlyPredictedIndexCount: Int = 0
+//    var correctlyPredictedCount: Int = 0
 
     init {
-        for (i in 0 until totoType.drawingSize) {
-            nextLowHighPattern[i] = PATTERN_DEFAULT_VALUE
+        for (i in 0 until totoType.size) {
+            nextPattern[i] = PATTERN_DEFAULT_VALUE
         }
     }
 
@@ -27,22 +27,21 @@ class TotoLowHighPatternPredict(
      * Correct if any of the indexes are not correct.
      * Re-calculate our next low high pattern.
      */
-    fun handleNextLowHighPattern(pattern: IntArray, drawingIndex: Int, occurredMoreThanAverage: Boolean) {
-        if (pattern.size != totoType.drawingSize)
+    fun handleNextPattern(pattern: IntArray, drawingIndex: Int, didOccurMoreThanAverage: Boolean) {
+        if (pattern.size != totoType.size)
             throw IllegalArgumentException("There is something wrong with the low high pattern!")
 
-
         // Handle first pattern
-        if (nextLowHighPattern.all { index -> index == PATTERN_DEFAULT_VALUE }) {
+        if (nextPattern.all { index -> index == PATTERN_DEFAULT_VALUE }) {
             pattern.forEachIndexed { index, value ->
-                nextLowHighPattern[index] = value.toFloat()
+                nextPattern[index] = value.toFloat()
             }
             return
         }
 
         /*
         var didCorrectlyPredictPattern = true
-        nextLowHighPattern.map { it.roundToInt() }.forEachIndexed { index, item ->
+        nextPattern.map { it.roundToInt() }.forEachIndexed { index, item ->
             if (didCorrectlyPredictPattern.not()) {
                 return@forEachIndexed
             }
@@ -52,7 +51,7 @@ class TotoLowHighPatternPredict(
             }
         }
         if (didCorrectlyPredictPattern) {
-            correctlyPredictedPatternFull++
+            correctlyPredictedCount++
         }
         */
 
@@ -60,40 +59,41 @@ class TotoLowHighPatternPredict(
         pattern.forEachIndexed { index, value ->
             when {
                 // We are getting 1 but we are predicting 0
-                value > nextLowHighPattern[index].roundToInt() -> {
-                    nextLowHighPattern[index] = nextLowHighPattern[index] + if (occurredMoreThanAverage)
+                value > nextPattern[index].roundToInt() -> {
+                    nextPattern[index] = nextPattern[index] + if (didOccurMoreThanAverage)
                         correctPatternUpwards
                     else
                         correctPatternUpwards / averageDivisorUpwards
 
                     // Correct for too high values
-                    if (nextLowHighPattern[index] > 1.49f) {
-                        nextLowHighPattern[index] = 1.49f
+                    if (nextPattern[index] > 1.49f) {
+                        nextPattern[index] = 1.49f
                     }
                 }
                 // We are getting 0 but we are predicting 1
-                value < nextLowHighPattern[index].roundToInt() -> {
-                    nextLowHighPattern[index] = nextLowHighPattern[index] - if (occurredMoreThanAverage)
+                value < nextPattern[index].roundToInt() -> {
+                    nextPattern[index] = nextPattern[index] - if (didOccurMoreThanAverage)
                         correctPatternDownwards
                     else
                         correctPatternDownwards / averageDivisorDownwards
 
                     // Correct for negative values
-                    if (nextLowHighPattern[index] < 0f) {
-                        nextLowHighPattern[index] = 0f
+                    if (nextPattern[index] < 0f) {
+                        nextPattern[index] = 0f
                     }
                 }
+
                 else -> {
                     // Value correctly predicted
-//                    correctlyPredictedPatternPart++
+//                    correctlyPredictedIndexCount++
                 }
             }
         }
     }
 
     fun normalizePrediction() {
-        nextLowHighPattern.forEachIndexed { index, value ->
-            nextLowHighPattern[index] = value.roundToInt().toFloat()
+        nextPattern.forEachIndexed { index, value ->
+            nextPattern[index] = value.roundToInt().toFloat()
         }
     }
 
