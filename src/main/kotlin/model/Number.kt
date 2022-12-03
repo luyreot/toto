@@ -6,7 +6,7 @@ package model
  *
  * Also, holds the [year] and the [issue] number of that drawing.
  */
-data class TotoNumber(
+data class Number(
     val number: Int,
     val position: Int,
     val year: Int,

@@ -8,7 +8,7 @@ package model
  * - a toto number
  * - a toto pattern
  */
-data class TotoFrequency(
+data class Frequency(
     val frequency: Int,
     val count: Int = 1
 )
