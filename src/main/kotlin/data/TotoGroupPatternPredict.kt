@@ -101,6 +101,9 @@ class TotoGroupPatternPredict(
         }
     }
 
+    /**
+     * These values managed to predict 214 group patterns correctly.
+     */
     private companion object {
         const val PATTERN_DEFAULT_VALUE = -1f
         const val CORRECT_UPWARDS_VALUE = 0.4f
