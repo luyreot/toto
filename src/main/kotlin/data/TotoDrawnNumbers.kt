@@ -1,15 +1,19 @@
 package data
 
+import extensions.clear
+import extensions.greaterOrEqual
 import model.TotoNumber
+import model.TotoNumbers
 import model.TotoType
+import util.FileConstants.PATH_TXT_6x49
 import util.IO
-import util.PATH_TXT_6x49
 
 /**
  * Holds a list of all drawn numbers.
  */
-class TotoNumbers(
-    private val totoType: TotoType
+class TotoDrawnNumbers(
+    private val totoType: TotoType,
+    private val fromYear: Int? = null
 ) {
 
     val numbers: List<TotoNumber>
@@ -17,22 +21,19 @@ class TotoNumbers(
 
     private val numbersCache = mutableListOf<TotoNumber>()
 
-    fun loadTotoNumbers(
-        vararg years: Int
-    ) {
+    val allDrawings: List<TotoNumbers>
+        get() = allDrawingsCache
+
+    private val allDrawingsCache = mutableListOf<TotoNumbers>()
+
+    val drawingsSubset: List<TotoNumbers>
+        get() = drawingsSubsetCache
+
+    private val drawingsSubsetCache = mutableListOf<TotoNumbers>()
+
+    fun loadTotoNumbers() {
         if (numbersCache.isNotEmpty()) numbersCache.clear()
 
-        val shouldLoadAllNumbers: Boolean = years.isEmpty()
-        if (shouldLoadAllNumbers) {
-            loadAllTotoNumbers()
-        } else {
-            loadTotoNumbersForYears(*years)
-        }
-
-        validateTotoNumbers()
-    }
-
-    private fun loadAllTotoNumbers() {
         when (totoType) {
             TotoType.D_6X49 -> {
                 IO.getFiles(PATH_TXT_6x49)?.let { files ->
@@ -47,16 +48,27 @@ class TotoNumbers(
 
             else -> throw IllegalArgumentException("${totoType.name} is not supported!")
         }
+
+        validateTotoNumbers()
     }
 
-    private fun loadTotoNumbersForYears(
-        vararg years: Int
-    ) {
-        years.forEach { year ->
-            addTotoNumbers(
-                year = year,
-                fileContents = IO.getTxtFileContents(PATH_TXT_6x49 + year)
-            )
+    fun extractDrawings() {
+        numbersCache.sortedWith(compareBy<TotoNumber> { it.year }.thenBy { it.issue }.thenBy { it.position }).let { sortedTotoNumbers ->
+            val drawing = IntArray(totoType.drawingSize)
+
+            sortedTotoNumbers.forEach { totoNumber ->
+                drawing[totoNumber.position] = totoNumber.number
+
+                if (totoNumber.position != totoType.drawingSize - 1) return@forEach
+
+                allDrawingsCache.add(TotoNumbers((drawing.clone())))
+
+                if (totoNumber.year.greaterOrEqual(fromYear, false)) {
+                    drawingsSubsetCache.add(TotoNumbers((drawing.clone())))
+                }
+
+                drawing.clear()
+            }
         }
     }
 
@@ -87,15 +99,18 @@ class TotoNumbers(
     }
 
     private fun validateTotoNumbers() {
-        if (numbersCache.isEmpty()) throw IllegalArgumentException("Drawings are empty!")
+        if (numbersCache.isEmpty())
+            throw IllegalArgumentException("Drawings are empty!")
 
-        if (numbersCache.any { it.issue == 0 }) throw IllegalArgumentException("There is a zero issue drawing!")
+        if (numbersCache.any { it.issue == 0 })
+            throw IllegalArgumentException("There is a zero issue drawing!")
 
         if (numbersCache.any { it.position > totoType.drawingSize - 1 })
             throw IllegalArgumentException("There is an incorrect position for ${totoType.name}!")
 
         val listSize: Int = numbersCache.size
         val setSize: Int = numbersCache.toSet().size
-        if (listSize != setSize) throw IllegalArgumentException("There is an invalid drawing!")
+        if (listSize != setSize)
+            throw IllegalArgumentException("There is an invalid drawing!")
     }
 }
