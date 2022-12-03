@@ -37,10 +37,7 @@ class TotoGroupPatternStats(
 
         drawings.forEachIndexed { index, totoNumbers ->
             val groupPattern = TotoNumbers(
-                convertTotoNumbersToGroupPattern(
-                    totoNumbers.numbers.copyOf(),
-                    groupStrategyMethod
-                )
+                convertTotoNumbersToGroupPattern(totoNumbers.numbers.copyOf(), groupStrategyMethod)
             )
 
             totoPredict.handleNextGroupPattern(

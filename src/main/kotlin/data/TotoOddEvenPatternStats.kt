@@ -40,7 +40,9 @@ class TotoOddEvenPatternStats(
 
         drawings.forEachIndexed { index, totoNumbers ->
             // Already got the toto numbers of a single drawing
-            val oddEvenPattern = TotoNumbers(convertTotoNumbersToOddEvenPattern(totoNumbers.numbers.copyOf()))
+            val oddEvenPattern = TotoNumbers(
+                convertTotoNumbersToOddEvenPattern(totoNumbers.numbers.copyOf())
+            )
 
             totoPredict.handleNextOddEvenPattern(
                 oddEvenPattern.numbers,

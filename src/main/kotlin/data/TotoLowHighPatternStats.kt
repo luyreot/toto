@@ -41,10 +41,7 @@ class TotoLowHighPatternStats(
         drawings.forEachIndexed { index, totoNumbers ->
             // Already got the toto numbers of a single drawing
             val lowHighPattern = TotoNumbers(
-                convertTotoNumbersToLowHighPattern(
-                    totoNumbers.numbers.copyOf(),
-                    totoType.lowHighMidPoint
-                )
+                convertTotoNumbersToLowHighPattern(totoNumbers.numbers.copyOf(), totoType.lowHighMidPoint)
             )
 
             totoPredict.handleNextLowHighPattern(
