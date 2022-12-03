@@ -43,8 +43,8 @@ class TotoStats(
         totoDrawingScoreStats
     )
 
-    fun loadTotoNumbers(vararg years: Int) {
-        totoNumbers.loadTotoNumbers(*years)
+    fun loadTotoNumbers() {
+        totoNumbers.loadTotoNumbers()
         totoNumbers.extractDrawings()
     }
 

@@ -31,16 +31,22 @@ class TotoDrawnNumbers(
 
     private val drawingsSubsetCache = mutableListOf<TotoNumbers>()
 
-    fun loadTotoNumbers(
-        vararg years: Int
-    ) {
+    fun loadTotoNumbers() {
         if (numbersCache.isNotEmpty()) numbersCache.clear()
 
-        val shouldLoadAllNumbers: Boolean = years.isEmpty()
-        if (shouldLoadAllNumbers) {
-            loadAllTotoNumbers()
-        } else {
-            loadTotoNumbersForYears(*years)
+        when (totoType) {
+            TotoType.D_6X49 -> {
+                IO.getFiles(PATH_TXT_6x49)?.let { files ->
+                    files.forEach { file ->
+                        addTotoNumbers(
+                            year = file.name.toInt(),
+                            fileContents = IO.getTxtFileContents(file)
+                        )
+                    }
+                } ?: throw IllegalArgumentException("Did not load any files!")
+            }
+
+            else -> throw IllegalArgumentException("${totoType.name} is not supported!")
         }
 
         validateTotoNumbers()
@@ -63,34 +69,6 @@ class TotoDrawnNumbers(
 
                 drawing.clear()
             }
-        }
-    }
-
-    private fun loadAllTotoNumbers() {
-        when (totoType) {
-            TotoType.D_6X49 -> {
-                IO.getFiles(PATH_TXT_6x49)?.let { files ->
-                    files.forEach { file ->
-                        addTotoNumbers(
-                            year = file.name.toInt(),
-                            fileContents = IO.getTxtFileContents(file)
-                        )
-                    }
-                } ?: throw IllegalArgumentException("Did not load any files!")
-            }
-
-            else -> throw IllegalArgumentException("${totoType.name} is not supported!")
-        }
-    }
-
-    private fun loadTotoNumbersForYears(
-        vararg years: Int
-    ) {
-        years.forEach { year ->
-            addTotoNumbers(
-                year = year,
-                fileContents = IO.getTxtFileContents(PATH_TXT_6x49 + year)
-            )
         }
     }
 
