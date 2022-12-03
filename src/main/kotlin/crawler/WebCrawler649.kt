@@ -3,9 +3,9 @@ package crawler
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
+import util.FileConstants.PATH_TXT_6x49
+import util.FileConstants.YEAR_FOR_WEB_CRAWL
 import util.IO
-import util.PATH_TXT_6x49
-import util.YEAR_FOR_WEB_CRAWL
 import java.io.IOException
 
 // TODO: 1/2/22 Class is only 6x49 aware

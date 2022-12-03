@@ -1,8 +1,7 @@
-import crawler.WebCrawler649
-import crawler.WebCrawler649Backup
 import data.TotoStats
 import model.TotoType
-import kotlin.concurrent.thread
+import util.ThreadUtils.launchThread
+import util.TotoUtils.fetchNewDrawings
 
 object Main {
 
@@ -39,17 +38,5 @@ object Main {
         }
 
         println("=== MAIN END ===")
-    }
-
-    private fun fetchNewDrawings(fetchFromBackupSite: Boolean = false) {
-        if (fetchFromBackupSite) {
-            WebCrawler649Backup.updateDrawings()
-        } else {
-            WebCrawler649.updateDrawings()
-        }
-    }
-
-    private fun launchThread(method: () -> Unit) = thread(true) {
-        method.invoke()
     }
 }

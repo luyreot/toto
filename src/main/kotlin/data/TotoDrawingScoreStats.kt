@@ -1,7 +1,7 @@
 package data
 
 import model.TotoType
-import util.Helper.getDrawingScore
+import util.TotoUtils.getDrawingScore
 import kotlin.math.abs
 
 class TotoDrawingScoreStats(

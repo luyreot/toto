@@ -6,7 +6,7 @@ import model.TotoGroupStrategy
 import model.TotoNumbers
 import model.TotoType
 import model.groupStrategies
-import util.Helper.getDrawingScore
+import util.TotoUtils.getDrawingScore
 
 class TotoNextDrawing(
     private val totoType: TotoType,

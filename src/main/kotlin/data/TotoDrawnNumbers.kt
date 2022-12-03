@@ -5,8 +5,8 @@ import extensions.greaterOrEqual
 import model.TotoNumber
 import model.TotoNumbers
 import model.TotoType
+import util.FileConstants.PATH_TXT_6x49
 import util.IO
-import util.PATH_TXT_6x49
 
 /**
  * Holds a list of all drawn numbers.

@@ -1,9 +1,19 @@
 package util
 
+import crawler.WebCrawler649
+import crawler.WebCrawler649Backup
 import model.TotoFrequency
 import model.TotoNumbers
 
-object Helper {
+object TotoUtils {
+
+    fun fetchNewDrawings(fetchFromBackupSite: Boolean = false) {
+        if (fetchFromBackupSite) {
+            WebCrawler649Backup.updateDrawings()
+        } else {
+            WebCrawler649.updateDrawings()
+        }
+    }
 
     fun getDrawingScore(
         drawingIndex: Int,

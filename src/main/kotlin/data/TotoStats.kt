@@ -77,6 +77,8 @@ class TotoStats(
         totoNextDrawing.predictNextDrawing()
     }
 
+    // region Testing
+
     fun testOddEvenPredictionAlgo() {
         /*
         var up = 0.1f
@@ -289,4 +291,6 @@ class TotoStats(
         println()
 //        */
     }
+
+    // endregion Testing
 }
