@@ -32,7 +32,7 @@ class TotoCombinedPatternStats(
     fun calculateCombinedPatternStats() {
         val drawings = if (fromYear == null) totoNumbers.allDrawings else totoNumbers.drawingsSubset
 
-        drawings.forEachIndexed { index, totoNumbers ->
+        drawings.forEach { totoNumbers ->
             val groupPattern = TotoNumbers(
                 convertTotoNumbersToGroupPattern(totoNumbers.numbers.copyOf(), groupStrategyMethod)
             )
@@ -53,7 +53,7 @@ class TotoCombinedPatternStats(
             // Add combined pattern
             if (patternsCache.contains(combinedPattern).not()) {
                 patternsCache.add(combinedPattern)
-                return@forEachIndexed
+                return@forEach
             }
 
             // Merge existing combined pattern
