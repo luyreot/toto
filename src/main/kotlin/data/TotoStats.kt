@@ -46,6 +46,7 @@ class TotoStats(
     fun loadTotoNumbers() {
         totoNumbers.loadTotoNumbers()
         totoNumbers.extractDrawings()
+        totoNumbers.checkForDuplicateDrawings()
     }
 
     fun calculateTotoNumberStats() {
