@@ -82,13 +82,21 @@ class PredictGroupPattern(
             averageTrueRangePatternArray[i].add(newAtrValue)
             nextPattern[i] = newAtrValue
 
-//            atrArray[i].last()?.let { atrValue ->
-//                val multiplier = if (atrArray[i].isAtMaxSize()) atrPeriod - 1 else atrArray[i].size
-//                val divisor = if (atrArray[i].isAtMaxSize()) atrPeriod else atrArray[i].size + 1
+//            averageTrueRangePatternArray[i].last()?.let { atrValue ->
+//                val multiplier = if (averageTrueRangePatternArray[i].isAtMaxSize())
+//                    period - 1
+//                else
+//                    averageTrueRangePatternArray[i].size
+//
+//                val divisor = if (averageTrueRangePatternArray[i].isAtMaxSize())
+//                    period
+//                else
+//                    averageTrueRangePatternArray[i].size + 1
+//
 //                val newAtrValue: Float = (atrValue * multiplier + pattern[i]) / divisor
-//                atrArray[i].add(newAtrValue)
+//                averageTrueRangePatternArray[i].add(newAtrValue)
 //                nextPattern[i] = newAtrValue
-//        }
+//            }
         }
     }
 
