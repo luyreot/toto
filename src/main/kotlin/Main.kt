@@ -1,7 +1,7 @@
 import data.Stats
 import model.TotoType
 import util.ThreadUtils.launchThread
-import util.TotoUtils.fetchNewDrawings
+import util.TotoUtils
 
 object Main {
 
@@ -9,7 +9,9 @@ object Main {
     fun main(args: Array<String>) {
         println("=== MAIN START ===")
 
-//        fetchNewDrawings()
+        TotoUtils.apply {
+//            fetchNewDrawings()
+        }
 
         Stats(TotoType.T_6X49).apply {
             loadNumbers()
