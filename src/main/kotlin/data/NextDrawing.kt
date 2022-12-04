@@ -23,6 +23,7 @@ class NextDrawing(
     private val groupPatternDeltaStats: GroupPatternDeltaStats,
     private val groupStrategy: GroupStrategy,
     private val groupDeltaStrategy: GroupStrategy,
+    private val combinedPatternStats: CombinedPatternStats,
     private val drawingScoreStats: DrawingScoreStats
 ) {
 

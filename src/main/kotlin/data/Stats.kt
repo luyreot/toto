@@ -42,6 +42,7 @@ class Stats(
         groupPatternDeltaStats,
         DIVIDE_BY_10,
         DELTA_SUBTRACT,
+        combinedPatternStats,
         drawingScoreStats
     )
 
