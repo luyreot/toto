@@ -194,6 +194,7 @@ class Stats(
     }
 
     fun testGroupPredictionAlgo() {
+        /*
         val periodIncrement = 8 // 2 drawings per week x 4 weeks = 1 month
         var predictedThreesCount = 0
         var predictedFoursCount = 0
@@ -233,6 +234,7 @@ class Stats(
         println("PredictedFoursCount - $predictedFoursCount")
         println("PredictedFivesCount - $predictedFivesCount")
         println("PredictedSixesCount - $predictedSixesCount")
+        */
     }
 
     // endregion Testing

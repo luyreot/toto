@@ -92,6 +92,9 @@ class PredictGroupPattern(
         }
     }
 
+    fun normalizePredictionPattern() {
+        TODO()
+    }
 
     //    round to int, multiply previous atr by current size and then add the new value and divide by size + 1
 //    Period - 48
@@ -109,7 +112,7 @@ class PredictGroupPattern(
     private companion object {
         const val PATTERN_DEFAULT_VALUE = 0f
 
-        // 4 weeks (1 month) x 2 drawings x 4 = 32
+        // 2 drawings per week x 4 weeks = 1 month
         const val PERIOD = 32
     }
 }
