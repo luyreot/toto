@@ -193,60 +193,45 @@ class Stats(
     }
 
     fun testGroupPredictionAlgo() {
-        /*
-        var up = 0.1f
-        var down = 0.1f
-        var divisorUp = 2
-        var divisorDown = 2
-        var correctlyPredictedIndexCount = 0
-        var correctlyPredictedCount = 0
-        var sUp = 0f
-        var sDown = 0f
-        var sDivisorUp = 0
-        var sDivisorDown = 0
-        for (u in 0..40) {
-            for (d in 0..40) {
-                divisorUp = 2
-                divisorDown = 2
+        val periodIncrement = 8 // 2 drawings per week x 4 weeks = 1 month
+        var predictedThreesCount = 0
+        var predictedFoursCount = 0
+        var predictedFivesCount = 0
+        var predictedSixesCount = 0
 
-                for (ud in 0..10) {
-                    for (dd in 0..10) {
-                        val predict = PredictGroupPattern(totoType, up, down, divisorUp, divisorDown)
-                        GroupPatternStats(totoType, drawings, DIVIDE_BY_10, predict).apply {
-                            calculateStats()
+        for (i in 1..24) {
+            val period = periodIncrement * i
+            val predict = PredictGroupPattern(totoType, period)
+            GroupPatternStats(totoType, drawings, DIVIDE_BY_10, predict, fromYear).apply {
+                calculateStats()
 
-                            println("UP - $up, DOWN - $down")
-                            println("Div UP - $divisorUp, Div DOWN - $divisorDown")
-                            println("correctlyPredictedIndexCount - ${predict.correctlyPredictedIndexCount}")
-                            println("correctlyPredictedCount - ${predict.correctlyPredictedCount}")
-                            println("nextGroupPattern - ${predict.nextPattern.map { it }}")
-                            println("--------")
-                        }
+                println("Period - $period")
+                println("PredictedThreesCount - ${predict.predictedThreesCount}")
+                println("PredictedFoursCount - ${predict.predictedFoursCount}")
+                println("PredictedFivesCount - ${predict.predictedFivesCount}")
+                println("PredictedSixesCount - ${predict.predictedSixesCount}")
+                println("--- --- --- --- --- --- ---")
 
-                        if (predict.correctlyPredictedIndexCount > correctlyPredictedIndexCount) {
-                            correctlyPredictedIndexCount = predict.correctlyPredictedIndexCount
-                        }
-                        if (predict.correctlyPredictedCount > correctlyPredictedCount) {
-                            correctlyPredictedCount = predict.correctlyPredictedCount
-                            sUp = up
-                            sDown = down
-                            sDivisorUp = divisorUp
-                            sDivisorDown = divisorDown
-                        }
-                        divisorDown += 1
-                    }
-                    divisorUp += 1
-                    divisorDown = 2
+                if (predictedThreesCount < predict.predictedThreesCount) {
+                    predictedThreesCount = predict.predictedThreesCount
                 }
-                down += 0.1f
+                if (predictedFoursCount < predict.predictedFoursCount) {
+                    predictedFoursCount = predict.predictedFoursCount
+                }
+                if (predictedFivesCount < predict.predictedFivesCount) {
+                    predictedFivesCount = predict.predictedFivesCount
+                }
+                if (predictedSixesCount < predict.predictedSixesCount) {
+                    predictedSixesCount = predict.predictedSixesCount
+                }
             }
-            up += 0.1f
-            down = 0.1f
         }
 
-        println("correctlyPredictedIndexCount - $correctlyPredictedIndexCount")
-        println("correctlyPredictedCount - $correctlyPredictedCount")
-        */
+        println("Top Results")
+        println("PredictedThreesCount - $predictedThreesCount")
+        println("PredictedFoursCount - $predictedFoursCount")
+        println("PredictedFivesCount - $predictedFivesCount")
+        println("PredictedSixesCount - $predictedSixesCount")
     }
 
     // endregion Testing

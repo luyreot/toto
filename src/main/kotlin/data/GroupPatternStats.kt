@@ -4,7 +4,6 @@ import extensions.greaterOrEqual
 import extensions.sortByValueDescending
 import model.*
 import util.PatternUtils.convertToGroupPattern
-import util.PatternUtils.didPatternOccurMoreThanAverage
 
 class GroupPatternStats(
     private val totoType: TotoType,
@@ -36,11 +35,7 @@ class GroupPatternStats(
         drawings.forEachIndexed { index, numbers ->
             val pattern = Numbers(convertToGroupPattern(numbers.numbers.copyOf(), groupStrategyMethod))
 
-            predict.handleNextPattern(
-                pattern.numbers,
-                index,
-                didPatternOccurMoreThanAverage(patternsCache, pattern)
-            )
+            predict.takePattern(pattern.numbers, index)
 
             patternsCache.merge(pattern, 1, Int::plus)
 
@@ -89,8 +84,6 @@ class GroupPatternStats(
                 )
             }
         }
-
-        predict.normalizePrediction()
 
         validateOccurrences()
         validateFrequencies()
