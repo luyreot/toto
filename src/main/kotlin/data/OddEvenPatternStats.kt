@@ -6,7 +6,6 @@ import model.Frequency
 import model.Numbers
 import model.TotoType
 import util.PatternUtils.convertOddEvenPattern
-import util.PatternUtils.didPatternOccurMoreThanAverage
 
 /**
  * Holds information about:
@@ -40,11 +39,7 @@ class OddEvenPatternStats(
             // Already got the toto numbers of a single drawing
             val pattern = Numbers(convertOddEvenPattern(numbers.numbers.copyOf()))
 
-            predict.handleNextPattern(
-                pattern.numbers,
-                index,
-                didPatternOccurMoreThanAverage(patternsCache, pattern)
-            )
+            predict.takePattern(pattern.numbers, index)
 
             // Save the pattern in the map
             patternsCache.merge(pattern, 1, Int::plus)
@@ -94,8 +89,6 @@ class OddEvenPatternStats(
                 )
             }
         }
-
-        predict.normalizePrediction()
 
         validateOccurrences()
         validateFrequencies()
