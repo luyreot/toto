@@ -6,7 +6,6 @@ import model.Frequency
 import model.Numbers
 import model.TotoType
 import util.PatternUtils.convertToLowHighPattern
-import util.PatternUtils.didPatternOccurMoreThanAverage
 
 /**
  * Holds information about:
@@ -40,11 +39,7 @@ class LowHighPatternStats(
             // Already got the toto numbers of a single drawing
             val pattern = Numbers(convertToLowHighPattern(numbers.numbers.copyOf(), totoType.lowHighMidPoint))
 
-            predict.handleNextPattern(
-                pattern.numbers,
-                index,
-                didPatternOccurMoreThanAverage(patternsCache, pattern)
-            )
+            predict.takePattern(pattern.numbers, index)
 
             // Save the pattern in the map
             patternsCache.merge(pattern, 1, Int::plus)
@@ -94,8 +89,6 @@ class LowHighPatternStats(
                 )
             }
         }
-
-        predict.normalizePrediction()
 
         validateOccurrences()
         validateFrequencies()
