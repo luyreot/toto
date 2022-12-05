@@ -9,7 +9,7 @@ class PredictOddEvenPattern(
     private val period: Int = PERIOD
 ) {
 
-    val nextPattern = FloatArray(totoType.size)
+    val nextPattern = IntArray(totoType.size)
 
     private val averageTrueRangePatternArray = Array<QueueList<Float>>(totoType.size) {
         QueueList(period)
@@ -35,15 +35,14 @@ class PredictOddEvenPattern(
             for (i in averageTrueRangePatternArray.indices) {
                 pattern[i].div(1f).let {
                     averageTrueRangePatternArray[i].add(it)
-                    nextPattern[i] = it
+                    nextPattern[i] = normalizePrediction(it)
                 }
             }
 
             return
         }
 
-        val predictedPattern = nextPattern.map { (it + 0.5f).toInt() }.toIntArray()
-        val predictedPatternList = predictedPattern.toList()
+        val predictedPatternList = nextPattern.toList()
         val currentPatternList = pattern.toMutableList()
         var predictedIndices = 0
         predictedPatternList.forEach { predictedPatternIndex ->
@@ -61,64 +60,56 @@ class PredictOddEvenPattern(
         if (predictedIndices >= 5) {
             predictedFivesCount++
         }
-        if (predictedPattern.contentEquals(pattern)) {
+        if (nextPattern.contentEquals(pattern)) {
             predictedSixesCount++
         }
 
         for (i in averageTrueRangePatternArray.indices) {
-            val divisor = if (averageTrueRangePatternArray[i].isAtMaxSize())
-                period
-            else
-                averageTrueRangePatternArray[i].size + 1
-
-            val sum = if (averageTrueRangePatternArray[i].isAtMaxSize())
-                averageTrueRangePatternArray[i].sum() - averageTrueRangePatternArray[i][0]
-            else
-                averageTrueRangePatternArray[i].sum()
-
-            val newAtrValue: Float = ((sum + pattern[i]) / divisor)
-            averageTrueRangePatternArray[i].add(newAtrValue)
-            nextPattern[i] = newAtrValue
-
-//            averageTrueRangePatternArray[i].last()?.let { atrValue ->
-//                val multiplier = if (averageTrueRangePatternArray[i].isAtMaxSize())
-//                    period - 1
-//                else
-//                    averageTrueRangePatternArray[i].size
-//
-//                val divisor = if (averageTrueRangePatternArray[i].isAtMaxSize())
-//                    period
-//                else
-//                    averageTrueRangePatternArray[i].size + 1
-//
-//                val newAtrValue: Float = (atrValue * multiplier + pattern[i]) / divisor
-//                averageTrueRangePatternArray[i].add(newAtrValue)
-//                nextPattern[i] = newAtrValue
-//            }
+            getSummedPeriodsValue(i, pattern[i]).let {
+                averageTrueRangePatternArray[i].add(it)
+                nextPattern[i] = normalizePrediction(it)
+            }
         }
     }
 
-    fun normalizePredictionPattern() {
-        nextPattern.forEachIndexed { index, value ->
-            nextPattern[index] = value.roundToInt().toFloat()
-        }
+    private fun normalizePrediction(value: Float): Int = (value + OFFSET).roundToInt()
+
+    private fun getSummedPeriodsValue(arrayIndex: Int, currentPatternValue: Int): Float {
+        val sum = if (averageTrueRangePatternArray[arrayIndex].isAtMaxSize())
+            averageTrueRangePatternArray[arrayIndex].sum() - averageTrueRangePatternArray[arrayIndex][0]
+        else
+            averageTrueRangePatternArray[arrayIndex].sum()
+
+        val divisor = if (averageTrueRangePatternArray[arrayIndex].isAtMaxSize())
+            period
+        else
+            averageTrueRangePatternArray[arrayIndex].size + 1
+
+        return (sum + currentPatternValue) / divisor
     }
 
-    //    Period - 32
-//    PredictedThreesCount - 9366
-//    PredictedFoursCount - 8423
-//    PredictedFivesCount - 6022
-//    PredictedSixesCount - 197
-//    Period - 80
-//    PredictedThreesCount - 9591
-//    PredictedFoursCount - 8911
-//    PredictedFivesCount - 6665
-//    PredictedSixesCount - 141
-    // previous algo produces result of 203
+    private fun getLastPeriodValue(arrayIndex: Int, currentPatternValue: Int): Float {
+        val lastValue = averageTrueRangePatternArray[arrayIndex].last()
+            ?: throw IllegalArgumentException("There is now last ATR value!")
+
+        val multiplier = if (averageTrueRangePatternArray[arrayIndex].isAtMaxSize())
+            period - 1
+        else
+            averageTrueRangePatternArray[arrayIndex].size
+
+        val divisor = if (averageTrueRangePatternArray[arrayIndex].isAtMaxSize())
+            period
+        else
+            averageTrueRangePatternArray[arrayIndex].size + 1
+
+        return (lastValue * multiplier + currentPatternValue) / divisor
+    }
+
     private companion object {
-        const val PATTERN_DEFAULT_VALUE = -1f
+        const val PATTERN_DEFAULT_VALUE = -1
 
         // 2 drawings per week x 4 weeks = 1 month
         const val PERIOD = 32
+        const val OFFSET = 0f
     }
 }
