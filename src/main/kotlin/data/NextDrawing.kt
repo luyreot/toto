@@ -30,10 +30,6 @@ class NextDrawing(
     val nextDrawingsTopScore = mutableMapOf<IntArray, Int>()
     val nextDrawingsAverageScore = mutableMapOf<IntArray, Int>()
 
-    lateinit var nextOddEvenPattern: IntArray
-    lateinit var nextLowHighPattern: IntArray
-    lateinit var nextGroupPattern: IntArray
-
     private val groupStrategyMethod = groupStrategies[groupStrategy] as? (Int) -> Int
     private val groupDeltaStrategyMethod = groupStrategies[groupDeltaStrategy] as? (Int, Int) -> Int
 
@@ -45,30 +41,16 @@ class NextDrawing(
             throw IllegalArgumentException("Group Delta strategy method is null!")
     }
 
-    fun populatePatternArrays() {
-        nextOddEvenPattern = predictOddEvenPattern.nextPattern.map { it.toInt() }.toIntArray()
-        if (nextOddEvenPattern.size != totoType.size)
-            throw IllegalArgumentException("Something wrong with the predicted odd even pattern!")
-
-        nextLowHighPattern = predictLowHighPattern.nextPattern.map { it.toInt() }.toIntArray()
-        if (nextLowHighPattern.size != totoType.size)
-            throw IllegalArgumentException("Something wrong with the predicted low high pattern!")
-
-        nextGroupPattern = predictGroupPattern.nextPattern.map { it.toInt() }.toIntArray()
-        if (nextGroupPattern.size != totoType.size)
-            throw IllegalArgumentException("Something wrong with the predicted group pattern!")
-    }
-
     fun predictNextDrawing() {
         val predictionNumbers = Array<List<Int>>(totoType.size) { emptyList() }
 
         for (i in 0 until totoType.size) {
-            val isOdd = nextOddEvenPattern[i] == 0
-            val isLow = nextLowHighPattern[i] == 0
+            val isOdd = predictOddEvenPattern.nextPattern[i] == 0
+            val isLow = predictLowHighPattern.nextPattern[i] == 0
             val group = when {
-                isLow && nextGroupPattern[i] > 2 -> 2
-                isLow.not() && nextGroupPattern[i] < 2 -> 2
-                else -> nextGroupPattern[i]
+                isLow && predictGroupPattern.nextPattern[i] > 2 -> 2
+                isLow.not() && predictGroupPattern.nextPattern[i] < 2 -> 2
+                else -> predictGroupPattern.nextPattern[i]
             }
 
             predictionNumbers[i] = getPredictionNumbers(

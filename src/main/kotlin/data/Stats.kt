@@ -81,7 +81,6 @@ class Stats(
     }
 
     fun predictNextDrawing() {
-        nextDrawing.populatePatternArrays()
         nextDrawing.predictNextDrawing()
     }
 
