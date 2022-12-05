@@ -139,10 +139,10 @@ class Stats(
         var predictedFivesCount = 0
         var predictedSixesCount = 0
 
-        for (i in 1..24) {
+        for (i in 1..111) {
             val period = periodIncrement * i
-            val predict = PredictGroupPattern(totoType, period)
-            GroupPatternStats(totoType, drawings, DIVIDE_BY_10, predict, fromYear).apply {
+            val predict = PredictLowHighPattern(totoType, period)
+            LowHighPatternStats(totoType, drawings, predict, fromYear).apply {
                 calculateStats()
 
                 println("Period - $period")
