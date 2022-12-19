@@ -44,12 +44,6 @@ class NextDrawing(
     fun predictNextDrawing() {
         val predictionNumbers = Array<List<Int>>(totoType.size) { emptyList() }
 
-        combinedPatternStats.patterns.find { it.groupPattern == Numbers(predictGroupPattern.nextPattern) }?.let { combinedPattern ->
-            val lowHighExist = combinedPattern.lowHighs.keys.contains(Numbers(predictLowHighPattern.nextPattern))
-            val oddEvenExist = combinedPattern.oddEvens.keys.contains(Numbers(predictOddEvenPattern.nextPattern))
-            TODO()
-        }
-
         for (i in 0 until totoType.size) {
             val isOdd = predictOddEvenPattern.nextPattern[i] == 0
             val isLow = predictLowHighPattern.nextPattern[i] == 0
