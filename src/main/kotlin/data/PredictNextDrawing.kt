@@ -6,57 +6,40 @@ import model.GroupStrategy
 import model.Numbers
 import model.TotoType
 import model.groupStrategies
-import util.PatternUtils.convertToGroupPatternDelta
 import util.TotoUtils.getDrawingScore
 
-class NextDrawing(
+class PredictNextDrawing(
     private val totoType: TotoType,
     private val drawings: Drawings,
     private val fromYear: Int? = null,
     private val numberStats: NumberStats,
-    private val oddEvenPatternStats: OddEvenPatternStats,
-    private val predictOddEvenPattern: PredictOddEvenPattern,
-    private val lowHighPatternStats: LowHighPatternStats,
-    private val predictLowHighPattern: PredictLowHighPattern,
-    private val groupPatternStats: GroupPatternStats,
-    private val predictGroupPattern: PredictGroupPattern,
-    private val groupPatternDeltaStats: GroupPatternDeltaStats,
     private val groupStrategy: GroupStrategy,
-    private val groupDeltaStrategy: GroupStrategy,
-    private val combinedPatternStats: CombinedPatternStats,
-    private val drawingScoreStats: DrawingScoreStats
+    private val drawingScoreStats: DrawingScoreStats,
+    private val predictPatternOptimizer: PredictPatternOptimizer
 ) {
 
     val nextDrawingsTopScore = mutableMapOf<IntArray, Int>()
     val nextDrawingsAverageScore = mutableMapOf<IntArray, Int>()
 
     private val groupStrategyMethod = groupStrategies[groupStrategy] as? (Int) -> Int
-    private val groupDeltaStrategyMethod = groupStrategies[groupDeltaStrategy] as? (Int, Int) -> Int
 
     init {
         if (groupStrategyMethod == null)
             throw IllegalArgumentException("Group strategy method is null!")
-
-        if (groupDeltaStrategyMethod == null)
-            throw IllegalArgumentException("Group Delta strategy method is null!")
     }
 
     fun predictNextDrawing() {
         val predictionNumbers = Array<List<Int>>(totoType.size) { emptyList() }
 
         for (i in 0 until totoType.size) {
-            val isOdd = predictOddEvenPattern.nextPattern[i] == 0
-            val isLow = predictLowHighPattern.nextPattern[i] == 0
-            val group = when {
-                isLow && predictGroupPattern.nextPattern[i] > 2 -> 2
-                isLow.not() && predictGroupPattern.nextPattern[i] < 2 -> 2
-                else -> predictGroupPattern.nextPattern[i]
-            }
+            val group = predictPatternOptimizer.nextGroupPattern[i]
+            val isLow = predictPatternOptimizer.nextLowHighPattern[i] == 0
+            val isOdd = predictPatternOptimizer.nextOddEvenPattern[i] == 0
 
             predictionNumbers[i] = getPredictionNumbers(
-                isOdd = isOdd,
+                group = group,
                 isLow = isLow,
-                group = group
+                isOdd = isOdd
             )
         }
 
@@ -66,15 +49,6 @@ class NextDrawing(
         for (i in numberCombinations.size - 1 downTo 0) {
             // Remove already existing drawings
             if (allDrawings.contains(Numbers(numberCombinations[i]))) {
-                numberCombinations.removeAt(i)
-            }
-
-            // Remove drawings that have occurred as delta pattern
-            val doesDeltaPatternExist = groupPatternDeltaStats
-                .patterns
-                .keys
-                .contains(Numbers(convertToGroupPatternDelta(numberCombinations[i].copyOf(), groupDeltaStrategyMethod)))
-            if (doesDeltaPatternExist) {
                 numberCombinations.removeAt(i)
             }
         }
@@ -104,9 +78,9 @@ class NextDrawing(
     }
 
     private fun getPredictionNumbers(
-        isOdd: Boolean,
+        group: Int,
         isLow: Boolean,
-        group: Int
+        isOdd: Boolean
     ): List<Int> {
         val numbers = mutableListOf<Int>()
 
@@ -125,14 +99,14 @@ class NextDrawing(
         return numbers
     }
 
-    private fun isEven(number: Int): Boolean = number and 1 == 0
-
-    private fun isHigh(number: Int): Boolean = number > totoType.lowHighMidPoint
-
     private fun isFromSameGroup(
         group: Int,
         number: Int
     ): Boolean = group == groupStrategyMethod?.invoke(number)
+
+    private fun isHigh(number: Int): Boolean = number > totoType.lowHighMidPoint
+
+    private fun isEven(number: Int): Boolean = number and 1 == 0
 
     private fun generateDrawings(allPossibleNumbers: Array<List<Int>>): MutableList<IntArray> {
         val combinations = mutableSetOf<Numbers>()

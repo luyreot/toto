@@ -105,12 +105,11 @@ class PredictLowHighPattern(
         return (lastValue * multiplier + currentPatternValue) / divisor
     }
 
-    // atr algo should beat 2584
-    private companion object {
-        const val PATTERN_DEFAULT_VALUE = -1
+    companion object {
+        private const val PATTERN_DEFAULT_VALUE = -1
 
         // 2 drawings per week x 4 weeks = 1 month
         const val PERIOD = 54
-        const val OFFSET = 0f
+        private const val OFFSET = 0f
     }
 }

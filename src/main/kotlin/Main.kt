@@ -35,6 +35,7 @@ object Main {
 //            testLowHighPredictionAlgo()
 //            testGroupPredictionAlgo()
 
+            optimizePredictedPatterns()
             predictNextDrawing()
 
             println()

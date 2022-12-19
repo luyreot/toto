@@ -1,6 +1,5 @@
 package data
 
-import model.GroupStrategy.DELTA_SUBTRACT
 import model.GroupStrategy.DIVIDE_BY_10
 import model.TotoType
 
@@ -28,7 +27,7 @@ class Stats(
 
     val groupPatternDeltaStats = GroupPatternDeltaStats(totoType, drawings, fromYear)
 
-    val nextDrawing = NextDrawing(
+    val predictPatternOptimizer = PredictPatternOptimizer(
         totoType,
         drawings,
         fromYear,
@@ -40,10 +39,18 @@ class Stats(
         groupPatternStats,
         predictGroupPattern,
         groupPatternDeltaStats,
-        DIVIDE_BY_10,
-        DELTA_SUBTRACT,
         combinedPatternStats,
         drawingScoreStats
+    )
+
+    val predictNextDrawing = PredictNextDrawing(
+        totoType,
+        drawings,
+        fromYear,
+        numberStats,
+        DIVIDE_BY_10,
+        drawingScoreStats,
+        predictPatternOptimizer
     )
 
     fun loadNumbers() {
@@ -80,8 +87,12 @@ class Stats(
         groupPatternDeltaStats.calculateStats()
     }
 
+    fun optimizePredictedPatterns() {
+        predictPatternOptimizer.optimizePredictedPatterns()
+    }
+
     fun predictNextDrawing() {
-        nextDrawing.predictNextDrawing()
+        predictNextDrawing.predictNextDrawing()
     }
 
     // region Testing
