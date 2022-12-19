@@ -54,9 +54,9 @@ class GroupPatternDeltaStats(
     private val totoType: TotoType,
     private val drawings: Drawings,
     private val fromYear: Int? = null
-) {
+) : PatternStats<Numbers> {
 
-    val patterns: Map<Numbers, Int>
+    override val patterns: Map<Numbers, Int>
         get() = patternsCache
     private val patternsCache = mutableMapOf<Numbers, Int>()
 
@@ -64,7 +64,7 @@ class GroupPatternDeltaStats(
         get() = patternsGroupedCache
     private val patternsGroupedCache = mutableMapOf<Int, MutableMap<Numbers, Int>>()
 
-    val frequencies: Map<Numbers, List<Frequency>>
+    override val frequencies: Map<Numbers, List<Frequency>>
         get() = frequenciesCache
     private val frequenciesCache = mutableMapOf<Numbers, MutableList<Frequency>>()
 

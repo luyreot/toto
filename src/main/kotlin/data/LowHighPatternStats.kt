@@ -21,13 +21,13 @@ class LowHighPatternStats(
     private val drawings: Drawings,
     private val predict: PredictLowHighPattern,
     private val fromYear: Int? = null
-) {
+) : PatternStats<Numbers> {
 
-    val patterns: Map<Numbers, Int>
+    override val patterns: Map<Numbers, Int>
         get() = patternsCache
     private val patternsCache = mutableMapOf<Numbers, Int>()
 
-    val frequencies: Map<Numbers, List<Frequency>>
+    override val frequencies: Map<Numbers, List<Frequency>>
         get() = frequenciesCache
     private val frequenciesCache = mutableMapOf<Numbers, MutableList<Frequency>>()
 

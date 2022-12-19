@@ -105,11 +105,11 @@ class PredictLowHighPattern(
         return (lastValue * multiplier + currentPatternValue) / divisor
     }
 
-    companion object {
-        private const val PATTERN_DEFAULT_VALUE = -1
+    private companion object {
+        const val PATTERN_DEFAULT_VALUE = -1
 
         // 2 drawings per week x 4 weeks = 1 month
         const val PERIOD = 54
-        private const val OFFSET = 0f
+        const val OFFSET = 0f
     }
 }

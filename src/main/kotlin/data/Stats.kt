@@ -38,7 +38,7 @@ class Stats(
         preditctLowHighPattern,
         groupPatternStats,
         predictGroupPattern,
-        groupPatternDeltaStats,
+        DIVIDE_BY_10,
         combinedPatternStats,
         drawingScoreStats
     )

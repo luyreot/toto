@@ -60,7 +60,7 @@ class PredictNextDrawing(
             nextDrawingsTopScore[drawing] = getDrawingScore(
                 drawings.size,
                 drawing,
-                numberStats.occurrences,
+                numberStats.patterns,
                 numberStats.frequencies,
                 numberStats.averageFrequencies,
                 drawings
@@ -84,7 +84,7 @@ class PredictNextDrawing(
     ): List<Int> {
         val numbers = mutableListOf<Int>()
 
-        numberStats.occurrences.forEach { (number, _) ->
+        numberStats.patterns.forEach { (number, _) ->
             val isOddEvenCriteriaFulfilled = (isOdd.not() && isEven(number)) || (isOdd && isEven(number).not())
             val isLowHighCriteriaFulfilled = (isLow.not() && isHigh(number)) || (isLow && isHigh(number).not())
             val isGroupCriteriaFulfilled = isFromSameGroup(group, number)
