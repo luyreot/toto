@@ -8,6 +8,7 @@ import model.Numbers
 import model.TotoType
 import model.groupStrategies
 import util.TotoUtils.getDrawingScore
+import kotlin.math.roundToInt
 
 class PredictNextDrawing(
     private val totoType: TotoType,
@@ -75,6 +76,12 @@ class PredictNextDrawing(
             }
         }
 
+        removeDrawingsNotInTheSameDrawingGroup(predictionsList)
+        removeDrawingsWithNumbersThatCannotOccurNext(
+            predictions = predictionsList,
+            drawings = drawings.reversed()
+        )
+
         // Calculate prediction score
         predictionsList.forEach { drawing ->
             nextDrawingsTopScore[drawing.numbers] = getDrawingScore(
@@ -88,9 +95,6 @@ class PredictNextDrawing(
         }
 
         nextDrawingsTopScore.sortByValueDescending()
-        removeDrawingsNotInTheSameGroup(nextDrawingsTopScore)
-
-        // TODO: Optimize predictions based on each number's frequency
 
         // Store top scores that are between the average score and the possible jump in the positive and negative
         nextDrawingsAverageScore.putAll(
@@ -166,20 +170,18 @@ class PredictNextDrawing(
         }
     }
 
-    private fun removeDrawingsNotInTheSameGroup(
-        drawings: MutableMap<IntArray, Int>
+    private fun removeDrawingsNotInTheSameDrawingGroup(
+        drawings: MutableList<Numbers>
     ) {
-        val toBeRemoved = mutableListOf<IntArray>()
-
-        drawings.keys.forEach { numbers ->
-            for (one in numbers.indices) {
-                val averageNumberScore = groupNumberStats.averageGroupOccurrence[numbers[one]] ?: 0
+        for (i in drawings.size - 1 downTo 0) {
+            for (one in drawings[i].numbers.indices) {
+                val averageNumberScore = groupNumberStats.averageGroupOccurrence[drawings[i].numbers[one]] ?: 0
                 var numberOfPairsFromSameGroup = 0
 
-                for (two in numbers.indices) {
+                for (two in drawings[i].numbers.indices) {
                     if (one == two) continue
 
-                    val secondNumberScore = groupNumberStats.groups[numbers[one]]?.get(numbers[two]) ?: 0
+                    val secondNumberScore = groupNumberStats.groups[drawings[i].numbers[one]]?.get(drawings[i].numbers[two]) ?: 0
 
                     if (secondNumberScore <= averageNumberScore) continue
 
@@ -187,14 +189,56 @@ class PredictNextDrawing(
                 }
 
                 if (numberOfPairsFromSameGroup < NUMBERS_PER_GROUP_PER_DRAWING) {
-                    toBeRemoved.add(numbers)
-                    return@forEach
+                    drawings.removeAt(i)
+                    break
+                }
+            }
+        }
+    }
+
+    private fun removeDrawingsWithNumbersThatCannotOccurNext(
+        predictions: MutableList<Numbers>,
+        drawings: List<Numbers>
+    ) {
+        for (i in predictions.size - 1 downTo 0) {
+            for (l in predictions[i].numbers.indices) {
+                val number = predictions[i].numbers[l]
+                // Get difference between the upcoming and last drawing when the pattern has occurred
+                val upcomingFrequency = getUpcomingDrawingNumberFrequency(
+                    number,
+                    drawings
+                )
+
+                // Get upcoming frequency count
+                val upcomingFrequencyCount: Int = numberStats.frequencies[number]
+                    ?.find { frequency -> frequency.frequency == upcomingFrequency }?.count
+                    ?: 1
+
+                if (numberStats.averageFrequencies.containsKey(number).not()) {
+                    throw IllegalArgumentException("Average number frequency is missing for number $number")
+                }
+
+                // Remove drawing if any of its number's upcoming frequency count is below average
+                if (upcomingFrequencyCount <= (numberStats.averageFrequencies[number]?.roundToInt() ?: 1)) {
+                    predictions.removeAt(i)
+                    break
+                }
+            }
+        }
+    }
+
+    private fun getUpcomingDrawingNumberFrequency(
+        predictionNumber: Int,
+        drawings: List<Numbers>
+    ): Int {
+        drawings.forEachIndexed { index, drawing ->
+            drawing.numbers.forEach { number ->
+                if (predictionNumber == number) {
+                    return index + 1
                 }
             }
         }
 
-        toBeRemoved.forEach {
-            drawings.remove(it)
-        }
+        throw IllegalArgumentException("Something went wrong! Could not find any previous drawing with the following number - $predictionNumber")
     }
 }
