@@ -203,6 +203,7 @@ class PredictNextDrawing(
         for (i in predictions.size - 1 downTo 0) {
             for (l in predictions[i].numbers.indices) {
                 val number = predictions[i].numbers[l]
+                
                 // Get difference between the upcoming and last drawing when the pattern has occurred
                 val upcomingFrequency = getUpcomingDrawingNumberFrequency(
                     number,

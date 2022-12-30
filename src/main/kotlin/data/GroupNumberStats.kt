@@ -82,7 +82,7 @@ class GroupNumberStats(
             if (fromYear == null) {
                 throw IllegalArgumentException("Not all numbers have been recorded for ${it.key}!")
             } else {
-                // For a drawing subset it is possible that not all number pair could be generated
+                // For a drawing subset it is possible that not all number pairs could be generated
                 println("Not all numbers have been recorded for ${it.key}!")
             }
         }
