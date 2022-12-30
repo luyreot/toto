@@ -21,11 +21,11 @@ object Main {
                     calculateNumberStats()
                     calculateDrawingScore()
                 },
+                launchThread { calculateNumberGroupStats() },
                 launchThread { calculateOddEvenPatternStats() },
                 launchThread { calculateLowHighPatternStats() },
                 launchThread { calculateGroupPatternStats() },
                 launchThread { calculateGroupPatternDeltaStats() },
-
                 launchThread { calculateCombinedPatternStats() }
             ).forEach { thread ->
                 thread.join()

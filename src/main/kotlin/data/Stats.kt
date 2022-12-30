@@ -12,6 +12,8 @@ class Stats(
 
     val numberStats = NumberStats(totoType, drawings, fromYear)
 
+    val groupNumberStats = GroupNumberStats(totoType, drawings, fromYear)
+
     val drawingScoreStats = DrawingScoreStats(totoType, drawings, numberStats, fromYear)
 
     val predictOddEvenPattern = PredictOddEvenPattern(totoType)
@@ -50,7 +52,8 @@ class Stats(
         numberStats,
         DIVIDE_BY_10,
         drawingScoreStats,
-        predictPatternOptimizer
+        predictPatternOptimizer,
+        groupNumberStats
     )
 
     fun loadNumbers() {
@@ -61,6 +64,10 @@ class Stats(
 
     fun calculateNumberStats() {
         numberStats.calculateStats()
+    }
+
+    fun calculateNumberGroupStats() {
+        groupNumberStats.calculateStats()
     }
 
     fun calculateDrawingScore() {

@@ -1,5 +1,6 @@
 package data
 
+import data.GroupNumberStats.Companion.NUMBERS_PER_GROUP_PER_DRAWING
 import extensions.clearAfter
 import extensions.sortByValueDescending
 import model.GroupStrategy
@@ -15,7 +16,8 @@ class PredictNextDrawing(
     private val numberStats: NumberStats,
     private val groupStrategy: GroupStrategy,
     private val drawingScoreStats: DrawingScoreStats,
-    private val predictPatternOptimizer: PredictPatternOptimizer
+    private val predictPatternOptimizer: PredictPatternOptimizer,
+    private val groupNumberStats: GroupNumberStats
 ) {
 
     val nextDrawingsTopScore = mutableMapOf<IntArray, Int>()
@@ -32,9 +34,9 @@ class PredictNextDrawing(
         val predictionNumbers = Array<List<Int>>(totoType.size) { emptyList() }
 
         for (i in 0 until totoType.size) {
-            val group = predictPatternOptimizer.nextGroupPattern[i]
-            val isLow = predictPatternOptimizer.nextLowHighPattern[i] == 0
-            val isOdd = predictPatternOptimizer.nextOddEvenPattern[i] == 0
+            val group: Int = predictPatternOptimizer.nextGroupPattern[i]
+            val isLow: Boolean = predictPatternOptimizer.nextLowHighPattern[i] == 0
+            val isOdd: Boolean = predictPatternOptimizer.nextOddEvenPattern[i] == 0
 
             predictionNumbers[i] = getPredictionNumbers(
                 group = group,
@@ -75,6 +77,9 @@ class PredictNextDrawing(
                         entry.value > drawingScoreStats.averageSore - drawingScoreStats.averageJump
             }
         )
+
+        removeDrawingsNotInTheSameGroup(nextDrawingsTopScore)
+        removeDrawingsNotInTheSameGroup(nextDrawingsAverageScore)
     }
 
     private fun getPredictionNumbers(
@@ -139,6 +144,38 @@ class PredictNextDrawing(
                     output = output
                 )
             }
+        }
+    }
+
+    private fun removeDrawingsNotInTheSameGroup(
+        drawings: MutableMap<IntArray, Int>
+    ) {
+        val toBeRemoved = mutableListOf<IntArray>()
+
+        drawings.keys.forEach { numbers ->
+            for (one in numbers.indices) {
+                val averageNumberScore = groupNumberStats.averageGroupOccurrence[numbers[one]] ?: 0
+                var numberOfPairsFromSameGroup = 0
+
+                for (two in numbers.indices) {
+                    if (one == two) continue
+
+                    val secondNumberScore = groupNumberStats.groups[numbers[one]]?.get(numbers[two]) ?: 0
+
+                    if (secondNumberScore <= averageNumberScore) continue
+
+                    numberOfPairsFromSameGroup++
+                }
+
+                if (numberOfPairsFromSameGroup < NUMBERS_PER_GROUP_PER_DRAWING) {
+                    toBeRemoved.add(numbers)
+                    return@forEach
+                }
+            }
+        }
+
+        toBeRemoved.forEach {
+            drawings.remove(it)
         }
     }
 }
