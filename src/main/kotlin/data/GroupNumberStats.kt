@@ -79,7 +79,7 @@ class GroupNumberStats(
             if (it.value.size == totoType.totalNumbers - 1)
                 return@forEach
 
-            if (fromYear != null) {
+            if (fromYear == null) {
                 throw IllegalArgumentException("Not all numbers have been recorded for ${it.key}!")
             } else {
                 // For a drawing subset it is possible that not all number pair could be generated

@@ -13,6 +13,7 @@ object Main {
 //            fetchNewDrawings()
         }
 
+        // 2014
         Stats(TotoType.T_6X49).apply {
             loadNumbers()
 

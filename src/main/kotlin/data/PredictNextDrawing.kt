@@ -31,44 +31,66 @@ class PredictNextDrawing(
     }
 
     fun predictNextDrawing() {
-        val predictionNumbers = Array<List<Int>>(totoType.size) { emptyList() }
-
-        for (i in 0 until totoType.size) {
-            val group: Int = predictPatternOptimizer.nextGroupPattern[i]
-            val isLow: Boolean = predictPatternOptimizer.nextLowHighPattern[i] == 0
-            val isOdd: Boolean = predictPatternOptimizer.nextOddEvenPattern[i] == 0
-
-            predictionNumbers[i] = getPredictionNumbers(
-                group = group,
-                isLow = isLow,
-                isOdd = isOdd
-            )
-        }
-
-        val numberCombinations: MutableList<IntArray> = generateDrawings(predictionNumbers)
-
         val allDrawings = drawings.drawings.toSet()
-        for (i in numberCombinations.size - 1 downTo 0) {
-            // Remove already existing drawings
-            if (allDrawings.contains(Numbers(numberCombinations[i]))) {
-                numberCombinations.removeAt(i)
+        val drawings = if (fromYear == null) drawings.drawings else drawings.drawingsSubset
+        val predictionsSet = mutableSetOf<Numbers>()
+
+        // Iterate over each group pattern and its low/high and odd/even patterns
+        // to get all number which will be used for generating drawings.
+        predictPatternOptimizer.upcommingPatterns.forEach { predictedPatterns ->
+            val numbersSet = Array<MutableSet<Int>>(totoType.size) { mutableSetOf() }
+
+            for (i in 0 until totoType.size) {
+                val group: Int = predictedPatterns.groupPattern.numbers[i]
+                val isLows: List<Boolean> = predictedPatterns.lowHighs.map { it.key.numbers[i] == 0 }
+                val isOdds: List<Boolean> = predictedPatterns.oddEvens.map { it.key.numbers[i] == 0 }
+
+                isLows.forEach { isLow ->
+                    isOdds.forEach { isOdd ->
+                        numbersSet[i].addAll(
+                            getPredictionNumbers(
+                                group = group,
+                                isLow = isLow,
+                                isOdd = isOdd
+                            )
+                        )
+                    }
+                }
+            }
+
+            val numbersList = Array<List<Int>>(totoType.size) { emptyList() }
+            numbersSet.forEachIndexed { index, set ->
+                numbersList[index] = set.toList()
+            }
+            generateDrawings(numbersList).forEach {
+                predictionsSet.add(Numbers(it))
             }
         }
 
-        val drawings = if (fromYear == null) drawings.drawings else drawings.drawingsSubset
+        // Remove already existing drawings
+        val predictionsList: MutableList<Numbers> = predictionsSet.toMutableList()
+        for (i in predictionsList.size - 1 downTo 0) {
+            if (allDrawings.contains(predictionsList[i])) {
+                predictionsList.removeAt(i)
+            }
+        }
 
         // Calculate prediction score
-        numberCombinations.forEach { drawing ->
-            nextDrawingsTopScore[drawing] = getDrawingScore(
+        predictionsList.forEach { drawing ->
+            nextDrawingsTopScore[drawing.numbers] = getDrawingScore(
                 drawings.size,
-                drawing,
+                drawing.numbers,
                 numberStats.patterns,
                 numberStats.frequencies,
                 numberStats.averageFrequencies,
                 drawings
             )
         }
+
         nextDrawingsTopScore.sortByValueDescending()
+        removeDrawingsNotInTheSameGroup(nextDrawingsTopScore)
+
+        // TODO: Optimize predictions based on each number's frequency
 
         // Store top scores that are between the average score and the possible jump in the positive and negative
         nextDrawingsAverageScore.putAll(
@@ -77,9 +99,6 @@ class PredictNextDrawing(
                         entry.value > drawingScoreStats.averageSore - drawingScoreStats.averageJump
             }
         )
-
-        removeDrawingsNotInTheSameGroup(nextDrawingsTopScore)
-        removeDrawingsNotInTheSameGroup(nextDrawingsAverageScore)
     }
 
     private fun getPredictionNumbers(

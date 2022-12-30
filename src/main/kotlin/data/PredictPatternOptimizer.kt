@@ -21,9 +21,7 @@ class PredictPatternOptimizer(
     private val drawingScoreStats: DrawingScoreStats
 ) {
 
-    lateinit var nextGroupPattern: IntArray
-    lateinit var nextLowHighPattern: IntArray
-    lateinit var nextOddEvenPattern: IntArray
+    val upcommingPatterns = mutableSetOf<CombinedPattern>()
 
     private val groupStrategyMethod = groupStrategies[groupStrategy] as? (Int) -> Int
 
@@ -33,14 +31,13 @@ class PredictPatternOptimizer(
     }
 
     fun optimizePredictedPatterns() {
-        optimizeGroupPattern()
-    }
+        val aboveAverageGroupPatterns = (groupPatternStats.patterns.values.sum() / groupPatternStats.patterns.size)
+            .let { averageGroupPatternOccurrence ->
+                groupPatternStats.patterns.filter { pattern -> pattern.value > averageGroupPatternOccurrence }.toMutableMap()
+            }
 
-    private fun optimizeGroupPattern() {
-        val averageGroupPatternOccurrence = groupPatternStats.patterns.values.sum() / groupPatternStats.patterns.size
-        val aboveAverageGroupPatterns = groupPatternStats.patterns.filter { it.value > averageGroupPatternOccurrence }.toMutableMap()
-
-        if (aboveAverageGroupPatterns.isEmpty()) throw IllegalArgumentException("There are no group patterns!")
+        if (aboveAverageGroupPatterns.isEmpty())
+            throw IllegalArgumentException("There are no group patterns!")
 
         // Add the predicted pattern at the top of the list if it is in the above average patterns map
         val predictedGroupPattern = Numbers(predictGroupPattern.nextPattern)
@@ -52,70 +49,83 @@ class PredictPatternOptimizer(
         groupPatternsToVerify.addAll(aboveAverageGroupPatterns.keys)
 
         groupPatternsToVerify.forEach { groupPattern ->
-            val averageGroupPatternFrequencyCount: Int = groupPatternStats.frequencies[groupPattern]
-                ?.map { it }
-                ?.sumOf { it.count }
-                ?.div(
-                    groupPatternStats.frequencies[groupPattern]?.size
-                        ?: throw IllegalArgumentException("Something is wrong with group pattern - $groupPattern")
-                )
-                ?: throw IllegalArgumentException("Something is wrong with group pattern - $groupPattern")
-
-            // Get difference between the upcoming and last drawing when the pattern has occurred
-            val lastFrequency = getLastFrequencyForPattern(
-                pattern = groupPattern,
-                convertFun = ::convertToGroup
-            )
-            // Find the first frequency that matches that difference
-            val cachedFrequency: Frequency? = groupPatternStats.frequencies[groupPattern]?.find { it.frequency == lastFrequency }
-
-            if (cachedFrequency == null) {
+            if (canPatternOccurNext(groupPatternStats, groupPattern, ::convertToGroup, "group").not()) {
                 return@forEach
             }
 
-            if (cachedFrequency.count <= averageGroupPatternFrequencyCount) {
+            val lowHighPatterns = getCombinedLowHighPatterns(groupPattern)
+            if (lowHighPatterns?.isEmpty() == true) {
+                return@forEach
+            }
+            val lowHighPatternsToAdd = mutableListOf<Numbers>()
+            lowHighPatterns?.forEach { lowHighPattern ->
+                if (canPatternOccurNext(lowHighPatternStats, lowHighPattern.key, ::convertToLowHigh, "low/high")) {
+                    lowHighPatternsToAdd.add(lowHighPattern.key)
+                }
+            }
+            if (lowHighPatternsToAdd.isEmpty()) {
                 return@forEach
             }
 
-            val lowHighPattern = getCombinedCrossPattern(
-                crossedPatterns = combinedPatternStats.patterns.find { it.groupPattern == groupPattern }?.lowHighs,
-                predictedPattern = Numbers(predictLowHighPattern.nextPattern)
-            )
-
-            if (lowHighPattern == null) {
+            val oddEvenPatterns = getCombinedOddEvenPatterns(groupPattern)
+            if (oddEvenPatterns?.isEmpty() == true) {
+                return@forEach
+            }
+            val oddEvenPatternsToAdd = mutableListOf<Numbers>()
+            oddEvenPatterns?.forEach { oddEvenPattern ->
+                if (canPatternOccurNext(oddEvenPatternStats, oddEvenPattern.key, ::convertToOddEven, "odd/even")) {
+                    oddEvenPatternsToAdd.add(oddEvenPattern.key)
+                }
+            }
+            if (oddEvenPatternsToAdd.isEmpty()) {
                 return@forEach
             }
 
-            val oddEvenPattern = getCombinedCrossPattern(
-                crossedPatterns = combinedPatternStats.patterns.find { it.groupPattern == groupPattern }?.oddEvens,
-                predictedPattern = Numbers(predictOddEvenPattern.nextPattern)
-            )
-
-            if (oddEvenPattern == null) {
-                return@forEach
+            val upcomingPattern = CombinedPattern(Numbers(groupPattern.numbers), 0)
+            lowHighPatternsToAdd.forEach {
+                upcomingPattern.lowHighs[it] = 0
             }
-
-            nextGroupPattern = groupPattern.numbers
-            nextLowHighPattern = lowHighPattern
-            nextOddEvenPattern = oddEvenPattern
-
-            return
+            oddEvenPatternsToAdd.forEach {
+                upcomingPattern.oddEvens[it] = 0
+            }
+            upcommingPatterns.add(upcomingPattern)
         }
 
-        throw IllegalArgumentException("Could not find a suitable group pattern!")
+        if (upcommingPatterns.isEmpty()) {
+            throw IllegalArgumentException("Could not find a suitable group pattern!")
+        }
     }
 
-    private fun getCombinedCrossPattern(
-        crossedPatterns: MutableMap<Numbers, Int>?,
-        predictedPattern: Numbers
-    ): IntArray? {
-        // TODO Get l/h and o/e pattern based on the frequency
-        //val averageScore = crossedPatterns?.values?.sum()?.div(crossedPatterns.size) ?: return null
+    private fun canPatternOccurNext(
+        patternStats: PatternStats<Numbers>,
+        pattern: Numbers,
+        convertFun: (IntArray) -> IntArray,
+        patternName: String
+    ): Boolean {
+        // Get difference between the upcoming and last drawing when the pattern has occurred
+        val upcomingFrequency: Int = getUpcomingPatternFrequency(
+            pattern = pattern,
+            convertFun = convertFun
+        )
 
-        return crossedPatterns?.maxByOrNull { it.value }?.key?.numbers
+        // Get upcoming frequency count
+        val upcomingFrequencyCount: Int = patternStats.frequencies[pattern]
+            ?.find { frequency -> frequency.frequency == upcomingFrequency }?.count
+            ?: 1
+
+        // Skip pattern if its upcoming frequency count is below average
+        val averageFrequencyCount: Int = patternStats.frequencies[pattern]
+            ?.sumOf { frequency -> frequency.count }
+            ?.div(
+                patternStats.frequencies[pattern]?.size
+                    ?: throw IllegalArgumentException("Cannot determine frequency size for $patternName pattern - $pattern")
+            )
+            ?: throw IllegalArgumentException("Cannot determine average frequency count for $patternName pattern - $pattern")
+
+        return upcomingFrequencyCount > averageFrequencyCount
     }
 
-    private fun getLastFrequencyForPattern(
+    private fun getUpcomingPatternFrequency(
         pattern: Numbers,
         convertFun: (IntArray) -> IntArray
     ): Int {
@@ -139,9 +149,9 @@ class PredictPatternOptimizer(
 
     private fun getCombinedLowHighPatterns(
         groupPattern: Numbers
-    ): Map<Numbers, Int>? = combinedPatternStats.patterns.find { it.groupPattern == groupPattern }?.lowHighs
+    ): MutableMap<Numbers, Int>? = combinedPatternStats.patterns.find { it.groupPattern == groupPattern }?.lowHighs
 
     private fun getCombinedOddEvenPatterns(
         groupPattern: Numbers
-    ): Map<Numbers, Int>? = combinedPatternStats.patterns.find { it.groupPattern == groupPattern }?.oddEvens
+    ): MutableMap<Numbers, Int>? = combinedPatternStats.patterns.find { it.groupPattern == groupPattern }?.oddEvens
 }
