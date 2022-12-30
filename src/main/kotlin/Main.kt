@@ -1,7 +1,7 @@
 import data.Stats
 import model.TotoType
 import util.ThreadUtils.launchThread
-import util.TotoUtils.fetchNewDrawings
+import util.TotoUtils
 
 object Main {
 
@@ -9,8 +9,11 @@ object Main {
     fun main(args: Array<String>) {
         println("=== MAIN START ===")
 
-//        fetchNewDrawings()
+        TotoUtils.apply {
+//            fetchNewDrawings()
+        }
 
+        // 2014
         Stats(TotoType.T_6X49).apply {
             loadNumbers()
 
@@ -19,11 +22,11 @@ object Main {
                     calculateNumberStats()
                     calculateDrawingScore()
                 },
+                launchThread { calculateNumberGroupStats() },
                 launchThread { calculateOddEvenPatternStats() },
                 launchThread { calculateLowHighPatternStats() },
                 launchThread { calculateGroupPatternStats() },
                 launchThread { calculateGroupPatternDeltaStats() },
-
                 launchThread { calculateCombinedPatternStats() }
             ).forEach { thread ->
                 thread.join()
@@ -33,6 +36,7 @@ object Main {
 //            testLowHighPredictionAlgo()
 //            testGroupPredictionAlgo()
 
+            optimizePredictedPatterns()
             predictNextDrawing()
 
             println()

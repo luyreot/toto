@@ -1,6 +1,5 @@
 package data
 
-import model.GroupStrategy.DELTA_SUBTRACT
 import model.GroupStrategy.DIVIDE_BY_10
 import model.TotoType
 
@@ -12,6 +11,8 @@ class Stats(
     val drawings = Drawings(totoType, fromYear)
 
     val numberStats = NumberStats(totoType, drawings, fromYear)
+
+    val groupNumberStats = GroupNumberStats(totoType, drawings, fromYear)
 
     val drawingScoreStats = DrawingScoreStats(totoType, drawings, numberStats, fromYear)
 
@@ -28,7 +29,7 @@ class Stats(
 
     val groupPatternDeltaStats = GroupPatternDeltaStats(totoType, drawings, fromYear)
 
-    val nextDrawing = NextDrawing(
+    val predictPatternOptimizer = PredictPatternOptimizer(
         totoType,
         drawings,
         fromYear,
@@ -39,10 +40,20 @@ class Stats(
         preditctLowHighPattern,
         groupPatternStats,
         predictGroupPattern,
-        groupPatternDeltaStats,
         DIVIDE_BY_10,
-        DELTA_SUBTRACT,
+        combinedPatternStats,
         drawingScoreStats
+    )
+
+    val predictNextDrawing = PredictNextDrawing(
+        totoType,
+        drawings,
+        fromYear,
+        numberStats,
+        DIVIDE_BY_10,
+        drawingScoreStats,
+        predictPatternOptimizer,
+        groupNumberStats
     )
 
     fun loadNumbers() {
@@ -53,6 +64,10 @@ class Stats(
 
     fun calculateNumberStats() {
         numberStats.calculateStats()
+    }
+
+    fun calculateNumberGroupStats() {
+        groupNumberStats.calculateStats()
     }
 
     fun calculateDrawingScore() {
@@ -79,173 +94,145 @@ class Stats(
         groupPatternDeltaStats.calculateStats()
     }
 
+    fun optimizePredictedPatterns() {
+        predictPatternOptimizer.optimizePredictedPatterns()
+    }
+
     fun predictNextDrawing() {
-        nextDrawing.populatePatternArrays()
-        nextDrawing.predictNextDrawing()
+        predictNextDrawing.predictNextDrawing()
     }
 
     // region Testing
 
     fun testOddEvenPredictionAlgo() {
         /*
-        var up = 0.1f
-        var down = 0.1f
-        var divisorUp = 2
-        var divisorDown = 2
-        var correctlyPredictedIndexCount = 0
-        var correctlyPredictedCount = 0
-        var sUp = 0f
-        var sDown = 0f
-        var sDivisorUp = 0
-        var sDivisorDown = 0
-        for (u in 0..9) {
-            for (d in 0..9) {
-                divisorUp = 2
-                divisorDown = 2
+        val periodIncrement = 8 // 2 drawings per week x 4 weeks = 1 month
+        var predictedThreesCount = 0
+        var predictedFoursCount = 0
+        var predictedFivesCount = 0
+        var predictedSixesCount = 0
 
-                for (ud in 0..10) {
-                    for (dd in 0..10) {
-                        val predict = PredictOddEvenPattern(totoType, up, down, divisorUp, divisorDown)
-                        OddEvenPatternStats(totoType, drawings, predict).apply {
-                            calculateStats()
+        for (i in 1..111) {
+            val period = periodIncrement * i
+            val predict = PredictOddEvenPattern(totoType, period)
+            OddEvenPatternStats(totoType, drawings, predict, fromYear).apply {
+                calculateStats()
 
-                            println("UP - $up, DOWN - $down")
-                            println("Div UP - $divisorUp, Div DOWN - $divisorDown")
-                            println("correctlyPredictedIndexCount - ${predict.correctlyPredictedIndexCount}")
-                            println("correctlyPredictedCount - ${predict.correctlyPredictedCount}")
-                            println("nextOddEvenPattern - ${predict.nextPattern.map { it }}")
-                            println("--------")
-                        }
+                println("Period - $period")
+                println("PredictedThreesCount - ${predict.predictedThreesCount}")
+                println("PredictedFoursCount - ${predict.predictedFoursCount}")
+                println("PredictedFivesCount - ${predict.predictedFivesCount}")
+                println("PredictedSixesCount - ${predict.predictedSixesCount}")
+                println("--- --- --- --- --- --- ---")
 
-                        if (predict.correctlyPredictedIndexCount > correctlyPredictedIndexCount) {
-                            correctlyPredictedIndexCount = predict.correctlyPredictedIndexCount
-                        }
-                        if (predict.correctlyPredictedCount > correctlyPredictedCount) {
-                            correctlyPredictedCount = predict.correctlyPredictedCount
-                            sUp = up
-                            sDown = down
-                            sDivisorUp = divisorUp
-                            sDivisorDown = divisorDown
-                        }
-                        divisorDown += 1
-                    }
-                    divisorUp += 1
-                    divisorDown = 2
+                if (predictedThreesCount < predict.predictedThreesCount) {
+                    predictedThreesCount = predict.predictedThreesCount
                 }
-                down += 0.1f
+                if (predictedFoursCount < predict.predictedFoursCount) {
+                    predictedFoursCount = predict.predictedFoursCount
+                }
+                if (predictedFivesCount < predict.predictedFivesCount) {
+                    predictedFivesCount = predict.predictedFivesCount
+                }
+                if (predictedSixesCount < predict.predictedSixesCount) {
+                    predictedSixesCount = predict.predictedSixesCount
+                }
             }
-            up += 0.1f
-            down = 0.1f
         }
 
-        println("correctlyPredictedIndexCount - $correctlyPredictedIndexCount")
-        println("correctlyPredictedCount - $correctlyPredictedCount")
+        println("Top Results")
+        println("PredictedThreesCount - $predictedThreesCount")
+        println("PredictedFoursCount - $predictedFoursCount")
+        println("PredictedFivesCount - $predictedFivesCount")
+        println("PredictedSixesCount - $predictedSixesCount")
         */
     }
 
     fun testLowHighPredictionAlgo() {
         /*
-        var up = 0.1f
-        var down = 0.1f
-        var divisorUp = 2
-        var divisorDown = 2
-        var correctlyPredictedIndexCount = 0
-        var correctlyPredictedCount = 0
-        for (u in 0..9) {
-            for (d in 0..9) {
-                divisorUp = 2
-                divisorDown = 2
+        val periodIncrement = 8 // 2 drawings per week x 4 weeks = 1 month
+        var predictedThreesCount = 0
+        var predictedFoursCount = 0
+        var predictedFivesCount = 0
+        var predictedSixesCount = 0
 
-                for (ud in 0..10) {
-                    for (dd in 0..10) {
-                        val predict = PredictLowHighPattern(totoType, up, down, divisorUp, divisorDown)
-                        LowHighPatternStats(totoType, drawings, predict).apply {
-                            calculateStats()
+        for (i in 1..111) {
+            val period = periodIncrement * i
+            val predict = PredictLowHighPattern(totoType, period)
+            LowHighPatternStats(totoType, drawings, predict, fromYear).apply {
+                calculateStats()
 
-                            println("UP - $up, DOWN - $down")
-                            println("Div UP - $divisorUp, Div DOWN - $divisorDown")
-                            println("correctlyPredictedIndexCount - ${predict.correctlyPredictedIndexCount}")
-                            println("correctlyPredictedCount - ${predict.correctlyPredictedCount}")
-                            println("nextLowHighPattern - ${predict.nextPattern.map { it }}")
-                            println("--------")
-                        }
+                println("Period - $period")
+                println("PredictedThreesCount - ${predict.predictedThreesCount}")
+                println("PredictedFoursCount - ${predict.predictedFoursCount}")
+                println("PredictedFivesCount - ${predict.predictedFivesCount}")
+                println("PredictedSixesCount - ${predict.predictedSixesCount}")
+                println("--- --- --- --- --- --- ---")
 
-                        if (predict.correctlyPredictedIndexCount > correctlyPredictedIndexCount) {
-                            correctlyPredictedIndexCount = predict.correctlyPredictedIndexCount
-                        }
-                        if (predict.correctlyPredictedCount > correctlyPredictedCount) {
-                            correctlyPredictedCount = predict.correctlyPredictedCount
-                        }
-                        divisorDown += 1
-                    }
-                    divisorUp += 1
-                    divisorDown = 2
+                if (predictedThreesCount < predict.predictedThreesCount) {
+                    predictedThreesCount = predict.predictedThreesCount
                 }
-                down += 0.1f
+                if (predictedFoursCount < predict.predictedFoursCount) {
+                    predictedFoursCount = predict.predictedFoursCount
+                }
+                if (predictedFivesCount < predict.predictedFivesCount) {
+                    predictedFivesCount = predict.predictedFivesCount
+                }
+                if (predictedSixesCount < predict.predictedSixesCount) {
+                    predictedSixesCount = predict.predictedSixesCount
+                }
             }
-            up += 0.1f
-            down = 0.1f
         }
 
-        println("correctlyPredictedIndexCount - $correctlyPredictedIndexCount")
-        println("correctlyPredictedCount - $correctlyPredictedCount")
+        println("Top Results")
+        println("PredictedThreesCount - $predictedThreesCount")
+        println("PredictedFoursCount - $predictedFoursCount")
+        println("PredictedFivesCount - $predictedFivesCount")
+        println("PredictedSixesCount - $predictedSixesCount")
         */
     }
 
     fun testGroupPredictionAlgo() {
         /*
-        var up = 0.1f
-        var down = 0.1f
-        var divisorUp = 2
-        var divisorDown = 2
-        var correctlyPredictedIndexCount = 0
-        var correctlyPredictedCount = 0
-        var sUp = 0f
-        var sDown = 0f
-        var sDivisorUp = 0
-        var sDivisorDown = 0
-        for (u in 0..40) {
-            for (d in 0..40) {
-                divisorUp = 2
-                divisorDown = 2
+        val periodIncrement = 8 // 2 drawings per week x 4 weeks = 1 month
+        var predictedThreesCount = 0
+        var predictedFoursCount = 0
+        var predictedFivesCount = 0
+        var predictedSixesCount = 0
 
-                for (ud in 0..10) {
-                    for (dd in 0..10) {
-                        val predict = PredictGroupPattern(totoType, up, down, divisorUp, divisorDown)
-                        GroupPatternStats(totoType, drawings, DIVIDE_BY_10, predict).apply {
-                            calculateStats()
+        for (i in 1..24) {
+            val period = periodIncrement * i
+            val predict = PredictGroupPattern(totoType, period)
+            GroupPatternStats(totoType, drawings, DIVIDE_BY_10, predict, fromYear).apply {
+                calculateStats()
 
-                            println("UP - $up, DOWN - $down")
-                            println("Div UP - $divisorUp, Div DOWN - $divisorDown")
-                            println("correctlyPredictedIndexCount - ${predict.correctlyPredictedIndexCount}")
-                            println("correctlyPredictedCount - ${predict.correctlyPredictedCount}")
-                            println("nextGroupPattern - ${predict.nextPattern.map { it }}")
-                            println("--------")
-                        }
+                println("Period - $period")
+                println("PredictedThreesCount - ${predict.predictedThreesCount}")
+                println("PredictedFoursCount - ${predict.predictedFoursCount}")
+                println("PredictedFivesCount - ${predict.predictedFivesCount}")
+                println("PredictedSixesCount - ${predict.predictedSixesCount}")
+                println("--- --- --- --- --- --- ---")
 
-                        if (predict.correctlyPredictedIndexCount > correctlyPredictedIndexCount) {
-                            correctlyPredictedIndexCount = predict.correctlyPredictedIndexCount
-                        }
-                        if (predict.correctlyPredictedCount > correctlyPredictedCount) {
-                            correctlyPredictedCount = predict.correctlyPredictedCount
-                            sUp = up
-                            sDown = down
-                            sDivisorUp = divisorUp
-                            sDivisorDown = divisorDown
-                        }
-                        divisorDown += 1
-                    }
-                    divisorUp += 1
-                    divisorDown = 2
+                if (predictedThreesCount < predict.predictedThreesCount) {
+                    predictedThreesCount = predict.predictedThreesCount
                 }
-                down += 0.1f
+                if (predictedFoursCount < predict.predictedFoursCount) {
+                    predictedFoursCount = predict.predictedFoursCount
+                }
+                if (predictedFivesCount < predict.predictedFivesCount) {
+                    predictedFivesCount = predict.predictedFivesCount
+                }
+                if (predictedSixesCount < predict.predictedSixesCount) {
+                    predictedSixesCount = predict.predictedSixesCount
+                }
             }
-            up += 0.1f
-            down = 0.1f
         }
 
-        println("correctlyPredictedIndexCount - $correctlyPredictedIndexCount")
-        println("correctlyPredictedCount - $correctlyPredictedCount")
+        println("Top Results")
+        println("PredictedThreesCount - $predictedThreesCount")
+        println("PredictedFoursCount - $predictedFoursCount")
+        println("PredictedFivesCount - $predictedFivesCount")
+        println("PredictedSixesCount - $predictedSixesCount")
         */
     }
 

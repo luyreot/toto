@@ -28,7 +28,7 @@ class DrawingScoreStats(
             getDrawingScore(
                 index,
                 numbers.numbers,
-                numberStats.occurrences,
+                numberStats.patterns,
                 numberStats.frequencies,
                 numberStats.averageFrequencies,
                 drawings

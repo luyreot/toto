@@ -6,7 +6,6 @@ import model.Frequency
 import model.Numbers
 import model.TotoType
 import util.PatternUtils.convertOddEvenPattern
-import util.PatternUtils.didPatternOccurMoreThanAverage
 
 /**
  * Holds information about:
@@ -22,13 +21,13 @@ class OddEvenPatternStats(
     private val drawings: Drawings,
     private val predict: PredictOddEvenPattern,
     private val fromYear: Int? = null
-) {
+) : PatternStats<Numbers> {
 
-    val patterns: Map<Numbers, Int>
+    override val patterns: Map<Numbers, Int>
         get() = patternsCache
     private val patternsCache = mutableMapOf<Numbers, Int>()
 
-    val frequencies: Map<Numbers, List<Frequency>>
+    override val frequencies: Map<Numbers, List<Frequency>>
         get() = frequenciesCache
     private val frequenciesCache = mutableMapOf<Numbers, MutableList<Frequency>>()
 
@@ -40,11 +39,7 @@ class OddEvenPatternStats(
             // Already got the toto numbers of a single drawing
             val pattern = Numbers(convertOddEvenPattern(numbers.numbers.copyOf()))
 
-            predict.handleNextPattern(
-                pattern.numbers,
-                index,
-                didPatternOccurMoreThanAverage(patternsCache, pattern)
-            )
+            predict.takePattern(pattern.numbers, index)
 
             // Save the pattern in the map
             patternsCache.merge(pattern, 1, Int::plus)
@@ -94,8 +89,6 @@ class OddEvenPatternStats(
                 )
             }
         }
-
-        predict.normalizePrediction()
 
         validateOccurrences()
         validateFrequencies()
