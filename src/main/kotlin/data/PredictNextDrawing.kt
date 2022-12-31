@@ -8,6 +8,7 @@ import model.Numbers
 import model.TotoType
 import model.groupStrategies
 import util.TotoUtils.getDrawingScore
+import java.util.*
 import kotlin.math.roundToInt
 
 class PredictNextDrawing(
@@ -69,21 +70,18 @@ class PredictNextDrawing(
         }
 
         // Remove already existing drawings
-        val predictionsList: MutableList<Numbers> = predictionsSet.toMutableList()
-        for (i in predictionsList.size - 1 downTo 0) {
-            if (allDrawings.contains(predictionsList[i])) {
-                predictionsList.removeAt(i)
-            }
+        predictionsSet.removeIf {
+            allDrawings.contains(it)
         }
 
-        removeDrawingsNotInTheSameDrawingGroup(predictionsList)
+        removeDrawingsNotInTheSameDrawingGroup(predictionsSet)
         removeDrawingsWithNumbersThatCannotOccurNext(
-            predictions = predictionsList,
+            predictions = predictionsSet,
             drawings = drawings.reversed()
         )
 
         // Calculate prediction score
-        predictionsList.forEach { drawing ->
+        predictionsSet.forEach { drawing ->
             nextDrawingsTopScore[drawing.numbers] = getDrawingScore(
                 drawings.size,
                 drawing.numbers,
@@ -171,17 +169,19 @@ class PredictNextDrawing(
     }
 
     private fun removeDrawingsNotInTheSameDrawingGroup(
-        drawings: MutableList<Numbers>
+        drawings: MutableSet<Numbers>
     ) {
-        for (i in drawings.size - 1 downTo 0) {
-            for (one in drawings[i].numbers.indices) {
-                val averageNumberScore = groupNumberStats.averageGroupOccurrence[drawings[i].numbers[one]] ?: 0
+        drawings.removeIf { drawing ->
+            var shouldRemove = false
+
+            for (one in drawing.numbers.indices) {
+                val averageNumberScore = groupNumberStats.averageGroupOccurrence[drawing.numbers[one]] ?: 0
                 var numberOfPairsFromSameGroup = 0
 
-                for (two in drawings[i].numbers.indices) {
+                for (two in drawing.numbers.indices) {
                     if (one == two) continue
 
-                    val secondNumberScore = groupNumberStats.groups[drawings[i].numbers[one]]?.get(drawings[i].numbers[two]) ?: 0
+                    val secondNumberScore = groupNumberStats.groups[drawing.numbers[one]]?.get(drawing.numbers[two]) ?: 0
 
                     if (secondNumberScore <= averageNumberScore) continue
 
@@ -189,21 +189,25 @@ class PredictNextDrawing(
                 }
 
                 if (numberOfPairsFromSameGroup < NUMBERS_PER_GROUP_PER_DRAWING) {
-                    drawings.removeAt(i)
+                    shouldRemove = true
                     break
                 }
             }
+
+            shouldRemove
         }
     }
 
     private fun removeDrawingsWithNumbersThatCannotOccurNext(
-        predictions: MutableList<Numbers>,
+        predictions: MutableSet<Numbers>,
         drawings: List<Numbers>
     ) {
-        for (i in predictions.size - 1 downTo 0) {
-            for (l in predictions[i].numbers.indices) {
-                val number = predictions[i].numbers[l]
-                
+        predictions.removeIf { prediction ->
+            var shouldRemove = false
+
+            for (l in prediction.numbers.indices) {
+                val number = prediction.numbers[l]
+
                 // Get difference between the upcoming and last drawing when the pattern has occurred
                 val upcomingFrequency = getUpcomingDrawingNumberFrequency(
                     number,
@@ -221,10 +225,12 @@ class PredictNextDrawing(
 
                 // Remove drawing if any of its number's upcoming frequency count is below average
                 if (upcomingFrequencyCount <= (numberStats.averageFrequencies[number]?.roundToInt() ?: 1)) {
-                    predictions.removeAt(i)
+                    shouldRemove = true
                     break
                 }
             }
+
+            shouldRemove
         }
     }
 
