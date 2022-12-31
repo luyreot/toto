@@ -6,6 +6,7 @@ import model.GroupStrategy
 import model.Numbers
 import model.TotoType
 import model.groupStrategies
+import util.PredictionTester
 import util.TotoUtils.getDrawingScore
 import java.util.*
 import kotlin.math.roundToInt
@@ -101,10 +102,18 @@ class PredictNextDrawing(
             }
         )
 
-        println("Total of ${nextDrawingsTopScore.size} top results.")
-        println("Total of ${nextDrawingsAverageScore.size} average results.")
-        printRandomResults()
-        printAveragedResults()
+        if (PredictionTester.isTestingPredictions.not()) {
+            println("Total of ${nextDrawingsTopScore.size} top results.")
+//            println("Total of ${nextDrawingsAverageScore.size} average results.")
+            printRandomResults()
+//            printAveragedResults()
+        } else {
+            println("====== Next drawings is ${PredictionTester.nextDrawing?.toList()}")
+            println("====== Checking top predictions:")
+            PredictionTester.checkPredictions(nextDrawingsTopScore)
+//            println("====== Checking average predictions:")
+//            PredictionTester.checkPredictions(nextDrawingsAverageScore)
+        }
     }
 
     private fun getPredictionNumbers(
@@ -258,10 +267,16 @@ class PredictNextDrawing(
             println("Random TOP picks:")
             println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
             println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
+            println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
+            println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
+            println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
+            println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
+            println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
+            println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
 
-            println("Random AVERAGE picks:")
-            println(nextDrawingsAverageScore.keys.elementAt(nextInt(nextDrawingsAverageScore.size)).toList())
-            println(nextDrawingsAverageScore.keys.elementAt(nextInt(nextDrawingsAverageScore.size)).toList())
+//            println("Random AVERAGE picks:")
+//            println(nextDrawingsAverageScore.keys.elementAt(nextInt(nextDrawingsAverageScore.size)).toList())
+//            println(nextDrawingsAverageScore.keys.elementAt(nextInt(nextDrawingsAverageScore.size)).toList())
         }
     }
 
@@ -269,8 +284,8 @@ class PredictNextDrawing(
         println("Averaged TOP picks:")
         printAveragedTopResults(nextDrawingsTopScore)
 
-        println("Averaged AVERAGE picks:")
-        printAveragedTopResults(nextDrawingsAverageScore)
+//        println("Averaged AVERAGE picks:")
+//        printAveragedTopResults(nextDrawingsAverageScore)
     }
 
     private fun printAveragedTopResults(
@@ -299,6 +314,6 @@ class PredictNextDrawing(
     }
 
     private companion object {
-        const val NUMBERS_PER_GROUP_PER_DRAWING: Int = 3
+        const val NUMBERS_PER_GROUP_PER_DRAWING: Int = 2
     }
 }

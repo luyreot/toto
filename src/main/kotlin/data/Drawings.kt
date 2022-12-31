@@ -7,6 +7,7 @@ import model.Numbers
 import model.TotoType
 import util.FileConstants.PATH_TXT_6x49
 import util.IO
+import util.PredictionTester
 
 /**
  * Holds a list of all drawn numbers.
@@ -99,6 +100,14 @@ class Drawings(
 
             if (drawnNumbers.size != totoType.size)
                 throw IllegalArgumentException("Drawing is not ${totoType.name}!")
+
+            if (PredictionTester.isTestingPredictions &&
+                PredictionTester.startFromYear == year &&
+                PredictionTester.startFromIssue == issue
+            ) {
+                PredictionTester.nextDrawing = drawing.split(",").map { it.toInt() }.toIntArray()
+                return
+            }
 
             drawnNumbers.forEachIndexed { position, number ->
                 numbersCache.add(

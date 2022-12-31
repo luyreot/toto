@@ -2,6 +2,7 @@ package data
 
 import model.GroupStrategy.DIVIDE_BY_10
 import model.TotoType
+import util.PredictionTester
 
 class Stats(
     private val totoType: TotoType,
@@ -59,7 +60,9 @@ class Stats(
     fun loadNumbers() {
         drawings.loadNumbers()
         drawings.extractDrawings()
-        drawings.checkForDuplicateDrawings()
+        if (PredictionTester.isTestingPredictions.not()) {
+            drawings.checkForDuplicateDrawings()
+        }
     }
 
     fun calculateNumberStats() {
