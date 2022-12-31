@@ -101,6 +101,11 @@ class PredictNextDrawing(
                         entry.value > drawingScoreStats.averageSore - drawingScoreStats.averageJump
             }
         )
+
+        println("Total of ${nextDrawingsTopScore.size} top results.")
+        println("Total of ${nextDrawingsAverageScore.size} average results.")
+        printRandomResults()
+        printAveragedResults()
     }
 
     private fun getPredictionNumbers(
@@ -247,5 +252,50 @@ class PredictNextDrawing(
         }
 
         throw IllegalArgumentException("Something went wrong! Could not find any previous drawing with the following number - $predictionNumber")
+    }
+
+    private fun printRandomResults() {
+        Random().apply {
+            println("Random TOP picks:")
+            println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
+            println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
+
+            println("Random AVERAGE picks:")
+            println(nextDrawingsAverageScore.keys.elementAt(nextInt(nextDrawingsAverageScore.size)).toList())
+            println(nextDrawingsAverageScore.keys.elementAt(nextInt(nextDrawingsAverageScore.size)).toList())
+        }
+    }
+
+    private fun printAveragedResults() {
+        println("Averaged TOP picks:")
+        printAveragedTopResults(nextDrawingsTopScore)
+
+        println("Averaged AVERAGE picks:")
+        printAveragedTopResults(nextDrawingsAverageScore)
+    }
+
+    private fun printAveragedTopResults(
+        results: MutableMap<IntArray, Int>
+    ) {
+        val score = results.values.sum() / results.size
+        val filteredResults = results.filter { it.value == score }
+
+        when {
+            filteredResults.isEmpty() -> {
+                println(results.filter { it.value > score }.minByOrNull { it.value }?.key?.toList())
+                println(results.filter { it.value < score }.maxByOrNull { it.value }?.key?.toList())
+            }
+
+            filteredResults.size == 1 -> {
+                filteredResults.keys.elementAt(0).toList()
+            }
+
+            else -> {
+                Random().apply {
+                    println(filteredResults.keys.elementAt(nextInt(filteredResults.size)).toList())
+                    println(filteredResults.keys.elementAt(nextInt(filteredResults.size)).toList())
+                }
+            }
+        }
     }
 }
