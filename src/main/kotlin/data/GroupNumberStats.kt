@@ -87,8 +87,4 @@ class GroupNumberStats(
             }
         }
     }
-
-    companion object {
-        const val NUMBERS_PER_GROUP_PER_DRAWING: Int = 3
-    }
 }

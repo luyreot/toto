@@ -1,6 +1,5 @@
 package data
 
-import data.GroupNumberStats.Companion.NUMBERS_PER_GROUP_PER_DRAWING
 import extensions.clearAfter
 import extensions.sortByValueDescending
 import model.GroupStrategy
@@ -297,5 +296,9 @@ class PredictNextDrawing(
                 }
             }
         }
+    }
+
+    private companion object {
+        const val NUMBERS_PER_GROUP_PER_DRAWING: Int = 3
     }
 }
