@@ -38,7 +38,7 @@ class DrawingScoreStats(
 
                 // Calculate the average jump between two consecutive drawings
                 if (index > 1) {
-                    jump = abs(score - previousScore)
+                    jump += abs(score - previousScore)
                 }
 
                 // Cache the score for next round of calculations
@@ -46,7 +46,8 @@ class DrawingScoreStats(
             }
         }
 
-        // Calculate the average score between all drawings
+        // Calculate the average score and jump between all drawings
         score = totalScore.div(drawings.size).toInt()
+        jump = jump.div(drawings.size - 1)
     }
 }
