@@ -265,14 +265,16 @@ class PredictNextDrawing(
     private fun printRandomResults() {
         Random().apply {
             println("Random TOP picks:")
-            println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
-            println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
-            println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
-            println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
-            println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
-            println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
-            println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
-            println(nextDrawingsTopScore.keys.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
+            nextDrawingsTopScore.keys.shuffled(this).let {
+                println(it.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
+                println(it.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
+                println(it.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
+                println(it.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
+                println(it.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
+                println(it.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
+                println(it.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
+                println(it.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
+            }
 
 //            println("Random AVERAGE picks:")
 //            println(nextDrawingsAverageScore.keys.elementAt(nextInt(nextDrawingsAverageScore.size)).toList())
