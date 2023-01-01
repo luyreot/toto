@@ -102,8 +102,8 @@ class PredictNextDrawing(
             }
         )
 
+        println("Total of ${nextDrawingsTopScore.size} top results.")
         if (PredictionTester.isTestingPredictions.not()) {
-            println("Total of ${nextDrawingsTopScore.size} top results.")
 //            println("Total of ${nextDrawingsAverageScore.size} average results.")
             printRandomResults()
 //            printAveragedResults()
