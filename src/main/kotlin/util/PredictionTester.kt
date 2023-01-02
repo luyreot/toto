@@ -3,8 +3,12 @@ package util
 object PredictionTester {
 
     var isTestingPredictions: Boolean = false
-    var startFromYear: Int? = null
-    var startFromIssue: Int? = null
+
+    var startYear: Int = 0
+    var startIssue: Int = 0
+
+    var issueCounter: Int = 0
+
     var nextDrawing: IntArray? = null
 
     fun checkPredictions(predictions: MutableMap<IntArray, Int>) {

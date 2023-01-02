@@ -94,6 +94,7 @@ class PredictNextDrawing(
 
         nextDrawingsTopScore.sortByValueDescending()
 
+        /* No need for this. Best results are coming from the top results.
         // Store top scores that are between the average score and the possible jump in the positive and negative
         nextDrawingsAverageScore.putAll(
             nextDrawingsTopScore.filter { entry ->
@@ -101,19 +102,20 @@ class PredictNextDrawing(
                         entry.value > drawingScoreStats.averageSore - drawingScoreStats.averageJump
             }
         )
+        */
 
         println("Total of ${nextDrawingsTopScore.size} top results.")
-        if (PredictionTester.isTestingPredictions.not()) {
-//            println("Total of ${nextDrawingsAverageScore.size} average results.")
-            printRandomResults()
-//            printAveragedResults()
-        } else {
-            println("====== Next drawings is ${PredictionTester.nextDrawing?.toList()}")
-            println("====== Checking top predictions:")
-            PredictionTester.checkPredictions(nextDrawingsTopScore)
-//            println("====== Checking average predictions:")
-//            PredictionTester.checkPredictions(nextDrawingsAverageScore)
+
+        PredictionTester.apply {
+            if (isTestingPredictions) {
+                println("====== Next drawings is ${nextDrawing?.toList()}")
+                println("====== Checking top predictions:")
+                checkPredictions(nextDrawingsTopScore)
+                return
+            }
         }
+
+        printRandomTopPredictions()
     }
 
     private fun getPredictionNumbers(
@@ -262,55 +264,18 @@ class PredictNextDrawing(
         throw IllegalArgumentException("Something went wrong! Could not find any previous drawing with the following number - $predictionNumber")
     }
 
-    private fun printRandomResults() {
+    private fun printRandomTopPredictions() {
         Random().apply {
             println("Random TOP picks:")
-            nextDrawingsTopScore.keys.shuffled(this).let {
-                println(it.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
-                println(it.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
-                println(it.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
-                println(it.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
-                println(it.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
-                println(it.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
-                println(it.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
-                println(it.elementAt(nextInt(nextDrawingsTopScore.size)).toList())
-            }
-
-//            println("Random AVERAGE picks:")
-//            println(nextDrawingsAverageScore.keys.elementAt(nextInt(nextDrawingsAverageScore.size)).toList())
-//            println(nextDrawingsAverageScore.keys.elementAt(nextInt(nextDrawingsAverageScore.size)).toList())
-        }
-    }
-
-    private fun printAveragedResults() {
-        println("Averaged TOP picks:")
-        printAveragedTopResults(nextDrawingsTopScore)
-
-//        println("Averaged AVERAGE picks:")
-//        printAveragedTopResults(nextDrawingsAverageScore)
-    }
-
-    private fun printAveragedTopResults(
-        results: MutableMap<IntArray, Int>
-    ) {
-        val score = results.values.sum() / results.size
-        val filteredResults = results.filter { it.value == score }
-
-        when {
-            filteredResults.isEmpty() -> {
-                println(results.filter { it.value > score }.minByOrNull { it.value }?.key?.toList())
-                println(results.filter { it.value < score }.maxByOrNull { it.value }?.key?.toList())
-            }
-
-            filteredResults.size == 1 -> {
-                filteredResults.keys.elementAt(0).toList()
-            }
-
-            else -> {
-                Random().apply {
-                    println(filteredResults.keys.elementAt(nextInt(filteredResults.size)).toList())
-                    println(filteredResults.keys.elementAt(nextInt(filteredResults.size)).toList())
-                }
+            nextDrawingsTopScore.keys.shuffled(this).let { predictions ->
+                println(predictions.elementAt(nextInt(predictions.size)).toList())
+                println(predictions.elementAt(nextInt(predictions.size)).toList())
+                println(predictions.elementAt(nextInt(predictions.size)).toList())
+                println(predictions.elementAt(nextInt(predictions.size)).toList())
+                println(predictions.elementAt(nextInt(predictions.size)).toList())
+                println(predictions.elementAt(nextInt(predictions.size)).toList())
+                println(predictions.elementAt(nextInt(predictions.size)).toList())
+                println(predictions.elementAt(nextInt(predictions.size)).toList())
             }
         }
     }
