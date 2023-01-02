@@ -7,6 +7,7 @@ import model.Numbers
 import model.TotoType
 import util.FileConstants.PATH_TXT_6x49
 import util.IO
+import util.PredictionTester
 
 /**
  * Holds a list of all drawn numbers.
@@ -34,7 +35,7 @@ class Drawings(
         when (totoType) {
             TotoType.T_6X49 -> {
                 IO.getFiles(PATH_TXT_6x49)?.let { files ->
-                    files.forEach { file ->
+                    files.sorted().forEach { file ->
                         addNumbers(
                             year = file.name.toInt(),
                             fileContents = IO.getTxtFileContents(file)
@@ -47,6 +48,55 @@ class Drawings(
         }
 
         validateNumbers()
+    }
+
+    fun setUpDrawingsForTesting() {
+        PredictionTester.apply {
+            if (isTestingPredictions.not()) return
+
+            nextDrawing = null
+
+            val issue = startIssue + issueCounter
+
+            var anyDrawingsLeftToTest = numbersCache.any { number ->
+                number.year == startYear && number.issue >= issue
+            }
+
+            if (anyDrawingsLeftToTest) {
+                numbersCache.filter { number ->
+                    number.year == startYear && number.issue == issue
+                }.let { numbers ->
+                    if (numbers.isEmpty())
+                        throw IllegalArgumentException("Cannot set next drawing for year $startYear and issue $issue!")
+
+                    nextDrawing = IntArray(totoType.size)
+                    numbers.sortedBy { it.position }.forEach { number ->
+                        nextDrawing!![number.position] = number.number
+                    }
+                }
+
+                numbersCache.removeIf { number ->
+                    (number.year == startYear && number.issue >= issue) || number.year > startYear
+                }
+
+                return
+            }
+
+            // Transition into next year
+            issueCounter = 0
+            startIssue = 1
+            startYear++
+
+            anyDrawingsLeftToTest = numbersCache.any { number ->
+                number.year == startYear && number.issue >= startIssue
+            }
+
+            if (anyDrawingsLeftToTest) {
+                setUpDrawingsForTesting()
+            } else {
+                isTestingPredictions = false
+            }
+        }
     }
 
     fun extractDrawings() {
@@ -70,6 +120,8 @@ class Drawings(
     }
 
     fun checkForDuplicateDrawings() {
+        if (PredictionTester.isTestingPredictions) return
+
         val allDrawingsSize = drawingsCache.size
         val allDrawingsSetSize = drawingsCache.toSet().size
         if (allDrawingsSize != allDrawingsSetSize) {

@@ -58,6 +58,7 @@ class Stats(
 
     fun loadNumbers() {
         drawings.loadNumbers()
+        drawings.setUpDrawingsForTesting()
         drawings.extractDrawings()
         drawings.checkForDuplicateDrawings()
     }
