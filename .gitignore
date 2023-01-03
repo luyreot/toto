@@ -2,3 +2,4 @@
 .gradle
 .idea/libraries-with-intellij-classes.xml
 .idea
+files/txt/.DS_Store
