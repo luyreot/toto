@@ -15,7 +15,7 @@ object Main {
         }
 
         PredictionTester.apply {
-            isTestingPredictions = true
+            isTestingPredictions = false
             startYear = 2022
             startIssue = 103
 
