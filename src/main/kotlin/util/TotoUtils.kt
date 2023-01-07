@@ -1,5 +1,7 @@
 package util
 
+import crawler.WebCrawler535
+import crawler.WebCrawler642
 import crawler.WebCrawler649
 import crawler.WebCrawler649Backup
 import model.Frequency
@@ -12,6 +14,8 @@ object TotoUtils {
             WebCrawler649Backup.updateDrawings()
         } else {
             WebCrawler649.updateDrawings()
+            WebCrawler642.updateDrawings()
+            WebCrawler535.updateDrawings()
         }
     }
 

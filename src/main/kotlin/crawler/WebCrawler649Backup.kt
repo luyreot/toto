@@ -8,7 +8,6 @@ import util.FileConstants.YEAR_FOR_WEB_CRAWL
 import util.IO
 import java.io.IOException
 
-// TODO: 1/2/22 Class is only 6x49 aware
 class WebCrawler649Backup {
 
     // region Web

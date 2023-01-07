@@ -3,12 +3,12 @@ package crawler
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import util.FileConstants.PATH_TXT_6x49
+import util.FileConstants.PATH_TXT_5x35
 import util.FileConstants.YEAR_FOR_WEB_CRAWL
 import util.IO
 import java.io.IOException
 
-class WebCrawler649 {
+class WebCrawler535 {
 
     // region Web
 
@@ -18,10 +18,10 @@ class WebCrawler649 {
 
     // The max html file size to be read, doesn't work if the number is too low aka the page is too large
     private val maxBodySize: Int = 10048000
-    private val url: String = "http://www.toto.bg/results/6x49/"
+    private val url: String = "http://www.toto.bg/results/5x35/"
 
     private val drawingPrefix: String = "-"
-    private val currentYearPath = PATH_TXT_6x49 + YEAR_FOR_WEB_CRAWL
+    private val currentYearPath = PATH_TXT_5x35 + YEAR_FOR_WEB_CRAWL
 
     // Alternative css query: "span[class*=ball-white]"
     private val documentQuery = "div.tir_numbers > div.row > div.col-sm-6.text-right.nopadding > span.ball-white"
@@ -47,7 +47,7 @@ class WebCrawler649 {
     fun crawl() {
         val pageUrl = url + YEAR_FOR_WEB_CRAWL + drawingPrefix
         var saveToFile = false
-        var drawingIndex = drawingCount
+        var drawingIndex = drawingCount / 2
 
         do {
             // For 2021 there is one extra drawing at position 1 in the txt file
@@ -68,8 +68,15 @@ class WebCrawler649 {
                 break
             }
 
-            val drawing = numbers.text().replace(" ", ",")
-            contentBuilder.appendLine(drawing)
+            val drawingsCount = numbers.size / 5
+            val drawings = mutableListOf<Elements>()
+            for (i in 0 until drawingsCount) {
+                drawings.add(Elements(numbers.slice(i * 5..i * 5 + 4)))
+            }
+            drawings.forEach { drawing ->
+                contentBuilder.appendLine(drawing.text().replace(" ", ","))
+            }
+
             if (saveToFile.not()) {
                 saveToFile = true
             }
@@ -121,7 +128,7 @@ class WebCrawler649 {
 
     companion object {
         fun updateDrawings() {
-            WebCrawler649().crawl()
+            WebCrawler535().crawl()
         }
     }
 }

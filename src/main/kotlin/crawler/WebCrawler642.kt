@@ -3,12 +3,12 @@ package crawler
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import util.FileConstants.PATH_TXT_6x49
+import util.FileConstants.PATH_TXT_6x42
 import util.FileConstants.YEAR_FOR_WEB_CRAWL
 import util.IO
 import java.io.IOException
 
-class WebCrawler649 {
+class WebCrawler642 {
 
     // region Web
 
@@ -18,10 +18,10 @@ class WebCrawler649 {
 
     // The max html file size to be read, doesn't work if the number is too low aka the page is too large
     private val maxBodySize: Int = 10048000
-    private val url: String = "http://www.toto.bg/results/6x49/"
+    private val url: String = "http://www.toto.bg/results/6x42/"
 
     private val drawingPrefix: String = "-"
-    private val currentYearPath = PATH_TXT_6x49 + YEAR_FOR_WEB_CRAWL
+    private val currentYearPath = PATH_TXT_6x42 + YEAR_FOR_WEB_CRAWL
 
     // Alternative css query: "span[class*=ball-white]"
     private val documentQuery = "div.tir_numbers > div.row > div.col-sm-6.text-right.nopadding > span.ball-white"
@@ -121,7 +121,7 @@ class WebCrawler649 {
 
     companion object {
         fun updateDrawings() {
-            WebCrawler649().crawl()
+            WebCrawler642().crawl()
         }
     }
 }
