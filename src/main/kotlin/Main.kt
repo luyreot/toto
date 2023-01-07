@@ -33,7 +33,6 @@ object Main {
                         launchThread { calculateOddEvenPatternStats() },
                         launchThread { calculateLowHighPatternStats() },
                         launchThread { calculateGroupPatternStats() },
-                        launchThread { calculateGroupPatternDeltaStats() },
                         launchThread { calculateCombinedPatternStats() }
                     ).forEach { thread ->
                         thread.join()

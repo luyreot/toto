@@ -27,8 +27,6 @@ class Stats(
 
     val combinedPatternStats = CombinedPatternStats(totoType, drawings, DIVIDE_BY_10, fromYear)
 
-    val groupPatternDeltaStats = GroupPatternDeltaStats(totoType, drawings, fromYear)
-
     val predictPatternOptimizer = PredictPatternOptimizer(
         totoType,
         drawings,
@@ -89,10 +87,6 @@ class Stats(
 
     fun calculateCombinedPatternStats() {
         combinedPatternStats.calculateStats()
-    }
-
-    fun calculateGroupPatternDeltaStats() {
-        groupPatternDeltaStats.calculateStats()
     }
 
     fun optimizePredictedPatterns() {

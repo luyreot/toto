@@ -20,10 +20,6 @@ package model
  * 0 - 1..9, 1 - 10..19, 2 - 20..29, 3 - 30..39, 4 - 40..49
  * 5,14,22,25,34,49 -> 0,1,2,2,3,4
  *
- * A delta group pattern for a toto drawing will look like this:
- * 4, 6, 9, 21, 36, 46 -> 4, 2, 3, 12, 15, 10
- * Check [data.GroupPatternDeltaStats] for more info on the algorithm.
- *
  * The size of the array depends on the toto type - 6x49, 6x42 or 5x35.
  */
 data class NumbersFloat(
