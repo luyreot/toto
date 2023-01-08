@@ -204,7 +204,7 @@ class Drawings(
 
     private fun printDuplicatedDrawings(drawings: List<Numbers>) {
         val duplicateNumbers: Set<Numbers> = drawings.groupingBy { it }.eachCount().filter { it.value > 1 }.keys
-        println("${duplicateNumbers.size} duplicated drawings.")
+        println("${duplicateNumbers.size} duplicated drawings:")
 
         numbersCache.sortedWith(compareBy<Number> { it.year }.thenBy { it.issue }.thenBy { it.position }).let { sortedNumbers ->
             val drawingArray = IntArray(totoType.size)
@@ -218,7 +218,7 @@ class Drawings(
 
                 if (duplicateNumbers.contains(drawing).not()) return@forEach
 
-                println("$drawing, year=${number.year}, issue=${number.issue}")
+                println("${drawing.toFormattedString()} - year=${number.year}, issue=${number.issue}")
             }
         }
     }

@@ -55,6 +55,8 @@ data class Numbers(
 
         return 1
     }
+
+    fun toFormattedString(): String = numbers.toList().toString().replace("[", "").replace("]", "")
 }
 
 interface CompareDeltaPattern<T> : Comparable<T> {
