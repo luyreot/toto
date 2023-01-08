@@ -47,7 +47,6 @@ class GroupNumberStats(
 
                     // Increment the occurrence of a number pair
                     groupsCache[numbers[one]]?.merge(numbers[two], 1, Int::plus)
-
                 }
             }
         }

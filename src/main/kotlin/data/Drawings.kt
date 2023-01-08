@@ -5,6 +5,8 @@ import extensions.greaterOrEqual
 import model.Number
 import model.Numbers
 import model.TotoType
+import util.FileConstants.PATH_TXT_5x35
+import util.FileConstants.PATH_TXT_6x42
 import util.FileConstants.PATH_TXT_6x49
 import util.IO
 import util.PredictionTester
@@ -33,18 +35,18 @@ class Drawings(
         if (numbersCache.isNotEmpty()) numbersCache.clear()
 
         when (totoType) {
-            TotoType.T_6X49 -> {
-                IO.getFiles(PATH_TXT_6x49)?.let { files ->
-                    files.sorted().forEach { file ->
-                        addNumbers(
-                            year = file.name.toInt(),
-                            fileContents = IO.getTxtFileContents(file)
-                        )
-                    }
-                } ?: throw IllegalArgumentException("Did not load any files!")
-            }
-
-            else -> throw IllegalArgumentException("${totoType.name} is not supported!")
+            TotoType.T_6X49 -> PATH_TXT_6x49
+            TotoType.T_6X42 -> PATH_TXT_6x42
+            TotoType.T_5X35 -> PATH_TXT_5x35
+        }.let { path ->
+            IO.getFiles(path)?.let { files ->
+                files.sorted().forEach { file ->
+                    addNumbers(
+                        year = file.name.toInt(),
+                        fileContents = IO.getTxtFileContents(file)
+                    )
+                }
+            } ?: throw IllegalArgumentException("Did not load any files for $path!")
         }
 
         validateNumbers()
@@ -152,7 +154,26 @@ class Drawings(
             if (drawnNumbers.size != totoType.size)
                 throw IllegalArgumentException("Drawing is not ${totoType.name}!")
 
+            for (i in 0 until drawnNumbers.size - 1) {
+                if (drawnNumbers[i].toInt() >= drawnNumbers[i + 1].toInt())
+                    throw IllegalArgumentException("Illegal numbers - ${drawnNumbers[i]}, ${drawnNumbers[i + 1]}")
+            }
+
             drawnNumbers.forEachIndexed { position, number ->
+                when (totoType) {
+                    TotoType.T_6X49 -> number.toInt().let {
+                        if (it < 1 || it > 49) throw IllegalArgumentException("Illegal number for 6x49 - $number")
+                    }
+
+                    TotoType.T_6X42 -> number.toInt().let {
+                        if (it < 1 || it > 42) throw IllegalArgumentException("Illegal number for 6x42 - $number")
+                    }
+
+                    TotoType.T_5X35 -> number.toInt().let {
+                        if (it < 1 || it > 35) throw IllegalArgumentException("Illegal number for 5x35 - $number")
+                    }
+                }
+
                 numbersCache.add(
                     Number(
                         number = number.toInt(),

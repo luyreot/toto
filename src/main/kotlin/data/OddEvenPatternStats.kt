@@ -19,7 +19,6 @@ import util.PatternUtils.convertOddEvenPattern
 class OddEvenPatternStats(
     private val totoType: TotoType,
     private val drawings: Drawings,
-    private val predict: PredictOddEvenPattern,
     private val fromYear: Int? = null
 ) : PatternStats<Numbers> {
 
@@ -38,8 +37,6 @@ class OddEvenPatternStats(
         drawings.forEachIndexed { index, numbers ->
             // Already got the toto numbers of a single drawing
             val pattern = Numbers(convertOddEvenPattern(numbers.numbers.copyOf()))
-
-            predict.takePattern(pattern.numbers, index)
 
             // Save the pattern in the map
             patternsCache.merge(pattern, 1, Int::plus)

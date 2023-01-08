@@ -1,6 +1,8 @@
 package data
 
-import model.*
+import model.CombinedPattern
+import model.Numbers
+import model.TotoType
 import util.PatternUtils.convertOddEvenPattern
 import util.PatternUtils.convertToGroupPattern
 import util.PatternUtils.convertToLowHighPattern
@@ -11,24 +13,14 @@ class PredictPatternOptimizer(
     private val fromYear: Int? = null,
     private val numberStats: NumberStats,
     private val oddEvenPatternStats: OddEvenPatternStats,
-    private val predictOddEvenPattern: PredictOddEvenPattern,
     private val lowHighPatternStats: LowHighPatternStats,
-    private val predictLowHighPattern: PredictLowHighPattern,
     private val groupPatternStats: GroupPatternStats,
     private val predictGroupPattern: PredictGroupPattern,
-    private val groupStrategy: GroupStrategy,
     private val combinedPatternStats: CombinedPatternStats,
     private val drawingScoreStats: DrawingScoreStats
 ) {
 
     val upcommingPatterns = mutableSetOf<CombinedPattern>()
-
-    private val groupStrategyMethod = groupStrategies[groupStrategy] as? (Int) -> Int
-
-    init {
-        if (groupStrategyMethod == null)
-            throw IllegalArgumentException("Group strategy method is null!")
-    }
 
     fun optimizePredictedPatterns() {
         val aboveAverageGroupPatterns = (groupPatternStats.patterns.values.sum() / groupPatternStats.patterns.size)
@@ -40,7 +32,7 @@ class PredictPatternOptimizer(
             throw IllegalArgumentException("There are no group patterns!")
 
         // Add the predicted pattern at the top of the list if it is in the above average patterns map
-        val predictedGroupPattern = Numbers(predictGroupPattern.nextPattern)
+        val predictedGroupPattern = Numbers(predictGroupPattern.predictedPattern)
         val groupPatternsToVerify = mutableListOf<Numbers>()
         if (aboveAverageGroupPatterns.containsKey(predictedGroupPattern)) {
             aboveAverageGroupPatterns.remove(predictedGroupPattern)
@@ -141,7 +133,7 @@ class PredictPatternOptimizer(
         throw IllegalArgumentException("Something went wrong! Could not find any previous drawing with the following pattern - $pattern")
     }
 
-    private fun convertToGroup(pattern: IntArray): IntArray = convertToGroupPattern(pattern, groupStrategyMethod)
+    private fun convertToGroup(pattern: IntArray): IntArray = convertToGroupPattern(pattern, totoType.groupStrategy)
 
     private fun convertToOddEven(pattern: IntArray): IntArray = convertOddEvenPattern(pattern)
 

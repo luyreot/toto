@@ -8,7 +8,6 @@ import util.FileConstants.YEAR_FOR_WEB_CRAWL
 import util.IO
 import java.io.IOException
 
-// TODO: 1/2/22 Class is only 6x49 aware
 class WebCrawler649 {
 
     // region Web
@@ -21,7 +20,6 @@ class WebCrawler649 {
     private val maxBodySize: Int = 10048000
     private val url: String = "http://www.toto.bg/results/6x49/"
 
-    // http://www.toto.bg/results/6x49/2020-100
     private val drawingPrefix: String = "-"
     private val currentYearPath = PATH_TXT_6x49 + YEAR_FOR_WEB_CRAWL
 

@@ -1,16 +1,16 @@
 package util
 
 import model.Numbers
+import model.TotoType
 
 object PatternUtils {
 
     fun convertToGroupPattern(
         numbers: IntArray,
-        groupStrategyMethod: ((Int) -> Int)?,
+        groupStrategyMethod: (Int) -> Int,
     ): IntArray {
         for (i in numbers.indices) {
-            numbers[i] = groupStrategyMethod?.invoke(numbers[i])
-                ?: throw IllegalArgumentException("Group strategy method is null!")
+            numbers[i] = groupStrategyMethod.invoke(numbers[i])
         }
 
         return numbers
@@ -42,39 +42,16 @@ object PatternUtils {
         pattern: Numbers,
     ): Boolean = patternsCache[pattern]?.let { it > patternsCache.values.sum() / patternsCache.size } ?: false
 
-    fun convertToGroupPatternDelta(
-        numbers: IntArray,
-        groupStrategyMethod: ((Int, Int) -> Int)?,
-    ): IntArray {
-        val result = IntArray(numbers.size)
-
-        for (i in numbers.indices) {
-            if (i == 0) {
-                result[i] = numbers[i]
-                continue
+    fun anyInvalidPatterns(
+        totoType: TotoType,
+        patterns: Set<Numbers>
+    ): Boolean = patterns.any { pattern ->
+        pattern.numbers.any { num ->
+            when (totoType) {
+                TotoType.T_6X49 -> num < 0 || num > 4
+                TotoType.T_6X42 -> num < 0 || num > 5
+                TotoType.T_5X35 -> num < 0 || num > 4
             }
-
-            result[i] = groupStrategyMethod?.invoke(numbers[i], numbers[i - 1])
-                ?: throw IllegalArgumentException("Group strategy method is null!")
         }
-
-        return result
-    }
-
-    fun unconvertGroupPatternDelta(
-        drawingSize: Int,
-        pattern: IntArray
-    ): IntArray {
-        val drawing = IntArray(drawingSize)
-
-        for (i in 0 until drawingSize) {
-            if (i == 0) {
-                drawing[i] = pattern[i]
-                continue
-            }
-            drawing[i] = drawing[i - 1] + pattern[i]
-        }
-
-        return drawing
     }
 }
