@@ -46,7 +46,7 @@ class Drawings(
                         fileContents = IO.getTxtFileContents(file)
                     )
                 }
-            } ?: throw IllegalArgumentException("Did not load any files!")
+            } ?: throw IllegalArgumentException("Did not load any files for $path!")
         }
 
         validateNumbers()

@@ -20,8 +20,7 @@ object Main {
             startIssue = 103
 
             do {
-                // 1999 for average calculations
-                Stats(TotoType.T_6X49).apply {
+                Stats(TotoType.T_5X35).apply {
                     loadNumbers()
 
                     listOf(
