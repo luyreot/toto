@@ -2,13 +2,15 @@ package data
 
 import extensions.greaterOrEqual
 import extensions.sortByValueDescending
-import model.*
+import model.Frequency
+import model.Numbers
+import model.TotoType
+import util.PatternUtils.anyInvalidPatterns
 import util.PatternUtils.convertToGroupPattern
 
 class GroupPatternStats(
     private val totoType: TotoType,
     private val drawings: Drawings,
-    private val groupStrategy: GroupStrategy,
     private val predict: PredictGroupPattern,
     private val fromYear: Int? = null
 ) : PatternStats<Numbers> {
@@ -21,19 +23,14 @@ class GroupPatternStats(
         get() = frequenciesCache
     private val frequenciesCache = mutableMapOf<Numbers, MutableList<Frequency>>()
 
-    private val groupStrategyMethod = groupStrategies[groupStrategy] as? (Int) -> Int
-
-    init {
-        if (groupStrategyMethod == null)
-            throw IllegalArgumentException("Group strategy method is null!")
-    }
-
     fun calculateStats() {
         val drawings = if (fromYear == null) drawings.drawings else drawings.drawingsSubset
         val lastPatternOccurrenceMap = mutableMapOf<Numbers, Int>()
 
         drawings.forEachIndexed { index, numbers ->
-            val pattern = Numbers(convertToGroupPattern(numbers.numbers.copyOf(), groupStrategyMethod))
+            val pattern = Numbers(
+                convertToGroupPattern(numbers.numbers.copyOf(), totoType.groupStrategy)
+            )
 
             predict.takePattern(pattern.numbers, index)
 
@@ -105,17 +102,9 @@ class GroupPatternStats(
         if (patternsCache.values.any { it == 0 })
             throw IllegalArgumentException("Invalid pattern occurrence value!")
 
-        // All patterns should have the proper values
-        if (groupStrategy != GroupStrategy.DIVIDE_BY_10)
-            throw IllegalArgumentException("Invalid Toto Group Strategy!")
-
-        val anyInvalidPatterns = patternsCache.keys.any { pattern ->
-            pattern.numbers.any { item ->
-                item != 0 && item != 1 && item != 2 && item != 3 && item != 4
-            }
-        }
-        if (anyInvalidPatterns)
+        if (anyInvalidPatterns(totoType, patternsCache.keys)) {
             throw IllegalArgumentException("Invalid group pattern!")
+        }
     }
 
     private fun validateFrequencies() {

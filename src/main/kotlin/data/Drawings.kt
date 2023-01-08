@@ -5,6 +5,8 @@ import extensions.greaterOrEqual
 import model.Number
 import model.Numbers
 import model.TotoType
+import util.FileConstants.PATH_TXT_5x35
+import util.FileConstants.PATH_TXT_6x42
 import util.FileConstants.PATH_TXT_6x49
 import util.IO
 import util.PredictionTester
@@ -33,18 +35,18 @@ class Drawings(
         if (numbersCache.isNotEmpty()) numbersCache.clear()
 
         when (totoType) {
-            TotoType.T_6X49 -> {
-                IO.getFiles(PATH_TXT_6x49)?.let { files ->
-                    files.sorted().forEach { file ->
-                        addNumbers(
-                            year = file.name.toInt(),
-                            fileContents = IO.getTxtFileContents(file)
-                        )
-                    }
-                } ?: throw IllegalArgumentException("Did not load any files!")
-            }
-
-            else -> throw IllegalArgumentException("${totoType.name} is not supported!")
+            TotoType.T_6X49 -> PATH_TXT_6x49
+            TotoType.T_6X42 -> PATH_TXT_6x42
+            TotoType.T_5X35 -> PATH_TXT_5x35
+        }.let { path ->
+            IO.getFiles(path)?.let { files ->
+                files.sorted().forEach { file ->
+                    addNumbers(
+                        year = file.name.toInt(),
+                        fileContents = IO.getTxtFileContents(file)
+                    )
+                }
+            } ?: throw IllegalArgumentException("Did not load any files!")
         }
 
         validateNumbers()

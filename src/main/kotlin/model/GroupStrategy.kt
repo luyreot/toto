@@ -1,9 +1,8 @@
 package model
 
-val groupStrategies = mapOf<GroupStrategy, Any>(
+val groupStrategies = mapOf<GroupStrategy, (Int) -> Int>(
     GroupStrategy.DIVIDE_BY_10 to ::divideBy10,
-    GroupStrategy.DELTA_SUBTRACT to Int::deltaSubtract,
-    GroupStrategy.DELTA_ADD to Int::deltaAdd
+    GroupStrategy.DIVIDE_BY_8 to ::divideBy8
 )
 
 /**
@@ -12,8 +11,7 @@ val groupStrategies = mapOf<GroupStrategy, Any>(
  */
 enum class GroupStrategy {
     DIVIDE_BY_10,
-    DELTA_SUBTRACT,
-    DELTA_ADD
+    DIVIDE_BY_8
 }
 
 /**
@@ -22,6 +20,4 @@ enum class GroupStrategy {
  */
 private fun divideBy10(number: Int): Int = number.div(10)
 
-private fun Int.deltaSubtract(number: Int): Int = this - number
-
-private fun Int.deltaAdd(number: Int): Int = this + number
+private fun divideBy8(number: Int): Int = number.div(8)

@@ -1,6 +1,5 @@
 package data
 
-import model.GroupStrategy.DIVIDE_BY_10
 import model.TotoType
 
 class Stats(
@@ -16,16 +15,14 @@ class Stats(
 
     val drawingScoreStats = DrawingScoreStats(totoType, drawings, numberStats, fromYear)
 
-    val predictOddEvenPattern = PredictOddEvenPattern(totoType)
-    val oddEvenPatternStats = OddEvenPatternStats(totoType, drawings, predictOddEvenPattern, fromYear)
+    val oddEvenPatternStats = OddEvenPatternStats(totoType, drawings, fromYear)
 
-    val preditctLowHighPattern = PredictLowHighPattern(totoType)
-    val lowHighPatternStats = LowHighPatternStats(totoType, drawings, preditctLowHighPattern, fromYear)
+    val lowHighPatternStats = LowHighPatternStats(totoType, drawings, fromYear)
 
     val predictGroupPattern = PredictGroupPattern(totoType)
-    val groupPatternStats = GroupPatternStats(totoType, drawings, DIVIDE_BY_10, predictGroupPattern, fromYear)
+    val groupPatternStats = GroupPatternStats(totoType, drawings, predictGroupPattern, fromYear)
 
-    val combinedPatternStats = CombinedPatternStats(totoType, drawings, DIVIDE_BY_10, fromYear)
+    val combinedPatternStats = CombinedPatternStats(totoType, drawings, fromYear)
 
     val predictPatternOptimizer = PredictPatternOptimizer(
         totoType,
@@ -33,12 +30,9 @@ class Stats(
         fromYear,
         numberStats,
         oddEvenPatternStats,
-        predictOddEvenPattern,
         lowHighPatternStats,
-        preditctLowHighPattern,
         groupPatternStats,
         predictGroupPattern,
-        DIVIDE_BY_10,
         combinedPatternStats,
         drawingScoreStats
     )
@@ -48,7 +42,6 @@ class Stats(
         drawings,
         fromYear,
         numberStats,
-        DIVIDE_BY_10,
         drawingScoreStats,
         predictPatternOptimizer,
         groupNumberStats
@@ -98,94 +91,6 @@ class Stats(
     }
 
     // region Testing
-
-    fun testOddEvenPredictionAlgo() {
-        /*
-        val periodIncrement = 8 // 2 drawings per week x 4 weeks = 1 month
-        var predictedThreesCount = 0
-        var predictedFoursCount = 0
-        var predictedFivesCount = 0
-        var predictedSixesCount = 0
-
-        for (i in 1..111) {
-            val period = periodIncrement * i
-            val predict = PredictOddEvenPattern(totoType, period)
-            OddEvenPatternStats(totoType, drawings, predict, fromYear).apply {
-                calculateStats()
-
-                println("Period - $period")
-                println("PredictedThreesCount - ${predict.predictedThreesCount}")
-                println("PredictedFoursCount - ${predict.predictedFoursCount}")
-                println("PredictedFivesCount - ${predict.predictedFivesCount}")
-                println("PredictedSixesCount - ${predict.predictedSixesCount}")
-                println("--- --- --- --- --- --- ---")
-
-                if (predictedThreesCount < predict.predictedThreesCount) {
-                    predictedThreesCount = predict.predictedThreesCount
-                }
-                if (predictedFoursCount < predict.predictedFoursCount) {
-                    predictedFoursCount = predict.predictedFoursCount
-                }
-                if (predictedFivesCount < predict.predictedFivesCount) {
-                    predictedFivesCount = predict.predictedFivesCount
-                }
-                if (predictedSixesCount < predict.predictedSixesCount) {
-                    predictedSixesCount = predict.predictedSixesCount
-                }
-            }
-        }
-
-        println("Top Results")
-        println("PredictedThreesCount - $predictedThreesCount")
-        println("PredictedFoursCount - $predictedFoursCount")
-        println("PredictedFivesCount - $predictedFivesCount")
-        println("PredictedSixesCount - $predictedSixesCount")
-        */
-    }
-
-    fun testLowHighPredictionAlgo() {
-        /*
-        val periodIncrement = 8 // 2 drawings per week x 4 weeks = 1 month
-        var predictedThreesCount = 0
-        var predictedFoursCount = 0
-        var predictedFivesCount = 0
-        var predictedSixesCount = 0
-
-        for (i in 1..111) {
-            val period = periodIncrement * i
-            val predict = PredictLowHighPattern(totoType, period)
-            LowHighPatternStats(totoType, drawings, predict, fromYear).apply {
-                calculateStats()
-
-                println("Period - $period")
-                println("PredictedThreesCount - ${predict.predictedThreesCount}")
-                println("PredictedFoursCount - ${predict.predictedFoursCount}")
-                println("PredictedFivesCount - ${predict.predictedFivesCount}")
-                println("PredictedSixesCount - ${predict.predictedSixesCount}")
-                println("--- --- --- --- --- --- ---")
-
-                if (predictedThreesCount < predict.predictedThreesCount) {
-                    predictedThreesCount = predict.predictedThreesCount
-                }
-                if (predictedFoursCount < predict.predictedFoursCount) {
-                    predictedFoursCount = predict.predictedFoursCount
-                }
-                if (predictedFivesCount < predict.predictedFivesCount) {
-                    predictedFivesCount = predict.predictedFivesCount
-                }
-                if (predictedSixesCount < predict.predictedSixesCount) {
-                    predictedSixesCount = predict.predictedSixesCount
-                }
-            }
-        }
-
-        println("Top Results")
-        println("PredictedThreesCount - $predictedThreesCount")
-        println("PredictedFoursCount - $predictedFoursCount")
-        println("PredictedFivesCount - $predictedFivesCount")
-        println("PredictedSixesCount - $predictedSixesCount")
-        */
-    }
 
     fun testGroupPredictionAlgo() {
         /*

@@ -9,13 +9,12 @@ class PredictGroupPattern(
     private val period: Int = PERIOD
 ) {
 
-    val nextPattern = IntArray(totoType.size)
+    val predictedPattern = IntArray(totoType.size)
 
     private val averageTrueRangePatternArray = Array<QueueList<Float>>(totoType.size) {
         QueueList(period)
     }
 
-    // TODO Hardcoded for 6x49
     var predictedThreesCount: Int = 0
     var predictedFoursCount: Int = 0
     var predictedFivesCount: Int = 0
@@ -23,7 +22,7 @@ class PredictGroupPattern(
 
     init {
         for (i in 0 until totoType.size) {
-            nextPattern[i] = PATTERN_DEFAULT_VALUE
+            predictedPattern[i] = PATTERN_DEFAULT_VALUE
         }
     }
 
@@ -35,39 +34,43 @@ class PredictGroupPattern(
             for (i in averageTrueRangePatternArray.indices) {
                 pattern[i].div(1f).let {
                     averageTrueRangePatternArray[i].add(it)
-                    nextPattern[i] = normalizePrediction(it)
+                    predictedPattern[i] = normalizePrediction(it)
                 }
             }
 
             return
         }
 
-        val predictedPatternList = nextPattern.toList()
-        val currentPatternList = pattern.toMutableList()
-        var predictedIndices = 0
-        predictedPatternList.forEach { predictedPatternIndex ->
-            if (currentPatternList.contains(predictedPatternIndex)) {
-                predictedIndices++
-                currentPatternList.remove(predictedPatternIndex)
+        val nextPattern = pattern.toMutableList()
+        var predictedNumCount = 0
+        predictedPattern.forEach { predictedNum ->
+            if (nextPattern.contains(predictedNum)) {
+                predictedNumCount++
+                nextPattern.remove(predictedNum)
             }
         }
-        if (predictedIndices >= 3) {
-            predictedThreesCount++
-        }
-        if (predictedIndices >= 4) {
-            predictedFoursCount++
-        }
-        if (predictedIndices >= 5) {
-            predictedFivesCount++
-        }
-        if (nextPattern.contentEquals(pattern)) {
-            predictedSixesCount++
+        when {
+            predictedNumCount == 6 && predictedPattern.contentEquals(pattern) -> {
+                predictedSixesCount++
+            }
+
+            predictedNumCount == 5 -> {
+                predictedFivesCount++
+            }
+
+            predictedNumCount == 4 -> {
+                predictedFoursCount++
+            }
+
+            predictedNumCount == 3 -> {
+                predictedThreesCount++
+            }
         }
 
         for (i in averageTrueRangePatternArray.indices) {
             getLastPeriodValue(i, pattern[i]).let {
                 averageTrueRangePatternArray[i].add(it)
-                nextPattern[i] = normalizePrediction(it)
+                predictedPattern[i] = normalizePrediction(it)
             }
         }
     }

@@ -2,10 +2,8 @@ package data
 
 import extensions.clearAfter
 import extensions.sortByValueDescending
-import model.GroupStrategy
 import model.Numbers
 import model.TotoType
-import model.groupStrategies
 import util.PredictionTester
 import util.TotoUtils.getDrawingScore
 import java.util.*
@@ -16,7 +14,6 @@ class PredictNextDrawing(
     private val drawings: Drawings,
     private val fromYear: Int? = null,
     private val numberStats: NumberStats,
-    private val groupStrategy: GroupStrategy,
     private val drawingScoreStats: DrawingScoreStats,
     private val predictPatternOptimizer: PredictPatternOptimizer,
     private val groupNumberStats: GroupNumberStats
@@ -24,13 +21,6 @@ class PredictNextDrawing(
 
     val nextDrawingsTopScore = mutableMapOf<IntArray, Int>()
     val nextDrawingsAverageScore = mutableMapOf<IntArray, Int>()
-
-    private val groupStrategyMethod = groupStrategies[groupStrategy] as? (Int) -> Int
-
-    init {
-        if (groupStrategyMethod == null)
-            throw IllegalArgumentException("Group strategy method is null!")
-    }
 
     fun predictNextDrawing() {
         val allDrawings = drawings.drawings.toSet()
@@ -143,7 +133,7 @@ class PredictNextDrawing(
     private fun isFromSameGroup(
         group: Int,
         number: Int
-    ): Boolean = group == groupStrategyMethod?.invoke(number)
+    ): Boolean = group == totoType.groupStrategy.invoke(number)
 
     private fun isHigh(number: Int): Boolean = number > totoType.lowHighMidPoint
 
@@ -268,16 +258,20 @@ class PredictNextDrawing(
         Random().apply {
             println("Random TOP picks:")
             nextDrawingsTopScore.keys.shuffled(this).let { predictions ->
-                println(predictions.elementAt(nextInt(predictions.size)).toList())
-                println(predictions.elementAt(nextInt(predictions.size)).toList())
-                println(predictions.elementAt(nextInt(predictions.size)).toList())
-                println(predictions.elementAt(nextInt(predictions.size)).toList())
-                println(predictions.elementAt(nextInt(predictions.size)).toList())
-                println(predictions.elementAt(nextInt(predictions.size)).toList())
-                println(predictions.elementAt(nextInt(predictions.size)).toList())
-                println(predictions.elementAt(nextInt(predictions.size)).toList())
+                printDrawing(predictions.elementAt(nextInt(predictions.size)))
+                printDrawing(predictions.elementAt(nextInt(predictions.size)))
+                printDrawing(predictions.elementAt(nextInt(predictions.size)))
+                printDrawing(predictions.elementAt(nextInt(predictions.size)))
+                printDrawing(predictions.elementAt(nextInt(predictions.size)))
+                printDrawing(predictions.elementAt(nextInt(predictions.size)))
+                printDrawing(predictions.elementAt(nextInt(predictions.size)))
+                printDrawing(predictions.elementAt(nextInt(predictions.size)))
             }
         }
+    }
+
+    private fun printDrawing(drawing: IntArray) {
+        println(drawing.toList().toString().replace("[", "").replace("]", ""))
     }
 
     private companion object {

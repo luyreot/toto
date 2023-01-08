@@ -1,7 +1,9 @@
 package data
 
 import extensions.sortByValueDescending
-import model.*
+import model.CombinedPattern
+import model.Numbers
+import model.TotoType
 import util.PatternUtils.convertOddEvenPattern
 import util.PatternUtils.convertToGroupPattern
 import util.PatternUtils.convertToLowHighPattern
@@ -13,7 +15,6 @@ import util.PatternUtils.convertToLowHighPattern
 class CombinedPatternStats(
     private val totoType: TotoType,
     private val drawings: Drawings,
-    private val groupStrategy: GroupStrategy,
     private val fromYear: Int? = null
 ) {
 
@@ -21,19 +22,12 @@ class CombinedPatternStats(
         get() = patternsCache
     private val patternsCache = mutableSetOf<CombinedPattern>()
 
-    private val groupStrategyMethod = groupStrategies[groupStrategy] as? (Int) -> Int
-
-    init {
-        if (groupStrategyMethod == null)
-            throw IllegalArgumentException("Group strategy method is null!")
-    }
-
     fun calculateStats() {
         val drawings = if (fromYear == null) drawings.drawings else drawings.drawingsSubset
 
         drawings.forEach { totoNumbers ->
             val groupPattern = Numbers(
-                convertToGroupPattern(totoNumbers.numbers.copyOf(), groupStrategyMethod)
+                convertToGroupPattern(totoNumbers.numbers.copyOf(), totoType.groupStrategy)
             )
 
             val lowHighPattern = Numbers(
@@ -68,7 +62,21 @@ class CombinedPatternStats(
             }
         }
 
+        validateResults()
         sortResults()
+    }
+
+    private fun validateResults() {
+        if (patternsCache.isEmpty())
+            throw IllegalArgumentException("There are no patterns!")
+
+        patternsCache.forEach { pattern ->
+            if (pattern.lowHighs.isEmpty())
+                throw IllegalArgumentException("There are no low/high patterns!")
+
+            if (pattern.oddEvens.isEmpty())
+                throw IllegalArgumentException("There are no odd/even patterns!")
+        }
     }
 
     private fun sortResults() {

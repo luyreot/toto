@@ -19,7 +19,6 @@ import util.PatternUtils.convertToLowHighPattern
 class LowHighPatternStats(
     private val totoType: TotoType,
     private val drawings: Drawings,
-    private val predict: PredictLowHighPattern,
     private val fromYear: Int? = null
 ) : PatternStats<Numbers> {
 
@@ -38,8 +37,6 @@ class LowHighPatternStats(
         drawings.forEachIndexed { index, numbers ->
             // Already got the toto numbers of a single drawing
             val pattern = Numbers(convertToLowHighPattern(numbers.numbers.copyOf(), totoType.lowHighMidPoint))
-
-            predict.takePattern(pattern.numbers, index)
 
             // Save the pattern in the map
             patternsCache.merge(pattern, 1, Int::plus)
