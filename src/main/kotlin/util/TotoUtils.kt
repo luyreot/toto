@@ -3,20 +3,15 @@ package util
 import crawler.WebCrawler535
 import crawler.WebCrawler642
 import crawler.WebCrawler649
-import crawler.WebCrawler649Backup
 import model.Frequency
 import model.Numbers
 
 object TotoUtils {
 
-    fun fetchNewDrawings(fetchFromBackupSite: Boolean = false) {
-        if (fetchFromBackupSite) {
-            WebCrawler649Backup.updateDrawings()
-        } else {
-            WebCrawler649.updateDrawings()
-            WebCrawler642.updateDrawings()
-            WebCrawler535.updateDrawings()
-        }
+    fun fetchNewDrawings() {
+        WebCrawler649.updateDrawings()
+        WebCrawler642.updateDrawings()
+        WebCrawler535.updateDrawings()
     }
 
     fun getDrawingScore(
