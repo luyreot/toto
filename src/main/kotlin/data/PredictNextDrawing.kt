@@ -4,6 +4,13 @@ import extensions.clearAfter
 import extensions.sortByValueDescending
 import model.Numbers
 import model.TotoType
+import util.FileConstants.FILE_TXT_5x35_PREDICTIONS
+import util.FileConstants.FILE_TXT_5x35_PREDICTIONS_RANDOM
+import util.FileConstants.FILE_TXT_6x42_PREDICTIONS
+import util.FileConstants.FILE_TXT_6x42_PREDICTIONS_RANDOM
+import util.FileConstants.FILE_TXT_6x49_PREDICTIONS
+import util.FileConstants.FILE_TXT_6x49_PREDICTIONS_RANDOM
+import util.IO
 import util.PredictionTester
 import util.TotoUtils.getDrawingScore
 import java.util.*
@@ -106,6 +113,7 @@ class PredictNextDrawing(
         }
 
         printRandomTopPredictions()
+        saveAllTopPredictionsToFile()
     }
 
     private fun getPredictionNumbers(
@@ -258,20 +266,53 @@ class PredictNextDrawing(
         Random().apply {
             println("Random TOP picks:")
             nextDrawingsTopScore.keys.shuffled(this).let { predictions ->
-                printDrawing(predictions.elementAt(nextInt(predictions.size)))
-                printDrawing(predictions.elementAt(nextInt(predictions.size)))
-                printDrawing(predictions.elementAt(nextInt(predictions.size)))
-                printDrawing(predictions.elementAt(nextInt(predictions.size)))
-                printDrawing(predictions.elementAt(nextInt(predictions.size)))
-                printDrawing(predictions.elementAt(nextInt(predictions.size)))
-                printDrawing(predictions.elementAt(nextInt(predictions.size)))
-                printDrawing(predictions.elementAt(nextInt(predictions.size)))
+                println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
+                println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
+                println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
+                println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
+                println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
+                println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
+                println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
+                println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
             }
         }
     }
 
-    private fun printDrawing(drawing: IntArray) {
-        println(drawing.toList().toString().replace("[", "").replace("]", ""))
+    private fun saveAllTopPredictionsToFile() {
+        val stringBuilder = StringBuilder()
+        val stringBuilderRandom = StringBuilder()
+
+        stringBuilder.appendLine("(${nextDrawingsTopScore.keys.size})")
+        stringBuilderRandom.appendLine("(${nextDrawingsTopScore.keys.size})")
+
+        nextDrawingsTopScore.keys.forEach { prediction ->
+            stringBuilder.appendLine(drawingToString(prediction))
+        }
+
+        nextDrawingsTopScore.keys.shuffled(Random()).forEach { prediction ->
+            stringBuilderRandom.appendLine(drawingToString(prediction))
+        }
+
+        when (totoType) {
+            TotoType.T_6X49 -> {
+                IO.saveTxtFile(FILE_TXT_6x49_PREDICTIONS, stringBuilder.toString())
+                IO.saveTxtFile(FILE_TXT_6x49_PREDICTIONS_RANDOM, stringBuilderRandom.toString())
+            }
+
+            TotoType.T_6X42 -> {
+                IO.saveTxtFile(FILE_TXT_6x42_PREDICTIONS, stringBuilder.toString())
+                IO.saveTxtFile(FILE_TXT_6x42_PREDICTIONS_RANDOM, stringBuilderRandom.toString())
+            }
+
+            TotoType.T_5X35 -> {
+                IO.saveTxtFile(FILE_TXT_5x35_PREDICTIONS, stringBuilder.toString())
+                IO.saveTxtFile(FILE_TXT_5x35_PREDICTIONS_RANDOM, stringBuilderRandom.toString())
+            }
+        }
+    }
+
+    private fun drawingToString(drawing: IntArray): String {
+        return drawing.toList().toString().replace("[", "").replace("]", "")
     }
 
     private companion object {
