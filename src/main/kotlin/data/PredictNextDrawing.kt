@@ -27,7 +27,6 @@ class PredictNextDrawing(
 ) {
 
     val nextDrawingsTopScore = mutableMapOf<IntArray, Int>()
-    val nextDrawingsAverageScore = mutableMapOf<IntArray, Int>()
 
     fun predictNextDrawing() {
         val allDrawings = drawings.drawings.toSet()
@@ -90,16 +89,6 @@ class PredictNextDrawing(
         }
 
         nextDrawingsTopScore.sortByValueDescending()
-
-        /* No need for this. Best results are coming from the top results.
-        // Store top scores that are between the average score and the possible jump in the positive and negative
-        nextDrawingsAverageScore.putAll(
-            nextDrawingsTopScore.filter { entry ->
-                entry.value < drawingScoreStats.averageSore + drawingScoreStats.averageJump &&
-                        entry.value > drawingScoreStats.averageSore - drawingScoreStats.averageJump
-            }
-        )
-        */
 
         println("Total of ${nextDrawingsTopScore.size} top results.")
 
