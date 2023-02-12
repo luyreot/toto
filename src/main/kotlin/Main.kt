@@ -17,7 +17,7 @@ object Main {
         PredictionTester.apply {
             isTestingPredictions = false
             startYear = 2023
-            startIssue = 4
+            startIssue = 11
 
             do {
                 println("======== 5x35 ========")
