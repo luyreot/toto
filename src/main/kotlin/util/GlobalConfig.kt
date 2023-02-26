@@ -7,6 +7,8 @@ object GlobalConfig {
     // 5x45, 6x42, 6x49
     val performAlgoForType: Array<Boolean> = arrayOf(false, false, true)
 
+    var calculateDerivedPredictions: Boolean = false
+
     var savePredictionsToFile: Boolean = false
 
     var checkPredictionScore: Boolean = false

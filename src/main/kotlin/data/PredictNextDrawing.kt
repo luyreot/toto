@@ -91,17 +91,25 @@ class PredictNextDrawing(
 
         nextDrawingsScore.sortByValueDescending()
 
-        println("Total of ${nextDrawingsScore.size} results.")
+        GlobalConfig.apply {
+            println("Total of ${nextDrawingsScore.size} results.")
 
-        if (GlobalConfig.checkPredictionScore) {
-            printPredictionScore(GlobalConfig.PredictionScoreTester.drawing, nextDrawingsScore)
-            return
-        }
+            val randomPicks = getRandomPredictions()
 
-        printRandomPredictions()
+            if (checkPredictionScore) {
+                println("====== All predictions:")
+                printPredictionScore(GlobalConfig.PredictionScoreTester.drawing, nextDrawingsScore.keys.toList())
 
-        if (GlobalConfig.savePredictionsToFile) {
-            saveAllPredictionsToFile()
+                if (calculateDerivedPredictions) {
+                    val randomDerivedPicks = getDerivativeRandomPredictions(randomPicks)
+                    println("====== All derived predictions:")
+                    printPredictionScore(GlobalConfig.PredictionScoreTester.drawing, randomDerivedPicks)
+                }
+            }
+
+            if (savePredictionsToFile) {
+                saveAllPredictionsToFile()
+            }
         }
     }
 
@@ -251,20 +259,39 @@ class PredictNextDrawing(
         throw IllegalArgumentException("Something went wrong! Could not find any previous drawing with the following number - $predictionNumber")
     }
 
-    private fun printRandomPredictions() {
-        Random().apply {
-            println("Random picks:")
-            nextDrawingsScore.keys.shuffled(this).let { predictions ->
-                println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
-                println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
-                println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
-                println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
-                println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
-                println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
-                println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
-                println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
+    private fun getRandomPredictions(): List<IntArray> {
+        val randomPicks = mutableListOf<IntArray>()
+        for (i in 0 until 8) {
+            Random().apply {
+                nextDrawingsScore.keys.shuffled(this).let { predictions ->
+                    randomPicks.add(predictions.elementAt(nextInt(predictions.size)))
+                }
             }
         }
+        println("Random picks:")
+        randomPicks.forEach { println(drawingToString(it)) }
+
+        return randomPicks
+    }
+
+    private fun getDerivativeRandomPredictions(randomPicks: List<IntArray>): List<IntArray> {
+        // Create all possible drawings from those 8 drawings' numbers.
+        // Each number can occur at any position in the drawings.
+        val numbersList = Array<List<Int>>(totoType.size) { emptyList() }
+        for (i in 0 until totoType.size) {
+            numbersList[i] = randomPicks.flatMap { drawing -> drawing.map { number -> number } }.toSet().toList()
+        }
+
+        val derivedPredictions = generateDrawings(numbersList)
+
+        println("Random derived picks:")
+        for (i in 0 until 8) {
+            Random().apply {
+                println(drawingToString(derivedPredictions[nextInt(derivedPredictions.size)]))
+            }
+        }
+
+        return derivedPredictions
     }
 
     private fun saveAllPredictionsToFile() {

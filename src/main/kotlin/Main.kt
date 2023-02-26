@@ -12,8 +12,9 @@ object Main {
 
         GlobalConfig.apply {
             fetchNewDrawings = false
+            calculateDerivedPredictions = false
             savePredictionsToFile = false
-            checkPredictionScore = false
+            checkPredictionScore = true
 
             GlobalConfig.PredictionScoreTester.apply {
                 startYear = 2023

@@ -57,7 +57,7 @@ object TotoUtils {
 
     fun printPredictionScore(
         drawing: IntArray?,
-        predictions: MutableMap<IntArray, Int>
+        predictions: List<IntArray>
     ) {
         if (drawing == null) return
 
@@ -69,7 +69,7 @@ object TotoUtils {
         var fives = 0
         var sixes = 0
 
-        predictions.keys.forEach { prediction ->
+        predictions.forEach { prediction ->
             prediction.intersect(drawing.toSet()).let { result ->
                 when (result.size) {
                     6 -> sixes++
