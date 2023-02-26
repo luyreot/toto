@@ -10,9 +10,10 @@ import util.FileConstants.FILE_TXT_6x42_PREDICTIONS
 import util.FileConstants.FILE_TXT_6x42_PREDICTIONS_RANDOM
 import util.FileConstants.FILE_TXT_6x49_PREDICTIONS
 import util.FileConstants.FILE_TXT_6x49_PREDICTIONS_RANDOM
+import util.GlobalConfig
 import util.IO
-import util.PredictionTester
 import util.TotoUtils.getDrawingScore
+import util.TotoUtils.printPredictionScore
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -26,7 +27,7 @@ class PredictNextDrawing(
     private val groupNumberStats: GroupNumberStats
 ) {
 
-    val nextDrawingsTopScore = mutableMapOf<IntArray, Int>()
+    val nextDrawingsScore = mutableMapOf<IntArray, Int>()
 
     fun predictNextDrawing() {
         val allDrawings = drawings.drawings.toSet()
@@ -78,7 +79,7 @@ class PredictNextDrawing(
 
         // Calculate prediction score
         predictionsSet.forEach { drawing ->
-            nextDrawingsTopScore[drawing.numbers] = getDrawingScore(
+            nextDrawingsScore[drawing.numbers] = getDrawingScore(
                 drawings.size,
                 drawing.numbers,
                 numberStats.patterns,
@@ -88,21 +89,20 @@ class PredictNextDrawing(
             )
         }
 
-        nextDrawingsTopScore.sortByValueDescending()
+        nextDrawingsScore.sortByValueDescending()
 
-        println("Total of ${nextDrawingsTopScore.size} top results.")
+        println("Total of ${nextDrawingsScore.size} results.")
 
-        PredictionTester.apply {
-            if (isTestingPredictions) {
-                println("====== Next drawings is ${nextDrawing?.toList()}")
-                println("====== Checking top predictions:")
-                checkPredictions(nextDrawingsTopScore)
-                return
-            }
+        if (GlobalConfig.checkPredictionScore) {
+            printPredictionScore(GlobalConfig.PredictionScoreTester.drawing, nextDrawingsScore)
+            return
         }
 
-        printRandomTopPredictions()
-        saveAllTopPredictionsToFile()
+        printRandomPredictions()
+
+        if (GlobalConfig.savePredictionsToFile) {
+            saveAllPredictionsToFile()
+        }
     }
 
     private fun getPredictionNumbers(
@@ -251,10 +251,10 @@ class PredictNextDrawing(
         throw IllegalArgumentException("Something went wrong! Could not find any previous drawing with the following number - $predictionNumber")
     }
 
-    private fun printRandomTopPredictions() {
+    private fun printRandomPredictions() {
         Random().apply {
-            println("Random TOP picks:")
-            nextDrawingsTopScore.keys.shuffled(this).let { predictions ->
+            println("Random picks:")
+            nextDrawingsScore.keys.shuffled(this).let { predictions ->
                 println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
                 println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
                 println(drawingToString(predictions.elementAt(nextInt(predictions.size))))
@@ -267,18 +267,18 @@ class PredictNextDrawing(
         }
     }
 
-    private fun saveAllTopPredictionsToFile() {
+    private fun saveAllPredictionsToFile() {
         val stringBuilder = StringBuilder()
         val stringBuilderRandom = StringBuilder()
 
-        stringBuilder.appendLine("(${nextDrawingsTopScore.keys.size})")
-        stringBuilderRandom.appendLine("(${nextDrawingsTopScore.keys.size})")
+        stringBuilder.appendLine("(${nextDrawingsScore.keys.size})")
+        stringBuilderRandom.appendLine("(${nextDrawingsScore.keys.size})")
 
-        nextDrawingsTopScore.keys.forEach { prediction ->
+        nextDrawingsScore.keys.forEach { prediction ->
             stringBuilder.appendLine(drawingToString(prediction))
         }
 
-        nextDrawingsTopScore.keys.shuffled(Random()).forEach { prediction ->
+        nextDrawingsScore.keys.shuffled(Random()).forEach { prediction ->
             stringBuilderRandom.appendLine(drawingToString(prediction))
         }
 

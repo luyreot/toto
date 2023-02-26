@@ -54,4 +54,36 @@ object TotoUtils {
 
         return score
     }
+
+    fun printPredictionScore(
+        drawing: IntArray?,
+        predictions: MutableMap<IntArray, Int>
+    ) {
+        if (drawing == null) return
+
+        println("====== Next drawings is ${drawing.toList()}")
+        println("====== Checking predictions:")
+
+        var threes = 0
+        var fours = 0
+        var fives = 0
+        var sixes = 0
+
+        predictions.keys.forEach { prediction ->
+            prediction.intersect(drawing.toSet()).let { result ->
+                when (result.size) {
+                    6 -> sixes++
+                    5 -> fives++
+                    4 -> fours++
+                    3 -> threes++
+                    else -> {}
+                }
+            }
+        }
+
+        println("$threes threes")
+        println("$fours fours")
+        println("$fives fives")
+        println("$sixes sixes")
+    }
 }
