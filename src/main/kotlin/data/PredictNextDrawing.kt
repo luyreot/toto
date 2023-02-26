@@ -95,13 +95,13 @@ class PredictNextDrawing(
             println("Total of ${nextDrawingsScore.size} results.")
 
             val randomPicks = getRandomPredictions()
+            val randomDerivedPicks = getDerivativeRandomPredictions(randomPicks)
 
             if (checkPredictionScore) {
                 println("====== All predictions:")
                 printPredictionScore(GlobalConfig.PredictionScoreTester.drawing, nextDrawingsScore.keys.toList())
 
                 if (calculateDerivedPredictions) {
-                    val randomDerivedPicks = getDerivativeRandomPredictions(randomPicks)
                     println("====== All derived predictions:")
                     printPredictionScore(GlobalConfig.PredictionScoreTester.drawing, randomDerivedPicks)
                 }
@@ -293,6 +293,17 @@ class PredictNextDrawing(
 
         return derivedPredictions
     }
+
+    private fun getDerivativeRandomPredictions(): List<IntArray> = listOf(
+        intArrayOf(5, 15, 29, 30, 37, 47),
+        intArrayOf(5, 6, 10, 33, 35, 43),
+        intArrayOf(8, 18, 21, 25, 33, 47),
+        intArrayOf(1, 13, 18, 31, 43, 46),
+        intArrayOf(4, 9, 10, 32, 36, 46),
+        intArrayOf(9, 11, 24, 28, 37, 48),
+        intArrayOf(6, 15, 25, 34, 37, 49),
+        intArrayOf(13, 16, 31, 37, 41, 47)
+    )
 
     private fun saveAllPredictionsToFile() {
         val stringBuilder = StringBuilder()
