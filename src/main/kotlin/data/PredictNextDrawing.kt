@@ -16,6 +16,7 @@ import util.TotoUtils.getDrawingScore
 import util.TotoUtils.printPredictionScore
 import java.util.*
 import kotlin.math.roundToInt
+import kotlin.random.Random.Default.nextInt
 
 class PredictNextDrawing(
     private val totoType: TotoType,
@@ -92,11 +93,9 @@ class PredictNextDrawing(
         nextDrawingsScore.sortByValueDescending()
 
         GlobalConfig.apply {
-            val randomDerivedPicks = if (loadPreviousRandomPicks) {
-                getDerivativeRandomPredictions(getDerivativeRandomPredictions())
-            } else {
-                getDerivativeRandomPredictions(getRandomPredictions())
-            }
+            val randomDerivedPicks = getDerivativeRandomPredictions(
+                if (loadPreviousRandomPicks) getPreviousRandomPicks() else getRandomPicks()
+            )
 
             if (checkPredictionScore) {
                 println("====== All predictions:")
@@ -260,20 +259,54 @@ class PredictNextDrawing(
         throw IllegalArgumentException("Something went wrong! Could not find any previous drawing with the following number - $predictionNumber")
     }
 
-    private fun getRandomPredictions(): List<IntArray> {
+    private fun getRandomPicks(): List<IntArray> {
         val randomPicks = mutableListOf<IntArray>()
-        for (i in 0 until 8) {
-            Random().apply {
-                nextDrawingsScore.keys.shuffled(this).let { predictions ->
-                    randomPicks.add(predictions.elementAt(nextInt(predictions.size)))
-                }
+
+        nextDrawingsScore.keys.toMutableList().apply {
+            for (i in 0 until size / 1000) {
+                this.shuffle()
             }
+            for (i in 0 until 8) {
+                randomPicks.add(elementAt(nextInt(size)))
+            }
+
+            println("Total of $size results.")
+            println("Random picks:")
+            randomPicks.forEach { println(drawingToString(it)) }
         }
-        println("Total of ${nextDrawingsScore.size} results.")
-        println("Random picks:")
-        randomPicks.forEach { println(drawingToString(it)) }
 
         return randomPicks
+    }
+
+    private fun getPreviousRandomPicks(): List<IntArray> = if (GlobalConfig.loadPreviousRandomPicks) {
+        listOf(
+            intArrayOf(
+                1, 11, 21, 32, 36, 41
+            ),
+            intArrayOf(
+                1, 13, 14, 29, 39, 43
+            ),
+            intArrayOf(
+                16, 23, 29, 34, 36, 49
+            ),
+            intArrayOf(
+                5, 14, 21, 23, 37, 44
+            ),
+            intArrayOf(
+                5, 17, 21, 31, 34, 46
+            ),
+            intArrayOf(
+                18, 24, 28, 37, 46, 49
+            ),
+            intArrayOf(
+                8, 14, 18, 23, 38, 49
+            ),
+            intArrayOf(
+                13, 14, 21, 27, 34, 44
+            )
+        )
+    } else {
+        throw IllegalArgumentException("loadPreviousRandomPicks is false!")
     }
 
     private fun getDerivativeRandomPredictions(randomPicks: List<IntArray>): List<IntArray> {
@@ -286,27 +319,20 @@ class PredictNextDrawing(
 
         val derivedPredictions = generateDrawings(numbersList)
 
-        println("Total of ${derivedPredictions.size} results.")
-        println("Random derived picks:")
-        for (i in 0 until 8) {
-            Random().apply {
-                println(drawingToString(derivedPredictions[nextInt(derivedPredictions.size)]))
+        derivedPredictions.apply {
+            for (i in 0 until size / 1000) {
+                this.shuffle()
+            }
+
+            println("Total of $size results.")
+            println("Random derived picks:")
+            for (i in 0 until 8) {
+                println(drawingToString(elementAt(nextInt(size))))
             }
         }
 
         return derivedPredictions
     }
-
-    private fun getDerivativeRandomPredictions(): List<IntArray> = listOf(
-        intArrayOf(5, 15, 29, 30, 37, 47),
-        intArrayOf(5, 6, 10, 33, 35, 43),
-        intArrayOf(8, 18, 21, 25, 33, 47),
-        intArrayOf(1, 13, 18, 31, 43, 46),
-        intArrayOf(4, 9, 10, 32, 36, 46),
-        intArrayOf(9, 11, 24, 28, 37, 48),
-        intArrayOf(6, 15, 25, 34, 37, 49),
-        intArrayOf(13, 16, 31, 37, 41, 47)
-    )
 
     private fun saveAllPredictionsToFile() {
         val stringBuilder = StringBuilder()

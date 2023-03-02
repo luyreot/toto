@@ -12,9 +12,9 @@ object Main {
 
         GlobalConfig.apply {
             fetchNewDrawings = false
-            checkPredictionScore = true
-            loadPreviousRandomPicks = true
-            calculateDerivedPredictions = true
+            checkPredictionScore = false
+            loadPreviousRandomPicks = false
+            calculateDerivedPredictions = false
             savePredictionsToFile = false
 
             GlobalConfig.PredictionScoreTester.apply {
