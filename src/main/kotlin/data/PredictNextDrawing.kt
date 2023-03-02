@@ -92,10 +92,11 @@ class PredictNextDrawing(
         nextDrawingsScore.sortByValueDescending()
 
         GlobalConfig.apply {
-            println("Total of ${nextDrawingsScore.size} results.")
-
-            val randomPicks = getRandomPredictions()
-            val randomDerivedPicks = getDerivativeRandomPredictions(randomPicks)
+            val randomDerivedPicks = if (loadPreviousRandomPicks) {
+                getDerivativeRandomPredictions(getDerivativeRandomPredictions())
+            } else {
+                getDerivativeRandomPredictions(getRandomPredictions())
+            }
 
             if (checkPredictionScore) {
                 println("====== All predictions:")
@@ -268,6 +269,7 @@ class PredictNextDrawing(
                 }
             }
         }
+        println("Total of ${nextDrawingsScore.size} results.")
         println("Random picks:")
         randomPicks.forEach { println(drawingToString(it)) }
 
@@ -284,6 +286,7 @@ class PredictNextDrawing(
 
         val derivedPredictions = generateDrawings(numbersList)
 
+        println("Total of ${derivedPredictions.size} results.")
         println("Random derived picks:")
         for (i in 0 until 8) {
             Random().apply {
