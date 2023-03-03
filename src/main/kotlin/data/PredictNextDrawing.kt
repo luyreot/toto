@@ -1,7 +1,6 @@
 package data
 
 import extensions.clearAfter
-import extensions.sortByValueDescending
 import model.Numbers
 import model.TotoType
 import util.FileConstants.FILE_TXT_5x35_PREDICTIONS
@@ -32,8 +31,9 @@ class PredictNextDrawing(
 
     fun predictNextDrawing() {
         val allDrawings = drawings.drawings.toSet()
-        val drawings = if (fromYear == null) drawings.drawings else drawings.drawingsSubset
+        val drawings = getAllDrawings()
         val predictionsSet = mutableSetOf<Numbers>()
+        nextDrawingsScore.clear()
 
         // Iterate over each group pattern and its low/high and odd/even patterns
         // to get all number which will be used for generating drawings.
@@ -67,11 +67,10 @@ class PredictNextDrawing(
             }
         }
 
-        // Remove already existing drawings
-        predictionsSet.removeIf {
-            allDrawings.contains(it)
-        }
-
+        removeDrawingsThatHaveBeenDrawn(
+            predictions = predictionsSet,
+            allDrawings = allDrawings
+        )
         removeDrawingsNotInTheSameDrawingGroup(predictionsSet)
         removeDrawingsWithNumbersThatCannotOccurNext(
             predictions = predictionsSet,
@@ -89,8 +88,6 @@ class PredictNextDrawing(
                 drawings
             )
         }
-
-        nextDrawingsScore.sortByValueDescending()
 
         GlobalConfig.apply {
             val randomDerivedPicks = getDerivativeRandomPredictions(
@@ -112,6 +109,8 @@ class PredictNextDrawing(
             }
         }
     }
+
+    private fun getAllDrawings() = if (fromYear == null) drawings.drawings else drawings.drawingsSubset
 
     private fun getPredictionNumbers(
         group: Int,
@@ -244,6 +243,13 @@ class PredictNextDrawing(
         }
     }
 
+    private fun removeDrawingsThatHaveBeenDrawn(
+        predictions: MutableCollection<Numbers>,
+        allDrawings: Collection<Numbers>
+    ) {
+        predictions.removeIf { allDrawings.contains(it) }
+    }
+
     private fun getUpcomingDrawingNumberFrequency(
         predictionNumber: Int,
         drawings: List<Numbers>
@@ -318,17 +324,25 @@ class PredictNextDrawing(
         }
 
         val derivedPredictions = generateDrawings(numbersList)
+        val randomDerivedPicks = mutableListOf<Numbers>()
 
         derivedPredictions.apply {
             for (i in 0 until size / 1000) {
                 this.shuffle()
             }
 
+            for (i in 0 until 8) {
+                randomDerivedPicks.add(Numbers(elementAt(nextInt(size))))
+            }
+
+            removeDrawingsThatHaveBeenDrawn(
+                predictions = randomDerivedPicks,
+                allDrawings = getAllDrawings()
+            )
+
             println("Total of $size results.")
             println("Random derived picks:")
-            for (i in 0 until 8) {
-                println(drawingToString(elementAt(nextInt(size))))
-            }
+            randomDerivedPicks.forEach { println(drawingToString(it.numbers)) }
         }
 
         return derivedPredictions
