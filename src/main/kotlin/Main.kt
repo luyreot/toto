@@ -14,7 +14,7 @@ object Main {
             fetchNewDrawings = false
             checkPredictionScore = false
             loadPreviousRandomPicks = false
-            calculateDerivedPredictions = false
+            calculateDerivedPredictions = true
             savePredictionsToFile = false
 
             GlobalConfig.PredictionScoreTester.apply {

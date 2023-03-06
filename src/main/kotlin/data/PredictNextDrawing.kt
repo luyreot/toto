@@ -287,28 +287,28 @@ class PredictNextDrawing(
     private fun getPreviousRandomPicks(): List<IntArray> = if (GlobalConfig.loadPreviousRandomPicks) {
         listOf(
             intArrayOf(
-                1, 11, 21, 32, 36, 41
+                4, 17, 27, 38, 41, 44
             ),
             intArrayOf(
-                1, 13, 14, 29, 39, 43
+                1, 17, 29, 35, 39, 47
             ),
             intArrayOf(
-                16, 23, 29, 34, 36, 49
+                4, 17, 29, 38, 42, 49
             ),
             intArrayOf(
-                5, 14, 21, 23, 37, 44
+                15, 21, 28, 32, 34, 47
             ),
             intArrayOf(
-                5, 17, 21, 31, 34, 46
+                9, 16, 20, 34, 44, 48
             ),
             intArrayOf(
-                18, 24, 28, 37, 46, 49
+                14, 20, 21, 35, 47, 48
             ),
             intArrayOf(
-                8, 14, 18, 23, 38, 49
+                1, 14, 23, 37, 42, 49
             ),
             intArrayOf(
-                13, 14, 21, 27, 34, 44
+                6, 12, 24, 35, 44, 49
             )
         )
     } else {
