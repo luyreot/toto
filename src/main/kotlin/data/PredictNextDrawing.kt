@@ -90,9 +90,13 @@ class PredictNextDrawing(
         }
 
         GlobalConfig.apply {
-            val randomDerivedPicks = getDerivativeRandomPredictions(
-                if (loadPreviousRandomPicks) getPreviousRandomPicks() else getRandomPicks()
-            )
+            val randomPicks = getRandomPicks()
+
+            val randomDerivedPicks = if (calculateDerivedPredictions) {
+                getDerivativeRandomPredictions(if (checkPredictionScore) getPreviousRandomPicks() else randomPicks)
+            } else {
+                emptyList()
+            }
 
             if (checkPredictionScore) {
                 println("====== All predictions:")
@@ -284,36 +288,32 @@ class PredictNextDrawing(
         return randomPicks
     }
 
-    private fun getPreviousRandomPicks(): List<IntArray> = if (GlobalConfig.loadPreviousRandomPicks) {
-        listOf(
-            intArrayOf(
-                4, 17, 27, 38, 41, 44
-            ),
-            intArrayOf(
-                1, 17, 29, 35, 39, 47
-            ),
-            intArrayOf(
-                4, 17, 29, 38, 42, 49
-            ),
-            intArrayOf(
-                15, 21, 28, 32, 34, 47
-            ),
-            intArrayOf(
-                9, 16, 20, 34, 44, 48
-            ),
-            intArrayOf(
-                14, 20, 21, 35, 47, 48
-            ),
-            intArrayOf(
-                1, 14, 23, 37, 42, 49
-            ),
-            intArrayOf(
-                6, 12, 24, 35, 44, 49
-            )
+    private fun getPreviousRandomPicks(): List<IntArray> = listOf(
+        intArrayOf(
+            4, 17, 27, 38, 41, 44
+        ),
+        intArrayOf(
+            1, 17, 29, 35, 39, 47
+        ),
+        intArrayOf(
+            4, 17, 29, 38, 42, 49
+        ),
+        intArrayOf(
+            15, 21, 28, 32, 34, 47
+        ),
+        intArrayOf(
+            9, 16, 20, 34, 44, 48
+        ),
+        intArrayOf(
+            14, 20, 21, 35, 47, 48
+        ),
+        intArrayOf(
+            1, 14, 23, 37, 42, 49
+        ),
+        intArrayOf(
+            6, 12, 24, 35, 44, 49
         )
-    } else {
-        throw IllegalArgumentException("loadPreviousRandomPicks is false!")
-    }
+    )
 
     private fun getDerivativeRandomPredictions(randomPicks: List<IntArray>): List<IntArray> {
         // Create all possible drawings from those 8 drawings' numbers.

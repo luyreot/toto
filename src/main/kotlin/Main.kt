@@ -12,14 +12,13 @@ object Main {
 
         GlobalConfig.apply {
             fetchNewDrawings = false
-            checkPredictionScore = false
-            loadPreviousRandomPicks = false
-            calculateDerivedPredictions = true
+            calculateDerivedPredictions = false
+            checkPredictionScore = true
             savePredictionsToFile = false
 
             GlobalConfig.PredictionScoreTester.apply {
                 startYear = 2023
-                startIssue = 18
+                startIssue = 19
             }
 
             if (fetchNewDrawings) {
