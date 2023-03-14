@@ -273,11 +273,21 @@ class PredictNextDrawing(
         val randomPicks = mutableListOf<IntArray>()
 
         nextDrawingsScore.keys.toMutableList().apply {
-            for (i in 0 until size / 1000) {
-                this.shuffle()
-            }
+            val indexes = mutableSetOf<Int>()
             for (i in 0 until 8) {
-                randomPicks.add(elementAt(nextInt(size)))
+                Random().apply {
+                    val from: Int = nextInt(size)
+                    var until: Int
+                    do {
+                        until = nextInt(size)
+                    } while (until == from)
+                    var index: Int
+                    do {
+                        index = if (from > until) nextInt(until, from) else nextInt(from, until)
+                    } while (indexes.contains(index))
+                    indexes.add(index)
+                    randomPicks.add(elementAt(index))
+                }
             }
 
             println("Total of $size results.")
