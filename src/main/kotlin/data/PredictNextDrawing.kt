@@ -299,30 +299,14 @@ class PredictNextDrawing(
     }
 
     private fun getPreviousRandomPicks(): List<IntArray> = listOf(
-        intArrayOf(
-            8, 15, 28, 30, 32, 43
-        ),
-        intArrayOf(
-            5, 13, 14, 28, 35, 43
-        ),
-        intArrayOf(
-            9, 14, 34, 35, 38, 46
-        ),
-        intArrayOf(
-            11, 13, 17, 29, 33, 43
-        ),
-        intArrayOf(
-            9, 19, 30, 35, 36, 41
-        ),
-        intArrayOf(
-            6, 11, 18, 30, 37, 44
-        ),
-        intArrayOf(
-            4, 11, 19, 28, 31, 44
-        ),
-        intArrayOf(
-            4, 8, 15, 26, 41, 46
-        )
+        intArrayOf(9, 15, 27, 29, 34, 43),
+        intArrayOf(9, 13, 26, 29, 30, 46),
+        intArrayOf(8, 13, 21, 25, 36, 46),
+        intArrayOf(5, 9, 13, 20, 29, 48),
+        intArrayOf(4, 13, 20, 22, 32, 43),
+        intArrayOf(3, 12, 23, 29, 34, 44),
+        intArrayOf(5, 14, 25, 28, 35, 42),
+        intArrayOf(12, 15, 22, 24, 38, 49)
     )
 
     private fun getDerivativeRandomPredictions(randomPicks: List<IntArray>): List<IntArray> {
@@ -337,12 +321,21 @@ class PredictNextDrawing(
         val randomDerivedPicks = mutableListOf<Numbers>()
 
         derivedPredictions.apply {
-            for (i in 0 until size / 1000) {
-                this.shuffle()
-            }
-
+            val indexes = mutableSetOf<Int>()
             for (i in 0 until 8) {
-                randomDerivedPicks.add(Numbers(elementAt(nextInt(size))))
+                Random().apply {
+                    val from: Int = nextInt(size)
+                    var until: Int
+                    do {
+                        until = nextInt(size)
+                    } while (until == from)
+                    var index: Int
+                    do {
+                        index = if (from > until) nextInt(until, from) else nextInt(from, until)
+                    } while (indexes.contains(index))
+                    indexes.add(index)
+                    randomDerivedPicks.add(Numbers(elementAt(index)))
+                }
             }
 
             removeDrawingsThatHaveBeenDrawn(
@@ -351,6 +344,10 @@ class PredictNextDrawing(
             )
 
             println("Total of $size results.")
+            println("Derived from:")
+            randomPicks.forEach {
+                println("intArrayOf(${drawingToString(it)}),")
+            }
             println("Random derived picks:")
             randomDerivedPicks.forEach { println(drawingToString(it.numbers)) }
         }
