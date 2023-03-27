@@ -18,7 +18,7 @@ object Main {
 
             GlobalConfig.PredictionScoreTester.apply {
                 startYear = 2023
-                startIssue = 24
+                startIssue = 25
             }
 
             if (fetchNewDrawings) {
