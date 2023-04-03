@@ -299,14 +299,14 @@ class PredictNextDrawing(
     }
 
     private fun getPreviousRandomPicks(): List<IntArray> = listOf(
-        intArrayOf(6, 8, 22, 25, 33, 49),
-        intArrayOf(11, 27, 29, 30, 34, 41),
-        intArrayOf(1, 17, 20, 27, 34, 49),
-        intArrayOf(4, 9, 23, 28, 35, 45),
-        intArrayOf(6, 15, 25, 37, 39, 47),
-        intArrayOf(17, 18, 27, 29, 36, 48),
-        intArrayOf(6, 10, 15, 33, 41, 49),
-        intArrayOf(4, 11, 29, 31, 35, 47)
+        intArrayOf(6, 14, 15, 37, 45, 49),
+        intArrayOf(9, 12, 13, 23, 32, 43),
+        intArrayOf(16, 23, 34, 42, 45, 46),
+        intArrayOf(4, 12, 22, 33, 39, 49),
+        intArrayOf(8, 16, 17, 21, 30, 42),
+        intArrayOf(7, 16, 21, 22, 34, 44),
+        intArrayOf(5, 8, 16, 20, 22, 42),
+        intArrayOf(8, 12, 37, 39, 41, 44)
     )
 
     private fun getDerivativeRandomPredictions(randomPicks: List<IntArray>): List<IntArray> {
