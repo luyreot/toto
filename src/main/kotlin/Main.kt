@@ -1,6 +1,6 @@
 import data.Stats
 import model.TotoType
-import util.PredictionTester
+import util.GlobalConfig
 import util.ThreadUtils.launchThread
 import util.TotoUtils
 
@@ -10,27 +10,42 @@ object Main {
     fun main(args: Array<String>) {
         println("=== MAIN START ===")
 
-        TotoUtils.apply {
-//            fetchNewDrawings()
-        }
+        GlobalConfig.apply {
+            fetchNewDrawings = false
 
-        PredictionTester.apply {
-            isTestingPredictions = false
-            startYear = 2022
-            startIssue = 103
+            calculateDerivedPredictions = true
+
+            checkPredictionScore = false
+
+            savePredictionsToFile = false
+
+            GlobalConfig.PredictionScoreTester.apply {
+                startYear = 2023
+                startIssue = 29
+            }
+
+            if (fetchNewDrawings) {
+                TotoUtils.fetchNewDrawings()
+            }
 
             do {
-                println("======== 5x35 ========")
-                performAlgo(Stats(TotoType.T_5X35))
+                if (performAlgoForType[0]) {
+                    println("======== 5x35 ========")
+                    performAlgo(Stats(TotoType.T_5X35))
+                }
 
-                println("======== 6x42 ========")
-                performAlgo(Stats(TotoType.T_6X42))
+                if (performAlgoForType[1]) {
+                    println("======== 6x42 ========")
+                    performAlgo(Stats(TotoType.T_6X42))
+                }
 
-                println("======== 6x49 ========")
-                performAlgo(Stats(TotoType.T_6X49))
+                if (performAlgoForType[2]) {
+                    println("======== 6x49 ========")
+                    performAlgo(Stats(TotoType.T_6X49))
+                }
 
-                issueCounter++
-            } while (isTestingPredictions)
+                GlobalConfig.PredictionScoreTester.counter++
+            } while (checkPredictionScore)
         }
 
         println("=== MAIN END ===")

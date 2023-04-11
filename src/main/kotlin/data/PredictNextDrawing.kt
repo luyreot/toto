@@ -1,13 +1,21 @@
 package data
 
 import extensions.clearAfter
-import extensions.sortByValueDescending
 import model.Numbers
 import model.TotoType
-import util.PredictionTester
+import util.FileConstants.FILE_TXT_5x35_PREDICTIONS
+import util.FileConstants.FILE_TXT_5x35_PREDICTIONS_RANDOM
+import util.FileConstants.FILE_TXT_6x42_PREDICTIONS
+import util.FileConstants.FILE_TXT_6x42_PREDICTIONS_RANDOM
+import util.FileConstants.FILE_TXT_6x49_PREDICTIONS
+import util.FileConstants.FILE_TXT_6x49_PREDICTIONS_RANDOM
+import util.GlobalConfig
+import util.IO
 import util.TotoUtils.getDrawingScore
+import util.TotoUtils.printPredictionScore
 import java.util.*
 import kotlin.math.roundToInt
+import kotlin.random.Random.Default.nextInt
 
 class PredictNextDrawing(
     private val totoType: TotoType,
@@ -19,13 +27,13 @@ class PredictNextDrawing(
     private val groupNumberStats: GroupNumberStats
 ) {
 
-    val nextDrawingsTopScore = mutableMapOf<IntArray, Int>()
-    val nextDrawingsAverageScore = mutableMapOf<IntArray, Int>()
+    val nextDrawingsScore = mutableMapOf<IntArray, Int>()
 
     fun predictNextDrawing() {
         val allDrawings = drawings.drawings.toSet()
-        val drawings = if (fromYear == null) drawings.drawings else drawings.drawingsSubset
+        val drawings = getAllDrawings()
         val predictionsSet = mutableSetOf<Numbers>()
+        nextDrawingsScore.clear()
 
         // Iterate over each group pattern and its low/high and odd/even patterns
         // to get all number which will be used for generating drawings.
@@ -59,11 +67,10 @@ class PredictNextDrawing(
             }
         }
 
-        // Remove already existing drawings
-        predictionsSet.removeIf {
-            allDrawings.contains(it)
-        }
-
+        removeDrawingsThatHaveBeenDrawn(
+            predictions = predictionsSet,
+            allDrawings = allDrawings
+        )
         removeDrawingsNotInTheSameDrawingGroup(predictionsSet)
         removeDrawingsWithNumbersThatCannotOccurNext(
             predictions = predictionsSet,
@@ -72,7 +79,7 @@ class PredictNextDrawing(
 
         // Calculate prediction score
         predictionsSet.forEach { drawing ->
-            nextDrawingsTopScore[drawing.numbers] = getDrawingScore(
+            nextDrawingsScore[drawing.numbers] = getDrawingScore(
                 drawings.size,
                 drawing.numbers,
                 numberStats.patterns,
@@ -82,31 +89,32 @@ class PredictNextDrawing(
             )
         }
 
-        nextDrawingsTopScore.sortByValueDescending()
+        GlobalConfig.apply {
+            val randomPicks = getRandomPicks()
 
-        /* No need for this. Best results are coming from the top results.
-        // Store top scores that are between the average score and the possible jump in the positive and negative
-        nextDrawingsAverageScore.putAll(
-            nextDrawingsTopScore.filter { entry ->
-                entry.value < drawingScoreStats.averageSore + drawingScoreStats.averageJump &&
-                        entry.value > drawingScoreStats.averageSore - drawingScoreStats.averageJump
+            val randomDerivedPicks = if (calculateDerivedPredictions) {
+                getDerivativeRandomPredictions(if (checkPredictionScore) getPreviousRandomPicks() else randomPicks)
+            } else {
+                emptyList()
             }
-        )
-        */
 
-        println("Total of ${nextDrawingsTopScore.size} top results.")
+            if (checkPredictionScore) {
+                println("====== All predictions:")
+                printPredictionScore(GlobalConfig.PredictionScoreTester.drawing, nextDrawingsScore.keys.toList())
 
-        PredictionTester.apply {
-            if (isTestingPredictions) {
-                println("====== Next drawings is ${nextDrawing?.toList()}")
-                println("====== Checking top predictions:")
-                checkPredictions(nextDrawingsTopScore)
-                return
+                if (calculateDerivedPredictions) {
+                    println("====== All derived predictions:")
+                    printPredictionScore(GlobalConfig.PredictionScoreTester.drawing, randomDerivedPicks)
+                }
+            }
+
+            if (savePredictionsToFile) {
+                saveAllPredictionsToFile()
             }
         }
-
-        printRandomTopPredictions()
     }
+
+    private fun getAllDrawings() = if (fromYear == null) drawings.drawings else drawings.drawingsSubset
 
     private fun getPredictionNumbers(
         group: Int,
@@ -239,6 +247,13 @@ class PredictNextDrawing(
         }
     }
 
+    private fun removeDrawingsThatHaveBeenDrawn(
+        predictions: MutableCollection<Numbers>,
+        allDrawings: Collection<Numbers>
+    ) {
+        predictions.removeIf { allDrawings.contains(it) }
+    }
+
     private fun getUpcomingDrawingNumberFrequency(
         predictionNumber: Int,
         drawings: List<Numbers>
@@ -254,24 +269,127 @@ class PredictNextDrawing(
         throw IllegalArgumentException("Something went wrong! Could not find any previous drawing with the following number - $predictionNumber")
     }
 
-    private fun printRandomTopPredictions() {
-        Random().apply {
-            println("Random TOP picks:")
-            nextDrawingsTopScore.keys.shuffled(this).let { predictions ->
-                printDrawing(predictions.elementAt(nextInt(predictions.size)))
-                printDrawing(predictions.elementAt(nextInt(predictions.size)))
-                printDrawing(predictions.elementAt(nextInt(predictions.size)))
-                printDrawing(predictions.elementAt(nextInt(predictions.size)))
-                printDrawing(predictions.elementAt(nextInt(predictions.size)))
-                printDrawing(predictions.elementAt(nextInt(predictions.size)))
-                printDrawing(predictions.elementAt(nextInt(predictions.size)))
-                printDrawing(predictions.elementAt(nextInt(predictions.size)))
+    private fun getRandomPicks(): List<IntArray> {
+        val randomPicks = mutableListOf<IntArray>()
+
+        nextDrawingsScore.keys.toMutableList().apply {
+            val indexes = mutableSetOf<Int>()
+            for (i in 0 until 8) {
+                Random().apply {
+                    val from: Int = nextInt(size)
+                    var until: Int
+                    do {
+                        until = nextInt(size)
+                    } while (until == from)
+                    var index: Int
+                    do {
+                        index = if (from > until) nextInt(until, from) else nextInt(from, until)
+                    } while (indexes.contains(index))
+                    indexes.add(index)
+                    randomPicks.add(elementAt(index))
+                }
+            }
+
+            println("Total of $size results.")
+            println("Random picks:")
+            randomPicks.forEach { println(drawingToString(it)) }
+        }
+
+        return randomPicks
+    }
+
+    private fun getPreviousRandomPicks(): List<IntArray> = listOf(
+        intArrayOf(6, 21, 37, 39, 45, 49),
+        intArrayOf(3, 10, 25, 26, 38, 43),
+        intArrayOf(4, 14, 25, 28, 31, 48),
+        intArrayOf(12, 16, 20, 21, 38, 49),
+        intArrayOf(6, 29, 37, 39, 41, 45),
+        intArrayOf(12, 14, 28, 30, 35, 42),
+        intArrayOf(9, 29, 36, 38, 43, 48),
+        intArrayOf(11, 19, 29, 33, 38, 44)
+    )
+
+    private fun getDerivativeRandomPredictions(randomPicks: List<IntArray>): List<IntArray> {
+        // Create all possible drawings from those 8 drawings' numbers.
+        // Each number can occur at any position in the drawings.
+        val numbersList = Array<List<Int>>(totoType.size) { emptyList() }
+        for (i in 0 until totoType.size) {
+            numbersList[i] = randomPicks.flatMap { drawing -> drawing.map { number -> number } }.toSet().toList()
+        }
+
+        val derivedPredictions = generateDrawings(numbersList)
+        val randomDerivedPicks = mutableListOf<Numbers>()
+
+        derivedPredictions.apply {
+            val indexes = mutableSetOf<Int>()
+            for (i in 0 until 8) {
+                Random().apply {
+                    val from: Int = nextInt(size)
+                    var until: Int
+                    do {
+                        until = nextInt(size)
+                    } while (until == from)
+                    var index: Int
+                    do {
+                        index = if (from > until) nextInt(until, from) else nextInt(from, until)
+                    } while (indexes.contains(index))
+                    indexes.add(index)
+                    randomDerivedPicks.add(Numbers(elementAt(index)))
+                }
+            }
+
+            removeDrawingsThatHaveBeenDrawn(
+                predictions = randomDerivedPicks,
+                allDrawings = getAllDrawings()
+            )
+
+            println("Total of $size results.")
+            println("Derived from:")
+            randomPicks.forEach {
+                println("intArrayOf(${drawingToString(it)}),")
+            }
+            println("Random derived picks:")
+            randomDerivedPicks.forEach { println(drawingToString(it.numbers)) }
+        }
+
+        return derivedPredictions
+    }
+
+    private fun saveAllPredictionsToFile() {
+        val stringBuilder = StringBuilder()
+        val stringBuilderRandom = StringBuilder()
+
+        stringBuilder.appendLine("(${nextDrawingsScore.keys.size})")
+        stringBuilderRandom.appendLine("(${nextDrawingsScore.keys.size})")
+
+        nextDrawingsScore.keys.forEach { prediction ->
+            stringBuilder.appendLine(drawingToString(prediction))
+        }
+
+        nextDrawingsScore.keys.shuffled(Random()).forEach { prediction ->
+            stringBuilderRandom.appendLine(drawingToString(prediction))
+        }
+
+        when (totoType) {
+            TotoType.T_6X49 -> {
+                IO.saveTxtFile(FILE_TXT_6x49_PREDICTIONS, stringBuilder.toString())
+                IO.saveTxtFile(FILE_TXT_6x49_PREDICTIONS_RANDOM, stringBuilderRandom.toString())
+            }
+
+            TotoType.T_6X42 -> {
+                IO.saveTxtFile(FILE_TXT_6x42_PREDICTIONS, stringBuilder.toString())
+                IO.saveTxtFile(FILE_TXT_6x42_PREDICTIONS_RANDOM, stringBuilderRandom.toString())
+            }
+
+            TotoType.T_5X35 -> {
+                IO.saveTxtFile(FILE_TXT_5x35_PREDICTIONS, stringBuilder.toString())
+                IO.saveTxtFile(FILE_TXT_5x35_PREDICTIONS_RANDOM, stringBuilderRandom.toString())
             }
         }
     }
 
-    private fun printDrawing(drawing: IntArray) {
-        println(drawing.toList().toString().replace("[", "").replace("]", ""))
+    private fun drawingToString(drawing: IntArray): String {
+        return drawing.toList().toString().replace("[", "").replace("]", "")
     }
 
     private companion object {

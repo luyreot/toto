@@ -8,8 +8,8 @@ import model.TotoType
 import util.FileConstants.PATH_TXT_5x35
 import util.FileConstants.PATH_TXT_6x42
 import util.FileConstants.PATH_TXT_6x49
+import util.GlobalConfig
 import util.IO
-import util.PredictionTester
 
 /**
  * Holds a list of all drawn numbers.
@@ -53,12 +53,12 @@ class Drawings(
     }
 
     fun setUpDrawingsForTesting() {
-        PredictionTester.apply {
-            if (isTestingPredictions.not()) return
+        if (GlobalConfig.checkPredictionScore.not()) return
 
-            nextDrawing = null
+        GlobalConfig.PredictionScoreTester.apply {
+            drawing = null
 
-            val issue = startIssue + issueCounter
+            val issue = startIssue + counter
 
             var anyDrawingsLeftToTest = numbersCache.any { number ->
                 number.year == startYear && number.issue >= issue
@@ -71,10 +71,12 @@ class Drawings(
                     if (numbers.isEmpty())
                         throw IllegalArgumentException("Cannot set next drawing for year $startYear and issue $issue!")
 
-                    nextDrawing = IntArray(totoType.size)
+                    val _drawing = IntArray(totoType.size)
                     numbers.sortedBy { it.position }.forEach { number ->
-                        nextDrawing!![number.position] = number.number
+                        _drawing[number.position] = number.number
                     }
+
+                    drawing = _drawing
                 }
 
                 numbersCache.removeIf { number ->
@@ -85,7 +87,7 @@ class Drawings(
             }
 
             // Transition into next year
-            issueCounter = 0
+            counter = 0
             startIssue = 1
             startYear++
 
@@ -96,7 +98,7 @@ class Drawings(
             if (anyDrawingsLeftToTest) {
                 setUpDrawingsForTesting()
             } else {
-                isTestingPredictions = false
+                GlobalConfig.checkPredictionScore = false
             }
         }
     }
@@ -122,7 +124,7 @@ class Drawings(
     }
 
     fun checkForDuplicateDrawings() {
-        if (PredictionTester.isTestingPredictions) return
+        if (GlobalConfig.checkPredictionScore) return
 
         val allDrawingsSize = drawingsCache.size
         val allDrawingsSetSize = drawingsCache.toSet().size
@@ -204,7 +206,7 @@ class Drawings(
 
     private fun printDuplicatedDrawings(drawings: List<Numbers>) {
         val duplicateNumbers: Set<Numbers> = drawings.groupingBy { it }.eachCount().filter { it.value > 1 }.keys
-        println("${duplicateNumbers.size} duplicated drawings.")
+        println("${duplicateNumbers.size} duplicated drawings:")
 
         numbersCache.sortedWith(compareBy<Number> { it.year }.thenBy { it.issue }.thenBy { it.position }).let { sortedNumbers ->
             val drawingArray = IntArray(totoType.size)
@@ -218,7 +220,7 @@ class Drawings(
 
                 if (duplicateNumbers.contains(drawing).not()) return@forEach
 
-                println("$drawing, year=${number.year}, issue=${number.issue}")
+                println("${drawing.toFormattedString()} - year=${number.year}, issue=${number.issue}")
             }
         }
     }

@@ -128,7 +128,7 @@ class Stats(
             }
         }
 
-        println("Top Results")
+        println("Results")
         println("PredictedThreesCount - $predictedThreesCount")
         println("PredictedFoursCount - $predictedFoursCount")
         println("PredictedFivesCount - $predictedFivesCount")
