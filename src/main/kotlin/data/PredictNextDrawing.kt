@@ -299,14 +299,33 @@ class PredictNextDrawing(
     }
 
     private fun getPreviousRandomPicks(): List<IntArray> = listOf(
-        intArrayOf(6, 21, 37, 39, 45, 49),
-        intArrayOf(3, 10, 25, 26, 38, 43),
-        intArrayOf(4, 14, 25, 28, 31, 48),
-        intArrayOf(12, 16, 20, 21, 38, 49),
-        intArrayOf(6, 29, 37, 39, 41, 45),
-        intArrayOf(12, 14, 28, 30, 35, 42),
-        intArrayOf(9, 29, 36, 38, 43, 48),
-        intArrayOf(11, 19, 29, 33, 38, 44)
+        // 5x35
+//        intArrayOf(3, 8, 17, 24, 29),
+//        intArrayOf(4, 14, 20, 22, 28),
+//        intArrayOf(5, 8, 17, 22, 25),
+//        intArrayOf(1, 14, 16, 24, 28),
+//        intArrayOf(7, 9, 18, 24, 30),
+//        intArrayOf(3, 6, 8, 18, 25),
+//        intArrayOf(5, 9, 14, 24, 32),
+//        intArrayOf(1, 7, 8, 19, 28)
+        // 6x42
+//        intArrayOf(11, 15, 20, 23, 27, 34),
+//        intArrayOf(12, 14, 16, 23, 28, 37),
+//        intArrayOf(13, 15, 17, 22, 27, 38),
+//        intArrayOf(13, 14, 21, 22, 25, 33),
+//        intArrayOf(12, 13, 20, 23, 24, 34),
+//        intArrayOf(8, 13, 18, 23, 24, 38),
+//        intArrayOf(11, 14, 21, 23, 26, 34),
+//        intArrayOf(10, 15, 18, 22, 30, 32)
+        // 6x49
+        intArrayOf(10, 17, 21, 33, 37, 40),
+        intArrayOf(5, 17, 20, 36, 42, 48),
+        intArrayOf(9, 11, 23, 34, 42, 48),
+        intArrayOf(12, 22, 26, 30, 32, 44),
+        intArrayOf(11, 23, 27, 34, 38, 40),
+        intArrayOf(8, 15, 25, 34, 40, 48),
+        intArrayOf(9, 10, 14, 25, 26, 45),
+        intArrayOf(8, 15, 25, 26, 36, 48)
     )
 
     private fun getDerivativeRandomPredictions(randomPicks: List<IntArray>): List<IntArray> {
