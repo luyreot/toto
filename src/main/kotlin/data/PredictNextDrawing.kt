@@ -318,14 +318,14 @@ class PredictNextDrawing(
 //        intArrayOf(11, 14, 21, 23, 26, 34),
 //        intArrayOf(10, 15, 18, 22, 30, 32)
         // 6x49
-        intArrayOf(10, 17, 21, 33, 37, 40),
-        intArrayOf(5, 17, 20, 36, 42, 48),
-        intArrayOf(9, 11, 23, 34, 42, 48),
-        intArrayOf(12, 22, 26, 30, 32, 44),
-        intArrayOf(11, 23, 27, 34, 38, 40),
-        intArrayOf(8, 15, 25, 34, 40, 48),
-        intArrayOf(9, 10, 14, 25, 26, 45),
-        intArrayOf(8, 15, 25, 26, 36, 48)
+        intArrayOf(4, 11, 22, 26, 44, 45),
+        intArrayOf(2, 12, 19, 22, 27, 42),
+        intArrayOf(3, 9, 19, 22, 36, 48),
+        intArrayOf(1, 7, 14, 27, 39, 40),
+        intArrayOf(3, 15, 21, 39, 42, 49),
+        intArrayOf(2, 8, 10, 14, 25, 44),
+        intArrayOf(12, 17, 20, 32, 36, 46),
+        intArrayOf(2, 29, 32, 37, 42, 43)
     )
 
     private fun getDerivativeRandomPredictions(randomPicks: List<IntArray>): List<IntArray> {

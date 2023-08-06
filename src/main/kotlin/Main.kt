@@ -11,17 +11,17 @@ object Main {
         println("=== MAIN START ===")
 
         GlobalConfig.apply {
-            fetchNewDrawings = false
+            fetchNewDrawings = true
 
             calculateDerivedPredictions = true
 
-            checkPredictionScore = false
+            checkPredictionScore = true
 
             savePredictionsToFile = false
 
             GlobalConfig.PredictionScoreTester.apply {
                 startYear = 2023
-                startIssue = 37
+                startIssue = 62
             }
 
             if (fetchNewDrawings) {
