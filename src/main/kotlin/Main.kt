@@ -9,11 +9,11 @@ object Main {
     fun main(args: Array<String>) {
         println("=== MAIN START ===")
 
-//        WebCrawler().apply {
-//            crawl(TotoType.T_5X35)
-//            crawl(TotoType.T_6X42)
-//            crawl(TotoType.T_6X49)
-//        }
+        WebCrawler().apply {
+            crawl(TotoType.T_5X35)
+            crawl(TotoType.T_6X42)
+            crawl(TotoType.T_6X49)
+        }
 
         val drawings = Drawings(TotoType.T_6X49)
 
@@ -90,7 +90,7 @@ object Main {
             groupPatternToPatternCorrelations
         )
 
-        if (true) {
+        if (false) {
             testing(
                 drawings = drawings,
                 backtestSampleSize = 100,
