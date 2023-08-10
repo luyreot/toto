@@ -90,10 +90,10 @@ object Main {
             groupPatternToPatternCorrelations
         )
 
-        if (false) {
+        if (true) {
             testing(
                 drawings = drawings,
-                backtestSampleSize = 100,
+                backtestSampleSize = 1,
                 numberSequenceSize = numberSequenceSize,
                 numberSequenceTakeRatio = numberSequenceTakeRatio,
                 groupSequenceSize = groupSequenceSize,
