@@ -78,19 +78,19 @@ object Main {
             oddEvenSequenceTakeRatio
         )
 
-        val predictDrawing = PredictDrawing(
-            drawings,
-            numbers,
-            groupPatterns,
-            lowHighPatterns,
-            oddEvenPatterns,
-            predictNumberSequences,
-            numberCombinations,
-            numberToPatternCorrelations,
-            groupPatternToPatternCorrelations
-        )
+//        val predictDrawing = PredictDrawing(
+//            drawings,
+//            numbers,
+//            groupPatterns,
+//            lowHighPatterns,
+//            oddEvenPatterns,
+//            predictNumberSequences,
+//            numberCombinations,
+//            numberToPatternCorrelations,
+//            groupPatternToPatternCorrelations
+//        )
 
-        if (true) {
+        if (false) {
             testing(
                 drawings = drawings,
                 backtestSampleSize = 1,
