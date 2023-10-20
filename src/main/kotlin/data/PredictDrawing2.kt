@@ -24,7 +24,7 @@ class PredictDrawing2(
             combinationSize = totoType.size
         )
         val predictions = mutableSetOf<UniquePattern>()
-        val predictionSize = 8
+        val predictionSize = 4
 
         val predictionNumbers = mutableSetOf<Int>()
         while (predictions.size < predictionSize) {
@@ -37,7 +37,7 @@ class PredictDrawing2(
                 continue
             }
             val drawing = UniquePattern(predictionNumbers.sorted().toIntArray())
-            if (allDrawings.contains(drawing) && totoType != TotoType.T_5X35) {
+            if (allDrawings.contains(drawing)) {
                 continue
             }
             predictions.add(drawing)
