@@ -10,10 +10,10 @@ import model.UniquePattern
  * It represents how many patterns will be chained together.
  * Track how ofter a particular sequence occurs.
  */
-class PatternSequences(
-    val drawings: List<Drawing>,
-    val patternType: PatternType,
-    val sequenceSize: Int
+class SubsequentDrawingsPatternSequences(
+    private val drawings: List<Drawing>,
+    private val patternType: PatternType,
+    private val sequenceSize: Int
 ) {
 
     val patternSequences: Map<UniquePattern, Int>

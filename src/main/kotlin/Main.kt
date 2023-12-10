@@ -1,6 +1,5 @@
 import crawler.WebCrawler
 import data.*
-import model.PatternType
 import model.TotoType
 
 object Main {
@@ -17,7 +16,7 @@ object Main {
 
         val drawings = Drawings(TotoType.T_6X49)
 
-        val numbers = Numbers(drawings.totoType, drawings.drawings)
+        val numberTable = NumberTable(drawings.totoType, drawings.drawings)
         val numberFrequencies = NumberFrequencies(drawings.totoType, drawings.drawings)
 
         val groupPatterns = GroupPatterns(drawings.drawings)
@@ -33,167 +32,58 @@ object Main {
         val groupPatternToPatternCorrelations = GroupPatternToPatternCorrelations(drawings.drawings)
         val lowHighPatternToPatternCorrelations = LowHighPatternToPatternCorrelations(drawings.drawings)
         val oddEvenPatternToPatternCorrelations = OddEvenPatternToPatternCorrelations(drawings.drawings)
+        val sameDrawingNumberCombinations = SameDrawingNumberCombinations(combinationSize = 3, drawings.drawings)
+        val subsequentDrawingNumberCombinations = SubsequentDrawingNumberCombinations(sequenceSize = 3, drawings.drawings)
 
-        val combinationSize = 3
-        val numberCombinations = NumberCombinations(combinationSize, drawings.drawings)
+        val predictNumberSequences = PredictNumberSequences(drawings.drawings, subsequentDrawingNumberCombinations, takeSize = 2)
 
-        val numberSequenceTakeRatio = .37f
-        val numberSequenceSize = 3
-        val numberSequences = NumberSequences(numberSequenceSize, drawings.drawings)
-        val predictNumberSequences = PredictNumberSequences(drawings.totoType, drawings.drawings, numberSequences, numberSequenceTakeRatio)
-
-        val groupSequenceTakeRatio = .77f
+        /*
         val groupSequenceSize = 2
-        val groupPatternSequences = PatternSequences(drawings.drawings, PatternType.GROUP, groupSequenceSize)
+        val groupSubsequentDrawingsPatternSequences = SubsequentDrawingsPatternSequences(
+            drawings.drawings, PatternType.GROUP, groupSequenceSize
+        )
         val predictGroupPatternSequences = PredictPatternSequences(
             drawings.totoType,
             drawings.drawings,
             PatternType.GROUP,
-            groupPatternSequences.patternSequences,
+            groupSubsequentDrawingsPatternSequences.patternSequences,
             groupSequenceSize,
-            groupSequenceTakeRatio
+            takeRatio = .77f
         )
 
-        val lowHighSequenceTakeRatio = .77f
         val lowHighSequenceSize = 4
-        val lowHighPatternSequences = PatternSequences(drawings.drawings, PatternType.LOW_HIGH, lowHighSequenceSize)
+        val lowHighSubsequentDrawingsPatternSequences = SubsequentDrawingsPatternSequences(
+            drawings.drawings, PatternType.LOW_HIGH, lowHighSequenceSize
+        )
         val predictLowHighPatternSequences = PredictPatternSequences(
             drawings.totoType,
             drawings.drawings,
             PatternType.LOW_HIGH,
-            lowHighPatternSequences.patternSequences,
+            lowHighSubsequentDrawingsPatternSequences.patternSequences,
             lowHighSequenceSize,
-            lowHighSequenceTakeRatio
+            takeRatio = .77f
         )
 
-        val oddEvenSequenceTakeRatio = .67f
         val oddEvenSequenceSize = 2
-        val oddEvenPatternSequences = PatternSequences(drawings.drawings, PatternType.ODD_EVEN, oddEvenSequenceSize)
+        val oddEvenSubsequentDrawingsPatternSequences = SubsequentDrawingsPatternSequences(
+            drawings.drawings, PatternType.ODD_EVEN, oddEvenSequenceSize
+        )
         val predictOddEvenPatternSequences = PredictPatternSequences(
             drawings.totoType,
             drawings.drawings,
             PatternType.ODD_EVEN,
-            oddEvenPatternSequences.patternSequences,
+            oddEvenSubsequentDrawingsPatternSequences.patternSequences,
             oddEvenSequenceSize,
-            oddEvenSequenceTakeRatio
+            takeRatio = .67f
+        )
+        */
+
+        val predictDrawingBasedOnNumberSequences = PredictDrawingBasedOnNumberSequences(
+            drawings.totoType,
+            drawings,
+            predictNumberSequences
         )
 
-//        val predictDrawing = PredictDrawing(
-//            drawings,
-//            numbers,
-//            groupPatterns,
-//            lowHighPatterns,
-//            oddEvenPatterns,
-//            predictNumberSequences,
-//            numberCombinations,
-//            numberToPatternCorrelations,
-//            groupPatternToPatternCorrelations
-//        )
-
-        if (false) {
-            testing(
-                drawings = drawings,
-                backtestSampleSize = 1,
-                numberSequenceSize = numberSequenceSize,
-                numberSequenceTakeRatio = numberSequenceTakeRatio,
-                groupSequenceSize = groupSequenceSize,
-                groupSequenceTakeRatio = groupSequenceTakeRatio,
-                lowHighSequenceSize = lowHighSequenceSize,
-                lowHighSequenceTakeRatio = lowHighSequenceTakeRatio,
-                oddEvenSequenceSize = oddEvenSequenceSize,
-                oddEvenSequenceTakeRatio = oddEvenSequenceTakeRatio
-            )
-        }
-
         println("=== MAIN END ===")
-    }
-
-    private fun testing(
-        drawings: Drawings,
-        backtestSampleSize: Int,
-        numberSequenceSize: Int,
-        numberSequenceTakeRatio: Float,
-        groupSequenceSize: Int,
-        groupSequenceTakeRatio: Float,
-        lowHighSequenceSize: Int,
-        lowHighSequenceTakeRatio: Float,
-        oddEvenSequenceSize: Int,
-        oddEvenSequenceTakeRatio: Float
-    ) {
-        val results = mutableMapOf<Int, Int>()
-
-        for (i in backtestSampleSize downTo 1) {
-            val subDrawings = drawings.drawings.subList(0, drawings.drawings.size - i)
-
-            val numberSequences = NumberSequences(numberSequenceSize, subDrawings)
-
-            // Testing number predictions
-            val predictNumberSequences = PredictNumberSequences(
-                drawings.totoType,
-                subDrawings,
-                numberSequences,
-                numberSequenceTakeRatio
-            )
-            predictNumberSequences.printPredictionResults(
-                drawings.drawings[subDrawings.size],
-                predictNumberSequences.predictionNumbers,
-                drawings.totoType.totalNumbers
-            ).let { result ->
-                results[result] = (results[result] ?: 0).plus(1)
-            }
-
-            // Testing group pattern predictions
-            /*
-            val groupPatternSequencesTest = PatternSequences(
-                drawings.drawings.size, drawings.drawings, PatternType.GROUP, groupSequenceSize, i
-            )
-            PredictPatternSequences(
-                drawings.totoType,
-                drawings.drawings,
-                PatternType.GROUP,
-                groupPatternSequencesTest.patternSequences,
-                groupSequenceSize,
-                groupSequenceTakeRatio,
-                i
-            )
-            */
-
-            // Testing low/high pattern predictions
-            /*
-            val lowHighPatternSequencesTest = PatternSequences(
-                drawings.drawings.size, drawings.drawings, PatternType.LOW_HIGH, lowHighSequenceSize, i
-            )
-            PredictPatternSequences(
-                drawings.totoType,
-                drawings.drawings,
-                PatternType.LOW_HIGH,
-                lowHighPatternSequencesTest.patternSequences,
-                lowHighSequenceSize,
-                lowHighSequenceTakeRatio,
-                i
-            )
-            */
-
-            // Testing odd/even pattern predictions
-            /*
-            val oddEvenPatternSequencesTest = PatternSequences(
-                drawings.drawings.size, drawings.drawings, PatternType.ODD_EVEN, oddEvenSequenceSize, i
-            )
-            PredictPatternSequences(
-                drawings.totoType,
-                drawings.drawings,
-                PatternType.ODD_EVEN,
-                oddEvenPatternSequencesTest.patternSequences,
-                oddEvenSequenceSize,
-                oddEvenSequenceTakeRatio,
-                i
-            )
-            */
-        }
-
-        println("Total Results (${results.values.sum()}):")
-        results.forEach { (result, count) ->
-            println("$result - $count times")
-        }
     }
 }

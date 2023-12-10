@@ -9,9 +9,9 @@ import model.UniquePattern
  * It represents how many numbers will be chained together.
  * Track how ofter a particular sequence occurs.
  */
-class NumberCombinations(
+class SameDrawingNumberCombinations(
     private val combinationSize: Int,
-    val drawings: List<Drawing>
+    private val drawings: List<Drawing>
 ) {
 
     val numberCombinations: Map<UniquePattern, Int>

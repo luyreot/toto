@@ -6,12 +6,12 @@ import model.TotoType
 import model.UniquePattern
 
 class PredictPatternSequences(
-    val totoType: TotoType,
-    val drawings: List<Drawing>,
-    val patternType: PatternType,
-    val sequences: Map<UniquePattern, Int>,
-    val sequenceSize: Int,
-    val takeRatio: Float
+    private val totoType: TotoType,
+    private val drawings: List<Drawing>,
+    private val patternType: PatternType,
+    private val sequences: Map<UniquePattern, Int>,
+    private val sequenceSize: Int,
+    private val takeRatio: Float
 ) {
 
     val predictionPatterns: Set<UniquePattern>
@@ -25,9 +25,17 @@ class PredictPatternSequences(
     private fun predict() {
         // Filter the sequences based on how often each of them has occurred.
         // Take the lowest and highest occurrences and using the ratio calculate the split point.
-        val lowestOccurrence: Int = sequences.values.minOf { it }
-        val highestOccurrence: Int = sequences.values.maxOf { it }
-        val splitPoint: Int = (highestOccurrence - ((highestOccurrence - lowestOccurrence) * takeRatio)).toInt()
+        var min: Int = -1
+        var max: Int = -1
+        sequences.values.forEach {
+            if (min == -1 || min > it) {
+                min = it
+            }
+            if (max == -1 || max < it) {
+                max = it
+            }
+        }
+        val splitPoint: Int = (max - ((max - min) * takeRatio)).toInt()
         val filteredSequences = sequences.filter { it.value > splitPoint }
 
         // Get the last patterns and store them in an array of arrays.

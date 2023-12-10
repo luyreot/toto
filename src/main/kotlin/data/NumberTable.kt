@@ -2,12 +2,11 @@ package data
 
 import model.Drawing
 import model.TotoType
-import model.UniquePattern
 
 /**
  * Track how often each number has been drawn.
  */
-class Numbers(
+class NumberTable(
     private val totoType: TotoType,
     private val drawings: List<Drawing>
 ) {
