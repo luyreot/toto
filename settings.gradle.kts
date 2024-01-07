@@ -1,1 +1,1 @@
-rootProject.name = "TotoMoto"
+rootProject.name = "Toto2.0"
