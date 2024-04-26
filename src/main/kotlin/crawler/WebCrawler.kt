@@ -1,6 +1,9 @@
 package crawler
 
 import model.TotoType
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.jsoup.select.Elements
 import util.Constants.PAGE_URL_5x35
 import util.Constants.PAGE_URL_6x42
 import util.Constants.PAGE_URL_6x49
@@ -8,10 +11,8 @@ import util.Constants.PAGE_YEAR
 import util.Constants.PATH_TXT_5x35
 import util.Constants.PATH_TXT_6x42
 import util.Constants.PATH_TXT_6x49
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.jsoup.select.Elements
 import util.IO
+import util.Logg
 import java.io.IOException
 
 class WebCrawler {
@@ -25,7 +26,8 @@ class WebCrawler {
         const val MAX_BODY_SIZE: Int = 10048000
 
         // Alternative css query: "span[class*=ball-white]"
-        const val DOCUMENT_QUERY: String = "div.tir_numbers > div.row > div.col-sm-6.text-right.nopadding > span.ball-white"
+        const val DOCUMENT_QUERY: String =
+            "div.tir_numbers > div.row > div.col-sm-6.text-right.nopadding > span.ball-white"
     }
 
 
@@ -44,7 +46,12 @@ class WebCrawler {
         } else {
             pastDrawings.size
         }
-        println("INFO: Current drawings count for $totoType - $PAGE_YEAR - $currentDrawing")
+        if (currentDrawing == 0) {
+            currentDrawing = 1
+        } else {
+            currentDrawing += 1
+        }
+        Logg.p("INFO: Current drawings count for $totoType - $PAGE_YEAR - $currentDrawing")
 
         // Fetch new drawings from web
         val pageUrl: String = when (totoType) {
@@ -57,14 +64,14 @@ class WebCrawler {
             val document: Document? = readPage(pageUrl + currentDrawing)
 
             if (document == null) {
-                println("ERROR! HTML Document is empty")
+                Logg.p("ERROR! HTML Document is empty")
                 break
             }
 
             // Gets the individual numbers as a list of elements
             val numbers: Elements = document.select(DOCUMENT_QUERY)
             if (numbers.isEmpty()) {
-                println("ERROR! Didn't select any elements")
+                Logg.p("ERROR! Didn't select any elements")
                 break
             }
 
@@ -90,12 +97,12 @@ class WebCrawler {
         } while (true)
 
         if (saveToFile) {
-            println("INFO: Saving new drawings...")
+            Logg.p("INFO: Saving new drawings...")
             IO.saveTxtFile(filePath, contentBuilder.toString())
             return
         }
 
-        println("INFO: No new drawings were added")
+        Logg.p("INFO: No new drawings were added")
     }
 
     private fun readPage(url: String): Document? {
@@ -106,24 +113,24 @@ class WebCrawler {
 
             /* Crawler doesn't return a contentType
             if (!connection.response().contentType().contains("text/html")) {
-                println("ERROR! Retrieved something other than HTML at $url")
+                Logme.p("ERROR! Retrieved something other than HTML at $url")
                 return null
             }*/
 
             return when (val statusCode = connection.response().statusCode()) {
                 0, 200 -> {
-                    println("SUCCESS! Received web page at $url")
+                    Logg.p("SUCCESS! Received web page at $url")
                     connection.maxBodySize(MAX_BODY_SIZE).get()
                 }
 
                 else -> {
-                    println("ERROR! Response status code for $url - $statusCode")
+                    Logg.p("ERROR! Response status code for $url - $statusCode")
                     null
                 }
             }
         } catch (ioe: IOException) {
-            println("ERROR! Failed getting the page body at $url")
-            println(ioe.message)
+            Logg.p("ERROR! Failed getting the page body at $url")
+            Logg.p(ioe.message)
         }
 
         return null

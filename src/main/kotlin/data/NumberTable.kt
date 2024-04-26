@@ -28,12 +28,4 @@ class NumberTable(
             _numbers[i] = allDrawnNumbers.count { number -> number == i }
         }
     }
-
-    fun getTopNumbers(ratio: Float): Map<Int, Int> {
-        val min: Int = _numbers.values.minOf { it }
-        val max: Int = _numbers.values.maxOf { it }
-        val splitPoint: Int = (max - ((max - min) * ratio)).toInt()
-
-        return _numbers.filter { it.value > splitPoint }
-    }
 }

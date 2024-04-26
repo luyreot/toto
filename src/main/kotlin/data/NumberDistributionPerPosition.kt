@@ -1,0 +1,77 @@
+package data
+
+import model.Drawing
+import model.TotoType
+
+/**
+ * Calculate how often a number has occurred at different positions.
+ */
+class NumberDistributionPerPosition(
+    private val totoType: TotoType,
+    private val drawings: List<Drawing>
+) {
+
+    val distributionArray: Array<MutableMap<Int, Int>> = Array(totoType.size) { mutableMapOf() }
+
+    val medianArray: DoubleArray = DoubleArray(totoType.size)
+    val meanArray: DoubleArray = DoubleArray(totoType.size)
+
+    val distributionByMedianArray: Array<MutableSet<Int>> = Array(totoType.size) { mutableSetOf() }
+    val distributionByMeanArray: Array<MutableSet<Int>> = Array(totoType.size) { mutableSetOf() }
+
+    init {
+        populateDistributionArray()
+        calculateMedians()
+        calculateMeans()
+        calculateDistributionsByMedianValues()
+        calculateDistributionsByMeanValues()
+    }
+
+    private fun populateDistributionArray() {
+        drawings.map { it.numbers }.forEach { drawing ->
+            drawing.forEachIndexed { index, number ->
+                distributionArray[index].merge(number, 1, Int::plus)
+            }
+        }
+    }
+
+    private fun calculateMedians() {
+        distributionArray.forEachIndexed { index, map ->
+            val sortedMap = map.values.sorted()
+            val isSizeOdd = sortedMap.size % 2 != 0
+            val middleIndex = sortedMap.size / 2
+            if (isSizeOdd) {
+                medianArray[index] = sortedMap[middleIndex].toDouble()
+            } else {
+                medianArray[index] = sortedMap[middleIndex].plus(sortedMap[middleIndex - 1]).toDouble().div(2)
+            }
+        }
+    }
+
+    private fun calculateMeans() {
+        distributionArray.forEachIndexed { index, map ->
+            val sum = map.values.sum().toDouble()
+            meanArray[index] = sum.div(map.size)
+        }
+    }
+
+    private fun calculateDistributionsByMedianValues() {
+        distributionArray.forEachIndexed { index, map ->
+            map.forEach { (number, frequency) ->
+                if (frequency > medianArray[index]) {
+                    distributionByMedianArray[index].add(number)
+                }
+            }
+        }
+    }
+
+    private fun calculateDistributionsByMeanValues() {
+        distributionArray.forEachIndexed { index, map ->
+            map.forEach { (number, frequency) ->
+                if (frequency > meanArray[index]) {
+                    distributionByMeanArray[index].add(number)
+                }
+            }
+        }
+    }
+}

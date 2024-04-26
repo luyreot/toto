@@ -1,5 +1,7 @@
 package model
 
+import util.Logg
+
 /**
  * Represents different types of toto numbers:
  * - drawing
@@ -31,7 +33,7 @@ open class Drawing(
 ) {
 
     fun printDrawingInfo() {
-        println("Year: $year, Issue: $issue, Numbers: ${getNumbersAsString()}")
+        Logg.p("Year: $year, Issue: $issue, Numbers: ${getNumbersAsString()}")
     }
 
     fun getNumbersAsString(): String {

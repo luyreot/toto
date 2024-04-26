@@ -3,13 +3,17 @@ package data
 import extension.toUniqueDrawing
 import model.Drawing
 import model.TotoType
+import org.json.JSONArray
+import org.json.JSONObject
 import util.IO
+import util.Logg
 
 /**
  * Track every drawing for the specified [totoType].
  */
 class Drawings(
-    val totoType: TotoType
+    val totoType: TotoType,
+    val yearFilter: Int
 ) {
 
     val drawings: List<Drawing>
@@ -27,30 +31,50 @@ class Drawings(
     }
 
     private fun loadDrawings() {
-        IO.getFiles(totoType.filePath)?.sorted()?.forEach { file ->
-            IO.getTxtFileContents(file).forEachIndexed { index, line ->
-                val numbers: IntArray = line.split(",").map { it.toInt() }.toIntArray()
+        val yearDrawings = JSONObject()
 
-                if (numbers.size != totoType.size) {
-                    throw IllegalArgumentException("Drawing is not ${totoType.name}! Size is ${numbers.size}")
-                }
-
-                if (numbers.any { totoType.isNumberValid.invoke(it).not() }) {
-                    throw IllegalArgumentException("Illegal number for ${totoType.name}! - $numbers")
-                }
-
-                Drawing(
-                    year = file.name.toInt(),
-                    issue = index + 1, // Skip adding 0 index issues
-                    numbers = numbers,
-                    groupPattern = numbers.map { totoType.getNumberGroup.invoke(it) }.toIntArray(),
-                    lowHighPattern = numbers.map { totoType.getNumberLowHigh.invoke(it) }.toIntArray(),
-                    oddEvenPattern = numbers.map { totoType.getNumberOddEven.invoke(it) }.toIntArray()
-                ).let {
-                    _drawings.add(it)
-                }
+        IO.getFiles(totoType.filePath)
+            ?.sorted()
+            ?.filter { file ->
+                val pathSplit = file.path.split("/")
+                val year = pathSplit[pathSplit.size - 1].toInt()
+                year >= yearFilter
             }
-        }
+            ?.forEach { file ->
+                val yearDrawingsArray = JSONArray()
+
+                IO.getTxtFileContents(file).forEachIndexed { index, line ->
+                    val numbers: IntArray = line.split(",").map { it.toInt() }.toIntArray()
+
+                    if (numbers.size != totoType.size) {
+                        throw IllegalArgumentException("Drawing is not ${totoType.name}! Size is ${numbers.size}")
+                    }
+
+                    if (numbers.any { totoType.isNumberValid.invoke(it).not() }) {
+                        throw IllegalArgumentException("Illegal number for ${totoType.name}! - $numbers")
+                    }
+
+                    val drawing = JSONObject()
+                    drawing.put("issue", index + 1)
+                    drawing.put("numbers", numbers)
+                    yearDrawingsArray.put(drawing)
+
+                    Drawing(
+                        year = file.name.toInt(),
+                        issue = index + 1, // Skip adding 0 index issues
+                        numbers = numbers,
+                        groupPattern = numbers.map { totoType.getNumberGroup.invoke(it) }.toIntArray(),
+                        lowHighPattern = numbers.map { totoType.getNumberLowHigh.invoke(it) }.toIntArray(),
+                        oddEvenPattern = numbers.map { totoType.getNumberOddEven.invoke(it) }.toIntArray()
+                    ).let {
+                        _drawings.add(it)
+                    }
+                }
+
+                yearDrawings.put(file.name, yearDrawingsArray)
+            }
+
+        println(yearDrawings)
     }
 
     private fun printDuplicateDrawings() {
@@ -66,7 +90,7 @@ class Drawings(
             duplicateNumbers.any { drawing.numbers.contentEquals(it) }
         }
 
-        println("${duplicateDrawings.size} duplicate drawings:")
+        Logg.p("${duplicateDrawings.size} duplicate drawings:")
         duplicateDrawings.forEach { it.printDrawingInfo() }
     }
 }
