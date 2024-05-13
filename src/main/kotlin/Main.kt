@@ -1,6 +1,9 @@
+import algo.PredictViaNumberDistributionPerPosition
 import crawler.WebCrawler
 import data.*
 import model.TotoType
+import test.BackTestNumberDistributionPerPositionAlgo
+import util.Constants
 import util.Logg
 import util.webCrawl
 
@@ -12,14 +15,14 @@ object Main {
 
         // Setup Global Configs
         webCrawl = false
-
         if (webCrawl()) return
 
-        // Configs for generating toto numbers
-        val yearFilter = 2018
         val totoType = TotoType.T_5X35
+        val allDrawings = Drawings(totoType, 0)
 
-        performAlgorithm(Drawings(totoType, yearFilter))
+//        allDataClasses(totoType)
+        predictViaNumberDistributionPerPosition(totoType, allDrawings)
+//        backtestPredictViaNumberDistributionPerPosition(totoType, allDrawings)
 
         Logg.p("=== MAIN END ===")
     }
@@ -36,30 +39,61 @@ object Main {
         return true
     }
 
+    private fun allDataClasses(totoType: TotoType) {
+        val allDrawings = Drawings(totoType, 0)
+        val yearFilter = Constants.PAGE_YEAR.toInt() - 10
+        val filteredDrawings = allDrawings.drawings.filter { it.year >= yearFilter }
 
-    private fun performAlgorithm(drawings: Drawings) {
-        val numberTable = NumberTable(drawings.totoType, drawings.drawings)
-        val numberIntervals = NumberIntervals(drawings.totoType, drawings.drawings)
-        val numberHotCold = NumberHotCold(drawings.totoType, drawings.drawings, numberTable.numbers)
-        val numberDistributionPerPosition = NumberDistributionPerPosition(drawings.totoType, drawings.drawings)
+        val numberTable = NumberTable(totoType, filteredDrawings)
+        val numberIntervals = NumberIntervals(totoType, filteredDrawings)
+        val numberHotCold = NumberHotCold(totoType, filteredDrawings, numberTable.numbers)
+        val numberDistributionPerPosition = NumberDistributionPerPosition(totoType, filteredDrawings)
 
-        //
-        val groupPatterns = GroupPatterns(drawings.drawings)
-        val groupPatternIntervals = GroupPatternIntervals(groupPatterns.patterns.keys, drawings.drawings)
-        val lowHighPatterns = LowHighPatterns(drawings.drawings)
-        val lowHighPatternIntervals = LowHighPatternIntervals(lowHighPatterns.patterns.keys, drawings.drawings)
-        val oddEvenPatterns = OddEvenPatterns(drawings.drawings)
-        val oddEvenPatternIntervals = OddEvenPatternIntervals(oddEvenPatterns.patterns.keys, drawings.drawings)
+        val groupPatterns = GroupPatterns(filteredDrawings)
+        val groupPatternIntervals = GroupPatternIntervals(groupPatterns.patterns.keys, filteredDrawings)
+        val lowHighPatterns = LowHighPatterns(filteredDrawings)
+        val lowHighPatternIntervals = LowHighPatternIntervals(lowHighPatterns.patterns.keys, filteredDrawings)
+        val oddEvenPatterns = OddEvenPatterns(filteredDrawings)
+        val oddEvenPatternIntervals = OddEvenPatternIntervals(oddEvenPatterns.patterns.keys, filteredDrawings)
 
-        val numberToPatternCorrelations = NumberToPatternCorrelations(drawings.drawings)
-        val groupPatternToPatternCorrelations = GroupPatternToPatternCorrelations(drawings.drawings)
-        val lowHighPatternToPatternCorrelations = LowHighPatternToPatternCorrelations(drawings.drawings)
-        val oddEvenPatternToPatternCorrelations = OddEvenPatternToPatternCorrelations(drawings.drawings)
-        //
+        val numberToPatternCorrelations = NumberToPatternCorrelations(filteredDrawings)
+        val groupPatternToPatternCorrelations = GroupPatternToPatternCorrelations(filteredDrawings)
+        val lowHighPatternToPatternCorrelations = LowHighPatternToPatternCorrelations(filteredDrawings)
+        val oddEvenPatternToPatternCorrelations = OddEvenPatternToPatternCorrelations(filteredDrawings)
 
-        val sameDrawingCombinations = SameDrawingCombinations(drawings.drawings, size = 2)
-        val subsequentDrawingCombinations = SubsequentDrawingCombinations(drawings.drawings, size = 3)
+        val sameDrawingCombinations = SameDrawingCombinations(filteredDrawings, size = 2)
+        val subsequentDrawingCombinations = SubsequentDrawingCombinations(filteredDrawings, size = 3)
 
+        println()
+    }
 
+    private fun predictViaNumberDistributionPerPosition(totoType: TotoType, allDrawings: Drawings) {
+        PredictViaNumberDistributionPerPosition(totoType, allDrawings).apply {
+            val yearFilter = Constants.PAGE_YEAR.toInt() - 20
+            val filteredDrawings = allDrawings.drawings.filter { it.year >= yearFilter }
+            val numbersToUse = getNumbersToUse(filteredDrawings)
+            generatePredictions(
+                numbersToUse,
+                when (totoType) {
+                    TotoType.T_6X49 -> 4
+                    TotoType.T_6X42 -> 4
+                    TotoType.T_5X35 -> 8
+                }
+            )
+        }
+    }
+
+    private fun backtestPredictViaNumberDistributionPerPosition(
+        totoType: TotoType,
+        allDrawings: Drawings
+    ) {
+        BackTestNumberDistributionPerPositionAlgo(
+            totoType,
+            allDrawings,
+            PredictViaNumberDistributionPerPosition(totoType, allDrawings)
+        ).backtest(
+            startYearFilter = 2020,
+            backTestSampleYearSize = 20
+        )
     }
 }

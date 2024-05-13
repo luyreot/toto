@@ -58,11 +58,9 @@ class NumberHotCold(
 
     init {
         calculateMedian()
-
         calculateMean()
         calculateNormalisedFrequencies()
-
-        createHotColdNumbers()
+        createHotColdNumbersByMedian()
         calculateTotalCountOfHotColdNumbers()
     }
 
@@ -129,7 +127,7 @@ class NumberHotCold(
      * Numbers with frequencies below both the mean and median can be considered "cold."
      * These are the numbers that occur less frequently than the average.
      */
-    private fun createHotColdNumbers() {
+    private fun createHotColdNumbersByMedian() {
         numbers.forEach { (number, frequency) ->
             if (frequency > median) {
                 _hotNumbers.add(number)

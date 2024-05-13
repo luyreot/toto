@@ -11,7 +11,7 @@ class NumberDistributionPerPosition(
     private val drawings: List<Drawing>
 ) {
 
-    val distributionArray: Array<MutableMap<Int, Int>> = Array(totoType.size) { mutableMapOf() }
+    val distributionArray: Array<MutableMap<Int, Double>> = Array(totoType.size) { mutableMapOf() }
 
     val medianArray: DoubleArray = DoubleArray(totoType.size)
     val meanArray: DoubleArray = DoubleArray(totoType.size)
@@ -28,37 +28,48 @@ class NumberDistributionPerPosition(
     }
 
     private fun populateDistributionArray() {
+        val numDistributionArray: Array<MutableMap<Int, Int>> = Array(totoType.size) { mutableMapOf() }
+
         drawings.map { it.numbers }.forEach { drawing ->
             drawing.forEachIndexed { index, number ->
-                distributionArray[index].merge(number, 1, Int::plus)
+                numDistributionArray[index].merge(number, 1, Int::plus)
+            }
+        }
+
+        numDistributionArray.forEachIndexed { index, numberDistributionMap ->
+            val totalOccurrenceCount = numberDistributionMap.values.sum().toDouble()
+
+            numberDistributionMap.forEach { (number, occurrence) ->
+                distributionArray[index][number] = occurrence.toDouble()
             }
         }
     }
 
     private fun calculateMedians() {
         distributionArray.forEachIndexed { index, map ->
-            val sortedMap = map.values.sorted()
+            val sortedMap = map.values.sortedBy { it }
             val isSizeOdd = sortedMap.size % 2 != 0
             val middleIndex = sortedMap.size / 2
+            val frequency = sortedMap[middleIndex]
             if (isSizeOdd) {
-                medianArray[index] = sortedMap[middleIndex].toDouble()
+                medianArray[index] = frequency
             } else {
-                medianArray[index] = sortedMap[middleIndex].plus(sortedMap[middleIndex - 1]).toDouble().div(2)
+                medianArray[index] = frequency.plus(sortedMap[middleIndex - 1]).div(2)
             }
         }
     }
 
     private fun calculateMeans() {
         distributionArray.forEachIndexed { index, map ->
-            val sum = map.values.sum().toDouble()
+            val sum = map.values.sumOf { it }
             meanArray[index] = sum.div(map.size)
         }
     }
 
     private fun calculateDistributionsByMedianValues() {
         distributionArray.forEachIndexed { index, map ->
-            map.forEach { (number, frequency) ->
-                if (frequency > medianArray[index]) {
+            map.forEach { (number, numberOccurrence) ->
+                if (numberOccurrence > medianArray[index]) {
                     distributionByMedianArray[index].add(number)
                 }
             }
@@ -67,8 +78,8 @@ class NumberDistributionPerPosition(
 
     private fun calculateDistributionsByMeanValues() {
         distributionArray.forEachIndexed { index, map ->
-            map.forEach { (number, frequency) ->
-                if (frequency > meanArray[index]) {
+            map.forEach { (number, numberOccurrence) ->
+                if (numberOccurrence > meanArray[index]) {
                     distributionByMeanArray[index].add(number)
                 }
             }
