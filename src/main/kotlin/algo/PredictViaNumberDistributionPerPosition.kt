@@ -13,6 +13,10 @@ class PredictViaNumberDistributionPerPosition(
 ) {
 
     private val allUniqueDrawings = mutableSetOf<UniqueIntArray>()
+    private val cooccurrenceMatrix: CooccurrenceMatrix = CooccurrenceMatrix(
+        totoType,
+        allDrawings.drawings.filter { it.year >= if (totoType == TotoType.T_5X35) 2023 else 2022 }
+    )
 
     init {
         prepareData()
@@ -59,6 +63,8 @@ class PredictViaNumberDistributionPerPosition(
         drawingsToGenerate: Int
     ) {
         val predictionDrawings = mutableSetOf<UniqueIntArray>()
+        val discardedDrawings = mutableSetOf<UniqueIntArray>()
+
         val predictionSize = 50
         val tmpArray = IntArray(totoType.size)
 
@@ -92,7 +98,35 @@ class PredictViaNumberDistributionPerPosition(
             }
 
             val uniqueIntArray = UniqueIntArray(tmpArray.copyOf().sortedArray())
+
+            if (discardedDrawings.contains(uniqueIntArray)) {
+                continue
+            }
+
             if (allUniqueDrawings.contains(uniqueIntArray)) {
+                discardedDrawings.add(uniqueIntArray)
+                continue
+            }
+
+            val cooccurrenceFrequencies = mutableListOf<Int>()
+            for (i in 0 until uniqueIntArray.numbers.size - 1) {
+                for (j in i + 1 until uniqueIntArray.numbers.size) {
+                    val rowNum = uniqueIntArray.numbers[i]
+                    val colNum = uniqueIntArray.numbers[j]
+                    cooccurrenceFrequencies.add(cooccurrenceMatrix.matrix[rowNum][colNum])
+                }
+            }
+
+            val lessThanMidpoint = cooccurrenceFrequencies.count { it < cooccurrenceMatrix.midpoint }
+            val equalToMidpoint = cooccurrenceFrequencies.count { it == cooccurrenceMatrix.midpoint }
+            val greaterThanMidpoint = cooccurrenceFrequencies.count { it > cooccurrenceMatrix.midpoint }
+
+            if (lessThanMidpoint > 2) {
+                discardedDrawings.add(uniqueIntArray)
+                continue
+            }
+            if (equalToMidpoint >= greaterThanMidpoint) {
+                discardedDrawings.add(uniqueIntArray)
                 continue
             }
 
