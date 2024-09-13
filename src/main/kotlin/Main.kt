@@ -69,7 +69,7 @@ object Main {
 
     private fun predictViaNumberDistributionPerPosition(totoType: TotoType, allDrawings: Drawings) {
         PredictViaNumberDistributionPerPosition(totoType, allDrawings).apply {
-            val yearFilter = Constants.PAGE_YEAR.toInt() - 20
+            val yearFilter = Constants.PAGE_YEAR.toInt() - 10
             val filteredDrawings = allDrawings.drawings.filter { it.year >= yearFilter }
             val numbersToUse = getNumbersToUse(filteredDrawings)
             generatePredictions(
