@@ -9,4 +9,8 @@ object Logg {
     fun p(list: List<Int>) {
         println(list)
     }
+
+    fun printIntArray(array: IntArray) {
+        println(array.toList().toString().replace("[", "").replace("]", ""))
+    }
 }

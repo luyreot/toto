@@ -24,7 +24,19 @@ class CooccurrenceMatrix(
 
     init {
         populateMatrix()
-        calculateMedian()
+        calculateMeanMidpoint()
+    }
+
+    fun isAboveMidpoint(rowNum: Int, colNum: Int): Boolean {
+        return matrix[rowNum][colNum] > _midpoint
+    }
+
+    fun isEqualToMidpoint(rowNum: Int, colNum: Int): Boolean {
+        return matrix[rowNum][colNum] == _midpoint
+    }
+
+    fun isBelowMidpoint(rowNum: Int, colNum: Int): Boolean {
+        return matrix[rowNum][colNum] < _midpoint
     }
 
     private fun populateMatrix() {
@@ -43,7 +55,7 @@ class CooccurrenceMatrix(
             }
     }
 
-    private fun calculateMedian() {
+    private fun calculateMeanMidpoint() {
         var count = 0
         var sum = 0
         for (row in 1 until totoType.totalNumbers) {

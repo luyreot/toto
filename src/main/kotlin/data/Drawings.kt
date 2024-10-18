@@ -74,7 +74,7 @@ class Drawings(
                 yearDrawings.put(file.name, yearDrawingsArray)
             }
 
-        println(yearDrawings)
+//        println(yearDrawings)
     }
 
     private fun printDuplicateDrawings() {

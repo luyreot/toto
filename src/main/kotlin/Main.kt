@@ -2,7 +2,8 @@ import algo.PredictViaNumberDistributionPerPosition
 import crawler.WebCrawler
 import data.*
 import model.TotoType
-import test.BackTestNumberDistributionPerPositionAlgo
+import test.BacktestCooccurrenceMatrix
+import test.BacktestNumberDistributionPerPosition
 import util.Constants
 import util.Logg
 import util.webCrawl
@@ -17,12 +18,13 @@ object Main {
         webCrawl = false
         if (webCrawl()) return
 
-        val totoType = TotoType.T_5X35
+        val totoType = TotoType.T_6X49
         val allDrawings = Drawings(totoType, 0)
 
 //        allDataClasses(totoType)
         predictViaNumberDistributionPerPosition(totoType, allDrawings)
 //        backtestPredictViaNumberDistributionPerPosition(totoType, allDrawings)
+//        backtestCooccurrenceMatrix(totoType, allDrawings)
 
         Logg.p("=== MAIN END ===")
     }
@@ -69,17 +71,23 @@ object Main {
 
     private fun predictViaNumberDistributionPerPosition(totoType: TotoType, allDrawings: Drawings) {
         PredictViaNumberDistributionPerPosition(totoType, allDrawings).apply {
-            val yearFilter = Constants.PAGE_YEAR.toInt() - 10
+            val yearFilter = when (totoType) {
+                TotoType.T_6X49 -> Constants.PAGE_YEAR.toInt() - 20
+                TotoType.T_6X42 -> Constants.PAGE_YEAR.toInt() - 20 // Not tested
+                TotoType.T_5X35 -> Constants.PAGE_YEAR.toInt() - 20
+            }
             val filteredDrawings = allDrawings.drawings.filter { it.year >= yearFilter }
             val numbersToUse = getNumbersToUse(filteredDrawings)
-            generatePredictions(
+            val drawingsToGenerate = when (totoType) {
+                TotoType.T_6X49 -> 4
+                TotoType.T_6X42 -> 4
+                TotoType.T_5X35 -> 8
+            }
+            val results = generatePredictions(
                 numbersToUse,
-                when (totoType) {
-                    TotoType.T_6X49 -> 4
-                    TotoType.T_6X42 -> 4
-                    TotoType.T_5X35 -> 8
-                }
+                drawingsToGenerate
             )
+            results.forEach { Logg.printIntArray(it.numbers) }
         }
     }
 
@@ -87,13 +95,26 @@ object Main {
         totoType: TotoType,
         allDrawings: Drawings
     ) {
-        BackTestNumberDistributionPerPositionAlgo(
+        BacktestNumberDistributionPerPosition(
             totoType,
             allDrawings,
             PredictViaNumberDistributionPerPosition(totoType, allDrawings)
-        ).backtest(
-            startYearFilter = 2020,
-            backTestSampleYearSize = 20
-        )
+        ).backtest(trainingDataYearFilter = 20, backtestSampleSizeYears = 1)
+    }
+
+    private fun backtestCooccurrenceMatrix(
+        totoType: TotoType,
+        allDrawings: Drawings
+    ) {
+        val yearFilter = when (totoType) {
+            TotoType.T_6X49 -> Constants.PAGE_YEAR.toInt() - 20
+            TotoType.T_6X42 -> Constants.PAGE_YEAR.toInt() - 20 // Not tested
+            TotoType.T_5X35 -> Constants.PAGE_YEAR.toInt() - 20
+        }
+        BacktestCooccurrenceMatrix(
+            totoType,
+            allDrawings,
+            yearFilter
+        ).test()
     }
 }

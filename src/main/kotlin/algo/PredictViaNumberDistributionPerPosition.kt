@@ -1,6 +1,8 @@
 package algo
 
-import data.*
+import data.Drawings
+import data.NumberDistributionPerPosition
+import data.SubsequentDrawingCombinations
 import extension.clear
 import model.Drawing
 import model.TotoType
@@ -13,10 +15,6 @@ class PredictViaNumberDistributionPerPosition(
 ) {
 
     private val allUniqueDrawings = mutableSetOf<UniqueIntArray>()
-    private val cooccurrenceMatrix: CooccurrenceMatrix = CooccurrenceMatrix(
-        totoType,
-        allDrawings.drawings.filter { it.year >= if (totoType == TotoType.T_5X35) 2023 else 2022 }
-    )
 
     init {
         prepareData()
@@ -31,27 +29,27 @@ class PredictViaNumberDistributionPerPosition(
     }
 
     fun getNumbersToUse(filteredDrawings: List<Drawing>): Array<List<Int>> {
-        val numberTable = NumberTable(totoType, filteredDrawings)
-        val numberHotCold = NumberHotCold(totoType, filteredDrawings, numberTable.numbers)
         val numberDistributionPerPosition = NumberDistributionPerPosition(totoType, filteredDrawings)
         val subsequentDrawingCombinations = SubsequentDrawingCombinations(filteredDrawings, size = 2)
-
-        val subsequentDrawingEqualNumbers: Set<Int> = subsequentDrawingCombinations.combinationsByMedian
-            .filter { it.key.array[0] == it.key.array[1] }
-            .map { it.key.array.first() }
-            .toSet()
-        val lastDrawingNumbers: List<Int> = filteredDrawings.takeLast(1).map { it.numbers.toList() }.flatten()
+        val lastDrawingNumbers: List<Int> = filteredDrawings
+            .takeLast(if (totoType == TotoType.T_5X35) 2 else 1)
+            .map { it.numbers.toList() }
+            .flatten()
         val numbersListToUse: Array<MutableList<Int>> = Array(totoType.size) { mutableListOf() }
 
-        numberDistributionPerPosition.distributionByMedianArray.forEachIndexed { index, numberSet ->
+        val subsequentDrawingCombinationNumbers = subsequentDrawingCombinations.combinationsByMean
+            .filter { entry -> lastDrawingNumbers.contains(entry.key.array[0]) }
+            .map { entry -> entry.key.array[1] }
+            .toSet()
+
+        numberDistributionPerPosition.distributionByMeanArray.forEachIndexed { index, numberSet ->
             numberSet.forEach { number ->
-                if (numberHotCold.isHot(number)) {
-                    if (!lastDrawingNumbers.contains(number) || subsequentDrawingEqualNumbers.contains(number)) {
-                        numbersListToUse[index].add(number)
-                    }
-                } else {
-                    numbersListToUse[index].add(number)
+                // Skip number it does not exist as the 2nd number in a two number pair of subsequent drawing number combinations
+                if (!subsequentDrawingCombinationNumbers.contains(number)) {
+                    return@forEach
                 }
+
+                numbersListToUse[index].add(number)
             }
         }
 
@@ -61,12 +59,11 @@ class PredictViaNumberDistributionPerPosition(
     fun generatePredictions(
         numbersListToUse: Array<List<Int>>,
         drawingsToGenerate: Int
-    ) {
-        val predictionDrawings = mutableSetOf<UniqueIntArray>()
-        val discardedDrawings = mutableSetOf<UniqueIntArray>()
-
-        val predictionSize = 50
+    ): Set<UniqueIntArray> {
         val tmpArray = IntArray(totoType.size)
+        if (tmpArray.size != numbersListToUse.size) {
+            throw IllegalArgumentException("Array sizes are different!")
+        }
 
         println("-------")
         val uniqueNumberToUse = numbersListToUse.map { it }.flatten().toSet().sorted()
@@ -76,70 +73,57 @@ class PredictViaNumberDistributionPerPosition(
         numbersListToUse.forEach { println(it.sorted().toString()) }
         println("-------")
 
-        while (predictionDrawings.size < predictionSize) {
+        val predictions = mutableSetOf<UniqueIntArray>()
+        val discarded = mutableSetOf<UniqueIntArray>()
+        val predictionSize = 6000000
+        val random = Random(System.currentTimeMillis())
+
+        val startTime = System.currentTimeMillis()
+        while (predictions.size < predictionSize) {
+            if (System.currentTimeMillis() - startTime > 30000) {
+                break
+            }
+
             tmpArray.clear()
 
-            numbersListToUse.forEachIndexed { index, nums ->
-                var tmpNums = nums
-                var _num: Int? = null
-
-                while (_num == null || tmpArray.contains(_num)) {
-                    var numOfShuffles = Random(System.currentTimeMillis()).nextInt(10)
-
-                    while (numOfShuffles > 0) {
-                        tmpNums = tmpNums.shuffled()
-                        numOfShuffles--
-                    }
-
-                    _num = tmpNums.first()
+            numbersListToUse.forEachIndexed { index, numbers ->
+                var nextNumber = numbers[random.nextInt(numbers.size)]
+                while (tmpArray.contains(nextNumber)) {
+                    nextNumber = numbers[random.nextInt(numbers.size)]
                 }
-
-                tmpArray[index] = _num
+                tmpArray[index] = nextNumber
             }
 
             val uniqueIntArray = UniqueIntArray(tmpArray.copyOf().sortedArray())
 
-            if (discardedDrawings.contains(uniqueIntArray)) {
+            if (discarded.contains(uniqueIntArray)) {
                 continue
             }
 
-            if (allUniqueDrawings.contains(uniqueIntArray)) {
-                discardedDrawings.add(uniqueIntArray)
+            // 5x35 can have drawing predictions that have been drawn previously
+            if (totoType != TotoType.T_5X35 && allUniqueDrawings.contains(uniqueIntArray)) {
+                discarded.add(uniqueIntArray)
                 continue
             }
 
-            val cooccurrenceFrequencies = mutableListOf<Int>()
-            for (i in 0 until uniqueIntArray.numbers.size - 1) {
-                for (j in i + 1 until uniqueIntArray.numbers.size) {
-                    val rowNum = uniqueIntArray.numbers[i]
-                    val colNum = uniqueIntArray.numbers[j]
-                    cooccurrenceFrequencies.add(cooccurrenceMatrix.matrix[rowNum][colNum])
-                }
-            }
-
-            val lessThanMidpoint = cooccurrenceFrequencies.count { it < cooccurrenceMatrix.midpoint }
-            val equalToMidpoint = cooccurrenceFrequencies.count { it == cooccurrenceMatrix.midpoint }
-            val greaterThanMidpoint = cooccurrenceFrequencies.count { it > cooccurrenceMatrix.midpoint }
-
-            if (lessThanMidpoint > 2) {
-                discardedDrawings.add(uniqueIntArray)
-                continue
-            }
-            if (equalToMidpoint >= greaterThanMidpoint) {
-                discardedDrawings.add(uniqueIntArray)
-                continue
-            }
-
-            predictionDrawings.add(uniqueIntArray)
+            predictions.add(uniqueIntArray)
         }
 
-        predictionDrawings
-            .shuffled()
-            .take(drawingsToGenerate)
-            .forEach {
-                println(it.numbers.toList().toString().replace("[", "").replace("]", ""))
-            }
+        println("Total number of generated predictions - ${predictions.size}.")
 
-        println()
+        val predictionsList = predictions.toList()
+        val output = mutableSetOf<UniqueIntArray>()
+        val chosenIndexes = mutableSetOf<Int>()
+
+        while (output.size < drawingsToGenerate) {
+            val randomIndex = random.nextInt(predictionsList.size)
+            if (chosenIndexes.contains(randomIndex)) {
+                continue
+            }
+            output.add(predictionsList[randomIndex])
+            chosenIndexes.add(randomIndex)
+        }
+
+        return output
     }
 }

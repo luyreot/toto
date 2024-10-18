@@ -10,7 +10,7 @@ import model.UniquePattern
  */
 class SubsequentDrawingCombinations(
     private val drawings: List<Drawing>,
-    val size: Int,
+    private val size: Int
 ) {
 
     val combinationsByMedian: Map<UniquePattern, Int>

@@ -37,7 +37,7 @@ class NumberDistributionPerPosition(
         }
 
         numDistributionArray.forEachIndexed { index, numberDistributionMap ->
-            val totalOccurrenceCount = numberDistributionMap.values.sum().toDouble()
+//            val totalOccurrenceCount = numberDistributionMap.values.sum().toDouble()
 
             numberDistributionMap.forEach { (number, occurrence) ->
                 distributionArray[index][number] = occurrence.toDouble()

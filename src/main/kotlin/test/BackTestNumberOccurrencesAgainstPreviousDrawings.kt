@@ -3,7 +3,7 @@ package test
 import data.Drawings
 import model.TotoType
 
-class TestNumberOccurrencesAgainstPreviousDrawings {
+class BackTestNumberOccurrencesAgainstPreviousDrawings {
 
     // sample size 2 for often occurring numbers
     // sample size 1 for less often occurring numbers
