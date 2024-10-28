@@ -80,11 +80,11 @@ class PredictViaNumberDistributionPerPosition(
 
         val startTime = System.currentTimeMillis()
         while (predictions.size < predictionSize) {
+            tmpArray.clear()
+            
             if (System.currentTimeMillis() - startTime > 30000) {
                 break
             }
-
-            tmpArray.clear()
 
             numbersListToUse.forEachIndexed { index, numbers ->
                 var nextNumber = numbers[random.nextInt(numbers.size)]
