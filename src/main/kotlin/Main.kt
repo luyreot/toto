@@ -15,7 +15,6 @@ object Main {
         Logg.p("=== MAIN START ===")
 
         // Setup Global Configs
-        webCrawl = false
         if (webCrawl()) return
 
         val totoType = TotoType.T_6X49
