@@ -66,9 +66,12 @@ class PredictViaNumberDistributionPerPosition(
         }
 
         println("-------")
-        val uniqueNumberToUse = numbersListToUse.map { it }.flatten().toSet().sorted()
-        println("Using a total of ${uniqueNumberToUse.size} numbers.")
-        println(uniqueNumberToUse)
+        val uniqueNumbersToUse = numbersListToUse.map { it }.flatten().toSet().sorted()
+        val uniqueNumbersNotToUse = (1..totoType.totalNumbers).toMutableSet().apply { removeAll(uniqueNumbersToUse) }
+        println("Using a total of ${uniqueNumbersToUse.size} number(s).")
+        println(uniqueNumbersToUse)
+        println("Not using ${uniqueNumbersNotToUse.size} number(s).")
+        println(uniqueNumbersNotToUse)
         println("-")
         numbersListToUse.forEach { println(it.sorted().toString()) }
         println("-------")
@@ -81,7 +84,7 @@ class PredictViaNumberDistributionPerPosition(
         val startTime = System.currentTimeMillis()
         while (predictions.size < predictionSize) {
             tmpArray.clear()
-            
+
             if (System.currentTimeMillis() - startTime > 30000) {
                 break
             }
