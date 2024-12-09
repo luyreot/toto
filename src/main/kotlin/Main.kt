@@ -6,6 +6,7 @@ import test.BacktestCooccurrenceMatrix
 import test.BacktestNumberDistributionPerPosition
 import util.Constants
 import util.Logg
+import util.deepLearning
 import util.webCrawl
 
 object Main {
@@ -14,30 +15,32 @@ object Main {
     fun main(args: Array<String>) {
         Logg.p("=== MAIN START ===")
 
-        // Setup Global Configs
-        if (webCrawl()) return
+        if (webCrawl) {
+            webCrawl()
+            return
+        }
 
         val totoType = TotoType.T_6X49
         val allDrawings = Drawings(totoType, 0)
 
-//        allDataClasses(totoType)
-        predictViaNumberDistributionPerPosition(totoType, allDrawings)
-//        backtestPredictViaNumberDistributionPerPosition(totoType, allDrawings)
-//        backtestCooccurrenceMatrix(totoType, allDrawings)
+        if (!deepLearning) {
+            allDataClasses(totoType)
+//            predictViaNumberDistributionPerPosition(totoType, allDrawings)
+//            backtestPredictViaNumberDistributionPerPosition(totoType, allDrawings)
+//            backtestCooccurrenceMatrix(totoType, allDrawings)
+        } else {
+            // todo
+        }
 
         Logg.p("=== MAIN END ===")
     }
 
-    private fun webCrawl(): Boolean {
-        if (!webCrawl) return false
-
+    private fun webCrawl() {
         WebCrawler().apply {
             crawl(TotoType.T_5X35)
             crawl(TotoType.T_6X42)
             crawl(TotoType.T_6X49)
         }
-
-        return true
     }
 
     private fun allDataClasses(totoType: TotoType) {

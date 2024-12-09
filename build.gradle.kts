@@ -5,16 +5,23 @@ plugins {
 group = "trd"
 version = "1.0"
 
+val COROUTINES_CORE = "1.6.0"
+val JSOUP = "1.15.4"
+val JSON = "20231013"
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$COROUTINES_CORE")
 
-    implementation("org.jsoup:jsoup:1.15.4")
+    // Jsoup
+    implementation("org.jsoup:jsoup:$JSOUP")
 
-    implementation("org.json:json:20231013")
+    // Json
+    implementation("org.json:json:$JSON")
 }
 
 kotlin {
