@@ -1,6 +1,7 @@
 import algo.PredictViaNumberDistributionPerPosition
 import crawler.WebCrawler
 import data.*
+import deeplearning.calculateOutput
 import model.TotoType
 import test.BacktestCooccurrenceMatrix
 import test.BacktestNumberDistributionPerPosition
@@ -30,6 +31,8 @@ object Main {
 //            backtestCooccurrenceMatrix(totoType, allDrawings)
         } else {
             // todo
+
+            calculateOutput()
         }
 
         Logg.p("=== MAIN END ===")
