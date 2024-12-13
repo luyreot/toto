@@ -1,7 +1,7 @@
 import algo.PredictViaNumberDistributionPerPosition
 import crawler.WebCrawler
 import data.*
-import deeplearning.calculateOutput
+import deeplearning.testNeuralNetwork
 import model.TotoType
 import test.BacktestCooccurrenceMatrix
 import test.BacktestNumberDistributionPerPosition
@@ -25,14 +25,12 @@ object Main {
         val allDrawings = Drawings(totoType, 0)
 
         if (!deepLearning) {
-            allDataClasses(totoType)
-//            predictViaNumberDistributionPerPosition(totoType, allDrawings)
+//            allDataClasses(totoType)
+            predictViaNumberDistributionPerPosition(totoType, allDrawings)
 //            backtestPredictViaNumberDistributionPerPosition(totoType, allDrawings)
 //            backtestCooccurrenceMatrix(totoType, allDrawings)
         } else {
-            // todo
-
-            calculateOutput()
+            testNeuralNetwork()
         }
 
         Logg.p("=== MAIN END ===")
