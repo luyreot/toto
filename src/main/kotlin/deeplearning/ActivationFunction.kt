@@ -5,6 +5,10 @@ import kotlin.math.max
 
 sealed interface ActivationFunction {
 
+    fun forward(input: DoubleArray): DoubleArray
+
+    fun forward(inputs: Array<DoubleArray>): Array<DoubleArray>
+
     /**
      * ReLU - Rectified Linear Unit
      * Introduces the property of nonlinearity to a deep learning model
@@ -17,11 +21,11 @@ sealed interface ActivationFunction {
      */
     data object ReLU : ActivationFunction {
 
-        fun forward(input: DoubleArray): DoubleArray {
+        override fun forward(input: DoubleArray): DoubleArray {
             return input.map { max(0.0, it) }.toDoubleArray()
         }
 
-        fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
+        override fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
             return inputs.map { dim1 -> dim1.map { dim2 -> max(0.0, dim2) }.toDoubleArray() }.toTypedArray()
         }
     }
@@ -36,7 +40,7 @@ sealed interface ActivationFunction {
      */
     data class Softmax(val overflowGuard: Boolean = true) : ActivationFunction {
 
-        fun forward(input: DoubleArray): DoubleArray {
+        override fun forward(input: DoubleArray): DoubleArray {
             var inputNew: List<Double> = input.asList()
             if (overflowGuard) {
                 val largestValue = input.max()
@@ -49,7 +53,7 @@ sealed interface ActivationFunction {
             return normalizedInput
         }
 
-        fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
+        override fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
             var inputsNew: List<List<Double>> = inputs.map { it.asList() }
             if (overflowGuard) {
                 val largestValues = inputsNew.map { it.max() }
