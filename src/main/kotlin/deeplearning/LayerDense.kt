@@ -5,16 +5,17 @@ import deeplearning.Matrix.multiply
 class LayerDense(
     val neurons: Array<Neuron>,
     val weights: Array<Array<Weight>>,
-    override val activationFunction: ActivationFunction,
+    override val activationFunction: ForwardPropagationFunction,
+    override val activationFunctionDerivative: BackwardPropagationFunction,
     private val verifyLayerData: Boolean = true
 ) : Layer {
 
     constructor(
         neurons: Array<Neuron>,
-        weights: Array<Weight>,
+        weights: Array<Array<Weight>>,
         activationFunction: ActivationFunction,
         verifyArrays: Boolean = true
-    ) : this(neurons, arrayOf(weights), activationFunction, verifyArrays)
+    ) : this(neurons, weights, activationFunction, activationFunction, verifyArrays)
 
     init {
         if (verifyLayerData) {
@@ -45,6 +46,14 @@ class LayerDense(
             biases = neurons.map { it.bias.bias }.toDoubleArray()
         )
         return activationFunction.forward(output)
+    }
+
+    override fun backward(input: DoubleArray): DoubleArray {
+        TODO("Not yet implemented")
+    }
+
+    override fun backward(inputs: Array<DoubleArray>): Array<DoubleArray> {
+        TODO("Not yet implemented")
     }
 
     private fun verifyInputSize(input: DoubleArray) {

@@ -1,8 +1,12 @@
 package deeplearning
 
 interface Layer {
-    val activationFunction: ActivationFunction
+    val activationFunction: ForwardPropagationFunction
+    val activationFunctionDerivative: BackwardPropagationFunction
 
     fun forward(input: DoubleArray): DoubleArray
     fun forward(inputs: Array<DoubleArray>): Array<DoubleArray>
+
+    fun backward(input: DoubleArray): DoubleArray
+    fun backward(inputs: Array<DoubleArray>): Array<DoubleArray>
 }

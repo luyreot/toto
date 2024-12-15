@@ -10,7 +10,7 @@ fun testNeuralNetwork() {
                 arrayOf(Weight(0.5), Weight(-0.91), Weight(0.26), Weight(-0.5)),
                 arrayOf(Weight(-0.26), Weight(-0.27), Weight(0.17), Weight(0.87))
             ),
-            activationFunction = ActivationFunction.ReLU
+            activationFunction = ReLU
         )
     )
     val inputs = arrayOf(
