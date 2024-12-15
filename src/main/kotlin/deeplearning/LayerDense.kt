@@ -1,6 +1,9 @@
 package deeplearning
 
 import deeplearning.Matrix.multiply
+import deeplearning.activation.ActivationFunction
+import deeplearning.activation.BackwardPropagationFunction
+import deeplearning.activation.ForwardPropagationFunction
 
 class LayerDense(
     val neurons: Array<Neuron>,
