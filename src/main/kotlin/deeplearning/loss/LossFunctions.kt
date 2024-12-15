@@ -35,17 +35,6 @@ object LossFunctions {
         }.sum()
     }
 
-    fun categoricalCrossEntropyDerivative(predicted: DoubleArray, actual: DoubleArray): DoubleArray {
-        return predicted.indices.map { i ->
-            val pred = predicted[i].coerceAtLeast(1e-15)  // Ensure no division by zero
-            if (actual[i] == 1.0) {
-                -1.0 / pred  // If y_i is 1, we compute -1 / p_i
-            } else {
-                0.0  // If y_i is 0, the derivative is 0
-            }
-        }.toDoubleArray()
-    }
-
     /**
      * The predicted and actual values will each be an array of arrays (a 2D array), where:
      * - each row in predicted corresponds to the model's predicted probabilities for one input.
@@ -57,6 +46,9 @@ object LossFunctions {
      * * It's assumed that predicted and actual are the same size, with dimensions [batch_size][num_classes].
      */
     fun categoricalCrossEntropyBatch(predicted: Array<DoubleArray>, actual: Array<DoubleArray>): Double {
+        // Ensure the sizes of predicted and actual match
+        require(predicted.size == actual.size) { "Batch sizes of predicted and actual must match" }
+
         var totalLoss = 0.0
         for ((predRow, targetRow) in predicted.zip(actual)) {
             totalLoss += -targetRow.zip(predRow) { target, pred ->
@@ -64,6 +56,36 @@ object LossFunctions {
             }.sum()
         }
         return totalLoss / predicted.size // Average loss across the batch
+    }
+
+    fun categoricalCrossEntropyDerivative(predicted: DoubleArray, actual: DoubleArray): DoubleArray {
+        return predicted.indices.map { i ->
+            val pred = predicted[i].coerceAtLeast(1e-15)  // Ensure no division by zero
+            if (actual[i] == 1.0) {
+                -1.0 / pred  // If y_i is 1, we compute -1 / p_i
+            } else {
+                0.0  // If y_i is 0, the derivative is 0
+            }
+        }.toDoubleArray()
+    }
+
+    fun categoricalCrossEntropyDerivativeBatch(
+        predicted: Array<DoubleArray>,
+        actual: Array<DoubleArray>
+    ): Array<DoubleArray> {
+        // Ensure the sizes of predicted and actual match
+        require(predicted.size == actual.size) { "Batch sizes of predicted and actual must match" }
+
+        return Array(predicted.size) { batchIndex ->
+            predicted[batchIndex].indices.map { i ->
+                val pred = predicted[batchIndex][i].coerceAtLeast(1e-15) // Ensure no division by zero
+                if (actual[batchIndex][i] == 1.0) {
+                    -1.0 / pred // If y_i is 1, compute -1 / p_i
+                } else {
+                    0.0 // If y_i is 0, derivative is 0
+                }
+            }.toDoubleArray()
+        }
     }
 
     /**
