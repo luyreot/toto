@@ -1,4 +1,4 @@
-package deeplearning
+package deeplearning.loss
 
 import kotlin.math.ln
 import kotlin.math.pow
