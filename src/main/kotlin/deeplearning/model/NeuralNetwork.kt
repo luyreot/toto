@@ -1,4 +1,4 @@
-package deeplearning
+package deeplearning.model
 
 /**
  * Goal is to:

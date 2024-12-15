@@ -1,3 +1,3 @@
-package deeplearning
+package deeplearning.model
 
 class Bias(val bias: Double)

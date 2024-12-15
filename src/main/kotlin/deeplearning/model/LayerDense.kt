@@ -1,4 +1,4 @@
-package deeplearning
+package deeplearning.model
 
 import deeplearning.util.Matrix.multiply
 import deeplearning.activation.ActivationFunction

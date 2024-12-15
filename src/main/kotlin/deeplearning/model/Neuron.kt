@@ -1,4 +1,4 @@
-package deeplearning
+package deeplearning.model
 
 class Neuron(
     val bias: Bias

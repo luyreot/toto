@@ -1,6 +1,10 @@
 package deeplearning
 
 import deeplearning.activation.ReLU
+import deeplearning.model.LayerDense
+import deeplearning.model.NeuralNetwork
+import deeplearning.model.Neuron
+import deeplearning.model.Weight
 
 fun testNeuralNetwork() {
     val nn = NeuralNetwork()

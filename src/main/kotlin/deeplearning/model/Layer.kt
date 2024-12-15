@@ -1,4 +1,4 @@
-package deeplearning
+package deeplearning.model
 
 import deeplearning.activation.BackwardPropagationFunction
 import deeplearning.activation.ForwardPropagationFunction
