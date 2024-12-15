@@ -30,6 +30,47 @@ sealed interface ActivationFunction {
         }
     }
 
+    data object ReLUDerivative : ActivationFunction {
+
+        override fun forward(input: DoubleArray): DoubleArray {
+            return input.map { if (it > 0.0) 1.0 else 0.0 }.toDoubleArray()
+        }
+
+        override fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
+            return inputs.map { dim1 ->
+                dim1.map { dim2 ->
+                    if (dim2 > 0.0) 1.0 else 0.0
+                }.toDoubleArray()
+            }.toTypedArray()
+        }
+    }
+
+    data object Sigmoid : ActivationFunction {
+
+        override fun forward(input: DoubleArray): DoubleArray {
+            return input.map { Math.sigmoid(it) }.toDoubleArray()
+        }
+
+        override fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
+            return inputs.map { dim1 -> dim1.map { dim2 -> Math.sigmoid(dim2) }.toDoubleArray() }.toTypedArray()
+        }
+    }
+
+    data object SigmoidDerivative : ActivationFunction {
+
+        override fun forward(input: DoubleArray): DoubleArray {
+            return input.map { Math.sigmoidDerivative(it) }.toDoubleArray()
+        }
+
+        override fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
+            return inputs.map { dim1 ->
+                dim1.map { dim2 ->
+                    Math.sigmoidDerivative(dim2)
+                }.toDoubleArray()
+            }.toTypedArray()
+        }
+    }
+
     /**
      * Issues:
      * - explosion of values once the exponentiation grows. It is easy to get massive numbers
@@ -37,6 +78,8 @@ sealed interface ActivationFunction {
      * and subtract it from input value. The largest value will then be 0 and everything else will be less than 0.
      * The rage of possibilities now becomes somewhere between 0 and 1 after exponentiation.
      * The actual output in the end will be the same.
+     *
+     * In classification, the 'Categorical Cross-Entropy' loss function is used when soft max is used in the output layer.
      */
     data class Softmax(val overflowGuard: Boolean = true) : ActivationFunction {
 
