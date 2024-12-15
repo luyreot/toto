@@ -1,6 +1,6 @@
 package deeplearning.activation
 
-import deeplearning.Math
+import deeplearning.util.Math
 
 data object Sigmoid : ActivationFunction {
 

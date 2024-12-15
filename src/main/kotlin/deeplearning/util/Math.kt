@@ -1,4 +1,4 @@
-package deeplearning
+package deeplearning.util
 
 import kotlin.math.exp
 import kotlin.math.pow

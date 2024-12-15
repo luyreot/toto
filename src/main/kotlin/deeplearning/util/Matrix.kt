@@ -1,4 +1,4 @@
-package deeplearning
+package deeplearning.util
 
 object Matrix {
 
