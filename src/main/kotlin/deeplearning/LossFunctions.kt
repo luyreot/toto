@@ -35,6 +35,17 @@ object LossFunctions {
         }.sum()
     }
 
+    fun categoricalCrossEntropyDerivative(predicted: DoubleArray, actual: DoubleArray): DoubleArray {
+        return predicted.indices.map { i ->
+            val pred = predicted[i].coerceAtLeast(1e-15)  // Ensure no division by zero
+            if (actual[i] == 1.0) {
+                -1.0 / pred  // If y_i is 1, we compute -1 / p_i
+            } else {
+                0.0  // If y_i is 0, the derivative is 0
+            }
+        }.toDoubleArray()
+    }
+
     /**
      * The predicted and actual values will each be an array of arrays (a 2D array), where:
      * - each row in predicted corresponds to the model's predicted probabilities for one input.
