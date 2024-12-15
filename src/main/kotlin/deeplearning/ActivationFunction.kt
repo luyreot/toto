@@ -3,6 +3,15 @@ package deeplearning
 import kotlin.math.exp
 import kotlin.math.max
 
+/**
+ * The defined functions below are used for doing the forward pass and the backward pass (_derivative).
+ *
+ * The gradient descent algorithm relies on the slope (or rate of change) of the activation function
+ * to compute how the weights and biases should be updated.
+ * During backpropagation, we calculate how the error propagates backward through the network.
+ * The error gradient at each neuron depends on the rate of change of its activation function
+ * (i.e., how sensitive the output is to changes in input).
+ */
 sealed interface ActivationFunction {
 
     fun forward(input: DoubleArray): DoubleArray
@@ -30,6 +39,9 @@ sealed interface ActivationFunction {
         }
     }
 
+    /**
+     * Used for backpropagation.
+     */
     data object ReLUDerivative : ActivationFunction {
 
         override fun forward(input: DoubleArray): DoubleArray {
@@ -56,6 +68,9 @@ sealed interface ActivationFunction {
         }
     }
 
+    /**
+     * Used for backpropagation.
+     */
     data object SigmoidDerivative : ActivationFunction {
 
         override fun forward(input: DoubleArray): DoubleArray {
@@ -80,6 +95,8 @@ sealed interface ActivationFunction {
      * The actual output in the end will be the same.
      *
      * In classification, the 'Categorical Cross-Entropy' loss function is used when soft max is used in the output layer.
+     *
+     * For backpropagation, the derivative is handled differently because it’s part of the cross-entropy loss optimization process.
      */
     data class Softmax(val overflowGuard: Boolean = true) : ActivationFunction {
 

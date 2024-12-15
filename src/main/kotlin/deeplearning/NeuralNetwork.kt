@@ -1,5 +1,13 @@
 package deeplearning
 
+/**
+ * Goal is to:
+ * - accept various types of data, including probabilities and occurrences of numbers.
+ * - predict a future outcome, such as the likelihood of a specific number or combination of numbers occurring.
+ *
+ * This falls under the category of sequence prediction or time-series forecasting,
+ * depending on how the data is structured and the patterns that will be learnt.
+ */
 class NeuralNetwork(
     val layers: MutableList<Layer> = mutableListOf()
 ) {
@@ -9,18 +17,18 @@ class NeuralNetwork(
     }
 
     fun forward(input: DoubleArray): DoubleArray {
-        var currentInput = input
+        var output = input
         for (layer in layers) {
-            currentInput = layer.forward(currentInput)
+            output = layer.forward(output)
         }
-        return currentInput
+        return output
     }
 
     fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
-        var currentInputs = inputs
+        var output = inputs
         for (layer in layers) {
-            currentInputs = layer.forward(currentInputs)
+            output = layer.forward(output)
         }
-        return currentInputs
+        return output
     }
 }
