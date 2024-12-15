@@ -1,9 +1,8 @@
 package deeplearning.model
 
 class Neuron(
-    val bias: Bias
+    var bias: Double
 ) {
-    constructor(bias: Int) : this(Bias(bias.toDouble()))
-    constructor(bias: Float) : this(Bias(bias.toDouble()))
-    constructor(bias: Double) : this(Bias(bias))
+    constructor(bias: Int) : this(bias.toDouble())
+    constructor(bias: Float) : this(bias.toDouble())
 }

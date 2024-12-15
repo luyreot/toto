@@ -4,7 +4,6 @@ import deeplearning.activation.ReLU
 import deeplearning.model.LayerDense
 import deeplearning.model.NeuralNetwork
 import deeplearning.model.Neuron
-import deeplearning.model.Weight
 
 fun testNeuralNetwork() {
     val nn = NeuralNetwork()
@@ -12,9 +11,9 @@ fun testNeuralNetwork() {
         LayerDense(
             neurons = arrayOf(Neuron(2.0), Neuron(3.0), Neuron(0.5)),
             weights = arrayOf(
-                arrayOf(Weight(0.2), Weight(0.8), Weight(-0.5), Weight(1.0)),
-                arrayOf(Weight(0.5), Weight(-0.91), Weight(0.26), Weight(-0.5)),
-                arrayOf(Weight(-0.26), Weight(-0.27), Weight(0.17), Weight(0.87))
+                arrayOf(0.2, 0.8, -0.5, 1.0),
+                arrayOf(0.5, -0.91, 0.26, -0.5),
+                arrayOf(-0.26, -0.27, 0.17, 0.87)
             ),
             activationFunction = ReLU
         )

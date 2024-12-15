@@ -99,7 +99,7 @@ object LossFunctions {
     }
 
     /**
-     * predicted and actual are 2D arrays.
+     * Predicted and actual are 2D arrays.
      *
      * Compute the error for each input in the batch, then average across the batch.
      * Iterate through the batch: Compute the MSE for each input and accumulate the results.

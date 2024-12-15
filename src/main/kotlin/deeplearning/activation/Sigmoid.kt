@@ -2,6 +2,10 @@ package deeplearning.activation
 
 import deeplearning.util.Math
 
+/**
+ * Granular - can optimize well with it.
+ * Has an issue - vanishing gradient problem.
+ */
 data object Sigmoid : ActivationFunction {
 
     override fun forward(input: DoubleArray): DoubleArray {

@@ -1,27 +1,27 @@
 package deeplearning.model
 
-import deeplearning.util.Matrix.multiply
 import deeplearning.activation.ActivationFunction
 import deeplearning.activation.BackwardPropagationFunction
 import deeplearning.activation.ForwardPropagationFunction
+import deeplearning.util.Matrix.multiply
 
 class LayerDense(
     val neurons: Array<Neuron>,
-    val weights: Array<Array<Weight>>,
+    val weights: Array<Array<Double>>,
     override val activationFunction: ForwardPropagationFunction,
     override val activationFunctionDerivative: BackwardPropagationFunction,
-    private val verifyLayerData: Boolean = true
+    private val verifyInputs: Boolean = true
 ) : Layer {
 
     constructor(
         neurons: Array<Neuron>,
-        weights: Array<Array<Weight>>,
+        weights: Array<Array<Double>>,
         activationFunction: ActivationFunction,
         verifyArrays: Boolean = true
     ) : this(neurons, weights, activationFunction, activationFunction, verifyArrays)
 
     init {
-        if (verifyLayerData) {
+        if (verifyInputs) {
             require(neurons.size == weights.size) {
                 "Neurons (${neurons.size}) and Weights (${weights.size}) have different sizes."
             }
@@ -32,21 +32,21 @@ class LayerDense(
     }
 
     override fun forward(input: DoubleArray): DoubleArray {
-        verifyInputSize(input)
+        verifyInput(input)
         val output = multiply(
             input = input,
-            weights = weights.map { dim1 -> dim1.map { dim2 -> dim2.weight }.toDoubleArray() }.toTypedArray(),
-            biases = neurons.map { it.bias.bias }.toDoubleArray()
+            weights = weights.map { dim1 -> dim1.map { it }.toDoubleArray() }.toTypedArray(),
+            biases = neurons.map { it.bias }.toDoubleArray()
         )
         return activationFunction.forward(output)
     }
 
     override fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
-        verifyInputSize(inputs)
+        verifyInputs(inputs)
         val output = multiply(
             inputs = inputs,
-            weights = weights.map { dim1 -> dim1.map { dim2 -> dim2.weight }.toDoubleArray() }.toTypedArray(),
-            biases = neurons.map { it.bias.bias }.toDoubleArray()
+            weights = weights.map { dim1 -> dim1.map { it }.toDoubleArray() }.toTypedArray(),
+            biases = neurons.map { it.bias }.toDoubleArray()
         )
         return activationFunction.forward(output)
     }
@@ -59,20 +59,20 @@ class LayerDense(
         TODO("Not yet implemented")
     }
 
-    private fun verifyInputSize(input: DoubleArray) {
-        if (verifyLayerData) {
-            require(input.size == weights[0].size) {
-                "Inputs (${input.size}) and Weights (${weights[0].size}) have different sizes."
-            }
+    private fun verifyInput(input: DoubleArray) {
+        if (!verifyInputs) return
+
+        require(input.size == weights[0].size) {
+            "Inputs (${input.size}) and Weights (${weights[0].size}) have different sizes."
         }
     }
 
-    private fun verifyInputSize(inputs: Array<DoubleArray>) {
-        if (verifyLayerData) {
-            inputs.forEachIndexed { index, input ->
-                require(input.size == weights[0].size) {
-                    "Inputs (${input.size}) at index $index and Weights (${weights[0].size}) have different sizes."
-                }
+    private fun verifyInputs(inputs: Array<DoubleArray>) {
+        if (!verifyInputs) return
+
+        inputs.forEachIndexed { index, input ->
+            require(input.size == weights[0].size) {
+                "Inputs (${input.size}) at index $index and Weights (${weights[0].size}) have different sizes."
             }
         }
     }
