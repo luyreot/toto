@@ -1,5 +1,7 @@
 package deeplearning
 
+import deeplearning.activation.ReLU
+
 fun testNeuralNetwork() {
     val nn = NeuralNetwork()
     nn.addLayer(

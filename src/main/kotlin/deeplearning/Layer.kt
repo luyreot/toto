@@ -1,5 +1,8 @@
 package deeplearning
 
+import deeplearning.activation.BackwardPropagationFunction
+import deeplearning.activation.ForwardPropagationFunction
+
 interface Layer {
     val activationFunction: ForwardPropagationFunction
     val activationFunctionDerivative: BackwardPropagationFunction
