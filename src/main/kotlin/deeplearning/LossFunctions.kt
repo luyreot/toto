@@ -11,6 +11,23 @@ object LossFunctions {
     /**
      * Categorical Cross-Entropy
      * Used for classification problems where outputs are probabilities.
+     *
+     * zip: The zip function combines the predicted and actual arrays element by element,
+     * allowing you to iterate over both arrays simultaneously.
+     * - predicted[i] is the predicted probability for class i.
+     * - actual[i] is the true label, either 1 (for the correct class) or 0 (for other classes).
+     * coerceAtLeast(1e-15) is a safety mechanism that ensures the predicted probability (pred) never becomes zero.
+     * Since the logarithm of 0 is undefined (i.e., it would result in -Infinity),
+     * this adjustment prevents potential runtime errors.
+     * By coercing values to at least 1e-15, you avoid the case where ln(0) is computed,
+     * and instead, it approximates the logarithm for very small values.
+     * The ln function is applied to the predicted probability. The natural logarithm of the predicted value
+     * is multiplied by the actual value (target), which is either 1 (for the correct class) or 0 (for all other classes).
+     * If the actual label is 1, this contributes to the loss calculation.
+     * If the actual label is 0, the corresponding term doesn't contribute, since multiplying by 0 results in 0.
+     * sum(): After calculating the log loss for each class, .sum() adds up all the terms to compute the total loss.
+     * Negative sign: The negative sign is outside the zip function to follow the formula of Categorical Cross-Entropy,
+     * which is the negative sum of the products of the true label and the log of the predicted probability.
      */
     fun categoricalCrossEntropy(predicted: DoubleArray, actual: DoubleArray): Double {
         return -actual.zip(predicted) { target, pred ->
