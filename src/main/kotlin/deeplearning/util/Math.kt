@@ -14,11 +14,4 @@ object Math {
     fun calculatePoissonProbability(frequency: Double, k: Int = 1): Double {
         return (frequency.pow(k) * exp(-frequency)) / factorial(k)
     }
-
-    fun sigmoid(x: Double): Double = 1.0 / (1.0 + exp(-x))
-
-    fun sigmoidDerivative(x: Double): Double {
-        val sig = sigmoid(x)
-        return sig * (1 - sig)
-    }
 }

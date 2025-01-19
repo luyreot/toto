@@ -16,6 +16,10 @@ class NeuralNetwork(
         layers.add(layer)
     }
 
+    fun addLayers(vararg layers: Layer) {
+        this.layers.addAll(layers)
+    }
+
     fun forward(input: DoubleArray): DoubleArray {
         var output = input
         for (layer in layers) {

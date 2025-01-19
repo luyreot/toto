@@ -7,7 +7,7 @@ import deeplearning.util.Matrix.multiply
 
 class LayerDense(
     val neurons: Array<Neuron>,
-    val weights: Array<Array<Double>>,
+    val weights: Array<DoubleArray>,
     override val activationFunction: ForwardPropagationFunction,
     override val activationFunctionDerivative: BackwardPropagationFunction,
     private val verifyInputs: Boolean = true
@@ -15,7 +15,7 @@ class LayerDense(
 
     constructor(
         neurons: Array<Neuron>,
-        weights: Array<Array<Double>>,
+        weights: Array<DoubleArray>,
         activationFunction: ActivationFunction,
         verifyArrays: Boolean = true
     ) : this(neurons, weights, activationFunction, activationFunction, verifyArrays)
@@ -35,7 +35,7 @@ class LayerDense(
         verifyInput(input)
         val output = multiply(
             input = input,
-            weights = weights.map { dim1 -> dim1.map { it }.toDoubleArray() }.toTypedArray(),
+            weights = weights,
             biases = neurons.map { it.bias }.toDoubleArray()
         )
         return activationFunction.forward(output)
@@ -45,7 +45,7 @@ class LayerDense(
         verifyInputs(inputs)
         val output = multiply(
             inputs = inputs,
-            weights = weights.map { dim1 -> dim1.map { it }.toDoubleArray() }.toTypedArray(),
+            weights = weights,
             biases = neurons.map { it.bias }.toDoubleArray()
         )
         return activationFunction.forward(output)
@@ -62,17 +62,21 @@ class LayerDense(
     private fun verifyInput(input: DoubleArray) {
         if (!verifyInputs) return
 
-        require(input.size == weights[0].size) {
-            "Inputs (${input.size}) and Weights (${weights[0].size}) have different sizes."
+        weights.forEachIndexed { index, weights ->
+            require(input.size == weights.size) {
+                "Inputs (${input.size}) and Weights (${weights.size}) have different sizes. Index $index."
+            }
         }
     }
 
     private fun verifyInputs(inputs: Array<DoubleArray>) {
         if (!verifyInputs) return
 
-        inputs.forEachIndexed { index, input ->
-            require(input.size == weights[0].size) {
-                "Inputs (${input.size}) at index $index and Weights (${weights[0].size}) have different sizes."
+        inputs.forEachIndexed { inputsIndex, inputsArr ->
+            weights.forEachIndexed { weightsIndex, weights ->
+                require(inputsArr.size == weights.size) {
+                    "Inputs (${inputsArr.size}) and Weights (${weights.size}) have different sizes. Weights Index $weightsIndex. Inputs Index $inputsIndex"
+                }
             }
         }
     }

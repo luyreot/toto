@@ -18,22 +18,24 @@ import kotlin.math.max
 data object ReLU : ActivationFunction {
 
     override fun forward(input: DoubleArray): DoubleArray {
-        return input.map { max(0.0, it) }.toDoubleArray()
+        return input.map { relu(it) }.toDoubleArray()
     }
 
     override fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
-        return inputs.map { dim1 -> dim1.map { dim2 -> max(0.0, dim2) }.toDoubleArray() }.toTypedArray()
+        return inputs.map { dim1 -> dim1.map { dim2 -> relu(dim2) }.toDoubleArray() }.toTypedArray()
     }
 
     override fun backward(input: DoubleArray): DoubleArray {
-        return input.map { if (it > 0.0) 1.0 else 0.0 }.toDoubleArray()
+        return input.map { reluDerivative(it) }.toDoubleArray()
     }
 
     override fun backward(inputs: Array<DoubleArray>): Array<DoubleArray> {
-        return inputs.map { dim1 ->
-            dim1.map { dim2 ->
-                if (dim2 > 0.0) 1.0 else 0.0
-            }.toDoubleArray()
-        }.toTypedArray()
+        return inputs.map { dim1 -> dim1.map { dim2 -> reluDerivative(dim2) }.toDoubleArray() }.toTypedArray()
     }
+
+    // Math
+
+    private fun relu(x: Double): Double = max(0.0, x)
+
+    private fun reluDerivative(x: Double): Double = if (x > 0.0) 1.0 else 0.0
 }

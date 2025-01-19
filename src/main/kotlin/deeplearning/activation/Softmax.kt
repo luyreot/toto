@@ -13,37 +13,56 @@ import kotlin.math.exp
  * In classification, the 'Categorical Cross-Entropy' loss function is used when soft max is used in the output layer.
  *
  * For backpropagation, the derivative is handled differently because it’s part of the cross-entropy loss optimization process.
+ * Not that there is a combined implementation for backpropagation, i.e. softmax + cross-entropy as a single function.
  */
-class Softmax(val overflowGuard: Boolean = true) : ForwardPropagationFunction {
+data class Softmax(private val overflowGuard: Boolean = true) : ActivationFunction {
 
     override fun forward(input: DoubleArray): DoubleArray {
-        var inputNew: List<Double> = input.asList()
+        return softmax(input)
+    }
+
+    override fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
+        return softmaxBatch(inputs)
+    }
+
+    override fun backward(input: DoubleArray): DoubleArray {
+        return softmaxDerivative(input)
+    }
+
+    override fun backward(inputs: Array<DoubleArray>): Array<DoubleArray> {
+        return softmaxDerivativeBatch(inputs)
+    }
+
+    private fun softmax(input: DoubleArray): DoubleArray {
+        val inputNew: DoubleArray = input.copyOf()
+
         if (overflowGuard) {
-            val largestValue = input.max()
-            inputNew = input.map { it - largestValue }
+            val largestValue: Double = inputNew.maxOrNull() ?: 0.0
+            for (i in inputNew.indices) {
+                inputNew[i] = inputNew[i] - largestValue
+            }
         }
 
         val expInput = inputNew.map { exp(it) }
         val product = expInput.sum()
         val normalizedInput = expInput.map { it / product }.toDoubleArray()
+
         return normalizedInput
     }
 
-    override fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
-        var inputsNew: List<List<Double>> = inputs.map { it.asList() }
-        if (overflowGuard) {
-            val largestValues = inputsNew.map { it.max() }
-            inputsNew = inputsNew.mapIndexed { dim1Index, dim1 ->
-                dim1.map { dim2 -> dim2 - largestValues[dim1Index] }
-            }
-        }
+    private fun softmaxBatch(inputs: Array<DoubleArray>): Array<DoubleArray> {
+        return inputs.map { softmax(it) }.toTypedArray()
+    }
 
-        val expInput = inputsNew.map { dim1 -> dim1.map { dim2 -> exp(dim2) } }
-        val products = expInput.map { it.sum() }
-        val normalizedInput = expInput.mapIndexed { dim1Index, dim1 ->
-            dim1.map { dim2 -> dim2 / products[dim1Index] }
-                .toDoubleArray()
-        }.toTypedArray()
-        return normalizedInput
+    private fun softmaxDerivative(input: DoubleArray): DoubleArray {
+        val softmax = softmax(input)
+        // Compute the diagonal terms of the Jacobian matrix
+        return input.indices.map { i ->
+            softmax[i] * (1 - softmax[i])
+        }.toDoubleArray()
+    }
+
+    private fun softmaxDerivativeBatch(inputs: Array<DoubleArray>): Array<DoubleArray> {
+        return inputs.map { softmaxDerivative(it) }.toTypedArray()
     }
 }

@@ -28,11 +28,28 @@ object LossFunctions {
      * sum(): After calculating the log loss for each class, .sum() adds up all the terms to compute the total loss.
      * Negative sign: The negative sign is outside the zip function to follow the formula of Categorical Cross-Entropy,
      * which is the negative sum of the products of the true label and the log of the predicted probability.
+     *
+     * Using a one-hot vector this formula could be simplified to: -ln(predicted[index].coerceAtLeast(1e-15)),
+     * where the index corresponds to the index of the 1 in the one-hot vector.
      */
     fun categoricalCrossEntropy(predicted: DoubleArray, actual: DoubleArray): Double {
         return -actual.zip(predicted) { target, pred ->
             target * ln(pred.coerceAtLeast(1e-15)) // Avoid log(0)
         }.sum()
+    }
+
+    /**
+     * Computes the gradient with respect to the predicted probabilities.
+     */
+    fun categoricalCrossEntropyDerivative(predicted: DoubleArray, actual: DoubleArray): DoubleArray {
+        return predicted.indices.map { i ->
+            val pred = predicted[i].coerceAtLeast(1e-15)  // Ensure no division by zero
+            if (actual[i] == 1.0) {
+                -1.0 / pred  // If y_i is 1, we compute -1 / p_i
+            } else {
+                0.0  // If y_i is 0, the derivative is 0
+            }
+        }.toDoubleArray()
     }
 
     /**
@@ -49,24 +66,12 @@ object LossFunctions {
         // Ensure the sizes of predicted and actual match
         require(predicted.size == actual.size) { "Batch sizes of predicted and actual must match" }
 
-        var totalLoss = 0.0
-        for ((predRow, targetRow) in predicted.zip(actual)) {
-            totalLoss += -targetRow.zip(predRow) { target, pred ->
+        val totalLoss = predicted.indices.sumOf { batchIndex ->
+            -actual[batchIndex].zip(predicted[batchIndex]) { target, pred ->
                 target * ln(pred.coerceAtLeast(1e-15)) // Avoid log(0)
             }.sum()
         }
-        return totalLoss / predicted.size // Average loss across the batch
-    }
-
-    fun categoricalCrossEntropyDerivative(predicted: DoubleArray, actual: DoubleArray): DoubleArray {
-        return predicted.indices.map { i ->
-            val pred = predicted[i].coerceAtLeast(1e-15)  // Ensure no division by zero
-            if (actual[i] == 1.0) {
-                -1.0 / pred  // If y_i is 1, we compute -1 / p_i
-            } else {
-                0.0  // If y_i is 0, the derivative is 0
-            }
-        }.toDoubleArray()
+        return totalLoss / predicted.size // Return average loss across the batch
     }
 
     fun categoricalCrossEntropyDerivativeBatch(
@@ -78,7 +83,7 @@ object LossFunctions {
 
         return Array(predicted.size) { batchIndex ->
             predicted[batchIndex].indices.map { i ->
-                val pred = predicted[batchIndex][i].coerceAtLeast(1e-15) // Ensure no division by zero
+                val pred = predicted[batchIndex][i].coerceAtLeast(1e-15) // Avoid division by zero
                 if (actual[batchIndex][i] == 1.0) {
                     -1.0 / pred // If y_i is 1, compute -1 / p_i
                 } else {
@@ -98,6 +103,12 @@ object LossFunctions {
         }.average()
     }
 
+    fun meanSquaredErrorDerivative(predicted: DoubleArray, actual: DoubleArray): DoubleArray {
+        return predicted.indices.map { i ->
+            -2 * (actual[i] - predicted[i])
+        }.toDoubleArray()
+    }
+
     /**
      * Predicted and actual are 2D arrays.
      *
@@ -108,12 +119,25 @@ object LossFunctions {
      * It's assumed that predicted and actual are the same size, with dimensions [batch_size][num_classes].
      */
     fun meanSquaredErrorBatch(predicted: Array<DoubleArray>, actual: Array<DoubleArray>): Double {
-        var totalLoss = 0.0
-        for ((predRow, targetRow) in predicted.zip(actual)) {
-            totalLoss += targetRow.zip(predRow) { target, pred ->
+        // Ensure the sizes of predicted and actual match
+        require(predicted.size == actual.size) { "Batch sizes of predicted and actual must match" }
+
+        val totalLoss = predicted.indices.sumOf { batchIndex ->
+            actual[batchIndex].zip(predicted[batchIndex]) { target, pred ->
                 (target - pred).pow(2)
-            }.average() // MSE for each input
+            }.average()
         }
-        return totalLoss / predicted.size // Average MSE across the batch
+        return totalLoss / predicted.size // Average loss across the batch
+    }
+
+    fun meanSquaredErrorDerivativeBatch(predicted: Array<DoubleArray>, actual: Array<DoubleArray>): Array<DoubleArray> {
+        // Ensure the sizes of predicted and actual match
+        require(predicted.size == actual.size) { "Batch sizes of predicted and actual must match" }
+
+        return Array(predicted.size) { batchIndex ->
+            predicted[batchIndex].indices.map { i ->
+                -2 * (actual[batchIndex][i] - predicted[batchIndex][i])
+            }.toDoubleArray()
+        }
     }
 }

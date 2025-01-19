@@ -1,6 +1,6 @@
 package deeplearning.activation
 
-import deeplearning.util.Math
+import kotlin.math.exp
 
 /**
  * Granular - can optimize well with it.
@@ -9,22 +9,27 @@ import deeplearning.util.Math
 data object Sigmoid : ActivationFunction {
 
     override fun forward(input: DoubleArray): DoubleArray {
-        return input.map { Math.sigmoid(it) }.toDoubleArray()
+        return input.map { sigmoid(it) }.toDoubleArray()
     }
 
     override fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
-        return inputs.map { dim1 -> dim1.map { dim2 -> Math.sigmoid(dim2) }.toDoubleArray() }.toTypedArray()
+        return inputs.map { dim1 -> dim1.map { dim2 -> sigmoid(dim2) }.toDoubleArray() }.toTypedArray()
     }
 
     override fun backward(input: DoubleArray): DoubleArray {
-        return input.map { Math.sigmoidDerivative(it) }.toDoubleArray()
+        return input.map { sigmoidDerivative(it) }.toDoubleArray()
     }
 
     override fun backward(inputs: Array<DoubleArray>): Array<DoubleArray> {
-        return inputs.map { dim1 ->
-            dim1.map { dim2 ->
-                Math.sigmoidDerivative(dim2)
-            }.toDoubleArray()
-        }.toTypedArray()
+        return inputs.map { dim1 -> dim1.map { dim2 -> sigmoidDerivative(dim2) }.toDoubleArray() }.toTypedArray()
+    }
+
+    // Math
+
+    private fun sigmoid(x: Double): Double = 1.0 / (1.0 + exp(-x))
+
+    private fun sigmoidDerivative(x: Double): Double {
+        val sig = sigmoid(x)
+        return sig * (1 - sig)
     }
 }
