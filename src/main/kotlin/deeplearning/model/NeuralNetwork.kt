@@ -35,4 +35,20 @@ class NeuralNetwork(
         }
         return output
     }
+
+    fun backward(lossGradient: DoubleArray): DoubleArray {
+        var gradient = lossGradient
+        for (layer in layers.reversed()) {
+            gradient = layer.backward(gradient)
+        }
+        return gradient
+    }
+
+    fun backward(lossGradients: Array<DoubleArray>): Array<DoubleArray> {
+        var gradients = lossGradients
+        for (layer in layers.reversed()) {
+            gradients = layer.backward(gradients)
+        }
+        return gradients
+    }
 }

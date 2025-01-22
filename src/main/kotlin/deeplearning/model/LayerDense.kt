@@ -1,5 +1,6 @@
 package deeplearning.model
 
+import deeplearning.LEARNING_RATE
 import deeplearning.activation.ActivationFunction
 import deeplearning.activation.BackwardPropagationFunction
 import deeplearning.activation.ForwardPropagationFunction
@@ -12,6 +13,9 @@ class LayerDense(
     override val activationFunctionDerivative: BackwardPropagationFunction,
     private val verifyInputs: Boolean = true
 ) : Layer {
+
+    private var input: DoubleArray = doubleArrayOf()
+    private var inputs: Array<DoubleArray> = arrayOf(doubleArrayOf())
 
     constructor(
         neurons: Array<Neuron>,
@@ -33,6 +37,7 @@ class LayerDense(
 
     override fun forward(input: DoubleArray): DoubleArray {
         verifyInput(input)
+        this.input = input
         val output = multiply(
             input = input,
             weights = weights,
@@ -43,6 +48,7 @@ class LayerDense(
 
     override fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
         verifyInputs(inputs)
+        this.inputs = inputs
         val output = multiply(
             inputs = inputs,
             weights = weights,
@@ -51,12 +57,76 @@ class LayerDense(
         return activationFunction.forward(output)
     }
 
-    override fun backward(input: DoubleArray): DoubleArray {
-        TODO("Not yet implemented")
+    override fun backward(lossGradient: DoubleArray): DoubleArray {
+        // Compute activation gradient
+        val activationGradient = activationFunctionDerivative.backward(lossGradient)
+
+        // Initialize arrays for the previous layer's deltas
+        val prevDelta = DoubleArray(weights[0].size)
+
+        // Update gradients for weights and biases
+        for (n in neurons.indices) {
+            for (j in weights[n].indices) {
+                weights[n][j] -= input[j] * activationGradient[n] * LEARNING_RATE
+                prevDelta[j] += weights[n][j] * activationGradient[n]
+            }
+            neurons[n].bias -= activationGradient[n] * LEARNING_RATE
+        }
+
+        return prevDelta
     }
 
-    override fun backward(inputs: Array<DoubleArray>): Array<DoubleArray> {
-        TODO("Not yet implemented")
+    override fun backward(lossGradients: Array<DoubleArray>): Array<DoubleArray> {
+        val batchSize = inputs.size
+
+        // Initialize gradient accumulators
+        val weightGradients = Array(weights.size) { DoubleArray(weights[0].size) }
+        val biasGradients = DoubleArray(neurons.size)
+        val prevDeltas = Array(batchSize) { DoubleArray(weights[0].size) }
+
+        // Loop through each input in the batch
+        for (i in inputs.indices) {
+            val input = inputs[i]
+            val lossGradient = lossGradients[i]
+
+            // Compute activation gradient for this data point
+            val activationGradient = activationFunctionDerivative.backward(lossGradient)
+
+            // Update gradients for weights and biases
+            for (n in neurons.indices) {
+                for (j in weights[n].indices) {
+                    weightGradients[n][j] += input[j] * activationGradient[n]
+                }
+                biasGradients[n] += activationGradient[n]
+            }
+
+            // Compute previous deltas for this data point
+            for (n in neurons.indices) {
+                for (j in weights[n].indices) {
+                    prevDeltas[i][j] += weights[n][j] * activationGradient[n]
+                }
+            }
+        }
+
+        // Average gradients over the batch
+        for (n in weightGradients.indices) {
+            for (j in weightGradients[n].indices) {
+                weightGradients[n][j] = weightGradients[n][j] / batchSize
+            }
+        }
+        for (n in biasGradients.indices) {
+            biasGradients[n] = biasGradients[n] / batchSize
+        }
+
+        // Update weights and biases
+        for (n in neurons.indices) {
+            for (j in weights[n].indices) {
+                weights[n][j] -= weightGradients[n][j] * LEARNING_RATE
+            }
+            neurons[n].bias -= biasGradients[n] * LEARNING_RATE
+        }
+
+        return prevDeltas
     }
 
     private fun verifyInput(input: DoubleArray) {

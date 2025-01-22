@@ -94,6 +94,29 @@ object LossFunctions {
     }
 
     /**
+     * The loss gradient is the key ingredient for the backward pass.
+     * It is used to update the weights in the network so that the predictions get closer to the targets over time.
+     */
+    fun categoricalCrossEntropyGradient(predicted: DoubleArray, actual: DoubleArray): DoubleArray {
+        val epsilon = 1e-15 // To avoid division by zero
+        return predicted.indices.map { i ->
+            -actual[i] / (predicted[i] + epsilon)
+        }.toDoubleArray()
+    }
+
+    fun categoricalCrossEntropyGradientBatch(
+        predicted: Array<DoubleArray>,
+        actual: Array<DoubleArray>
+    ): Array<DoubleArray> {
+        val epsilon = 1e-15 // To avoid division by zero
+        return Array(predicted.size) { i ->
+            DoubleArray(predicted[i].size) { j ->
+                -actual[i][j] / (predicted[i][j] + epsilon)
+            }
+        }
+    }
+
+    /**
      * Mean Squared Error (MSE)
      * Used for regression problems.
      */
