@@ -4,6 +4,7 @@ import deeplearning.activation.ReLU
 import deeplearning.activation.Softmax
 import deeplearning.loss.LossFunctions
 import deeplearning.model.LayerDense
+import deeplearning.model.LayerType
 import deeplearning.model.NeuralNetwork
 import deeplearning.model.Neuron
 
@@ -14,6 +15,8 @@ fun testNeuralNetwork() {
     nn.addLayers(
         // Input Layer
         LayerDense(
+            layerType = LayerType.INPUT,
+            activationFunction = ReLU,
             neurons = arrayOf(
                 Neuron(2.0),
                 Neuron(3.0),
@@ -23,11 +26,12 @@ fun testNeuralNetwork() {
                 doubleArrayOf(0.2, 0.8, -0.5, 1.0),
                 doubleArrayOf(0.5, -0.91, 0.26, -0.5),
                 doubleArrayOf(-0.26, -0.27, 0.17, 0.87)
-            ),
-            activationFunction = ReLU
+            )
         ),
         // Hidden Layer(s)
         LayerDense(
+            layerType = LayerType.HIDDEN,
+            activationFunction = ReLU,
             neurons = arrayOf(
                 Neuron(1.2),
                 Neuron(2.2),
@@ -37,11 +41,12 @@ fun testNeuralNetwork() {
                 doubleArrayOf(0.2, 0.8, -0.5),
                 doubleArrayOf(0.5, -0.91, 0.26),
                 doubleArrayOf(-0.26, -0.27, 0.17)
-            ),
-            activationFunction = ReLU
+            )
         ),
         // Output Layer
         LayerDense(
+            layerType = LayerType.OUTPUT,
+            activationFunction = Softmax(),
             neurons = arrayOf(
                 Neuron(-1),
                 Neuron(2),
@@ -51,8 +56,7 @@ fun testNeuralNetwork() {
                 doubleArrayOf(0.1, -0.14, 0.5),
                 doubleArrayOf(-0.5, 0.12, -0.33),
                 doubleArrayOf(-0.44, 0.73, -0.13)
-            ),
-            activationFunction = Softmax()
+            )
         )
     )
 

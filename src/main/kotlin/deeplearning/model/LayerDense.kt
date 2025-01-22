@@ -7,10 +7,11 @@ import deeplearning.activation.ForwardPropagationFunction
 import deeplearning.util.Matrix.multiply
 
 class LayerDense(
-    val neurons: Array<Neuron>,
-    val weights: Array<DoubleArray>,
+    override val layerType: LayerType,
     override val activationFunction: ForwardPropagationFunction,
     override val activationFunctionDerivative: BackwardPropagationFunction,
+    private val neurons: Array<Neuron>,
+    private val weights: Array<DoubleArray>,
     private val verifyInputs: Boolean = true
 ) : Layer {
 
@@ -18,11 +19,12 @@ class LayerDense(
     private var inputs: Array<DoubleArray> = arrayOf(doubleArrayOf())
 
     constructor(
+        layerType: LayerType,
+        activationFunction: ActivationFunction,
         neurons: Array<Neuron>,
         weights: Array<DoubleArray>,
-        activationFunction: ActivationFunction,
         verifyArrays: Boolean = true
-    ) : this(neurons, weights, activationFunction, activationFunction, verifyArrays)
+    ) : this(layerType, activationFunction, activationFunction, neurons, weights, verifyArrays)
 
     init {
         if (verifyInputs) {

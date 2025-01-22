@@ -26,6 +26,8 @@ import deeplearning.activation.ForwardPropagationFunction
  * These gradients are used to update the weights during the optimization step (e.g., gradient descent).
  */
 interface Layer {
+    val layerType: LayerType
+
     val activationFunction: ForwardPropagationFunction
     val activationFunctionDerivative: BackwardPropagationFunction
 
