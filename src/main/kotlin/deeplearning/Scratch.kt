@@ -2,51 +2,46 @@ package deeplearning
 
 import deeplearning.activation.ReLU
 import deeplearning.activation.Softmax
-import deeplearning.loss.LossFunctions
-import deeplearning.model.LayerDense
-import deeplearning.model.LayerType
-import deeplearning.model.NeuralNetwork
-import deeplearning.model.Neuron
-
-const val LEARNING_RATE = 0.01
+import deeplearning.model.*
 
 fun testNeuralNetwork() {
-    val nn = NeuralNetwork()
+    val nn = NeuralNetwork(tag = "training")
     nn.addLayers(
         // Input Layer
         LayerDense(
             layerType = LayerType.INPUT,
-            activationFunction = ReLU,
             neurons = arrayOf(
                 Neuron(2.0),
                 Neuron(3.0),
-                Neuron(0.5)
+                Neuron(0.5),
+                Neuron(0.1),
             ),
             weights = arrayOf(
                 doubleArrayOf(0.2, 0.8, -0.5, 1.0),
                 doubleArrayOf(0.5, -0.91, 0.26, -0.5),
+                doubleArrayOf(-0.26, -0.27, 0.17, 0.87),
                 doubleArrayOf(-0.26, -0.27, 0.17, 0.87)
-            )
+            ),
+            activationFunction = ReLU
         ),
         // Hidden Layer(s)
         LayerDense(
             layerType = LayerType.HIDDEN,
-            activationFunction = ReLU,
             neurons = arrayOf(
                 Neuron(1.2),
                 Neuron(2.2),
                 Neuron(0.5)
             ),
             weights = arrayOf(
-                doubleArrayOf(0.2, 0.8, -0.5),
-                doubleArrayOf(0.5, -0.91, 0.26),
-                doubleArrayOf(-0.26, -0.27, 0.17)
-            )
+                doubleArrayOf(0.2, 0.8, -0.5, 1.2),
+                doubleArrayOf(0.5, -0.91, 0.26, 3.2),
+                doubleArrayOf(-0.26, -0.27, 0.17, 1.2)
+            ),
+            activationFunction = ReLU
         ),
         // Output Layer
         LayerDense(
             layerType = LayerType.OUTPUT,
-            activationFunction = Softmax(),
             neurons = arrayOf(
                 Neuron(-1),
                 Neuron(2),
@@ -56,7 +51,8 @@ fun testNeuralNetwork() {
                 doubleArrayOf(0.1, -0.14, 0.5),
                 doubleArrayOf(-0.5, 0.12, -0.33),
                 doubleArrayOf(-0.44, 0.73, -0.13)
-            )
+            ),
+            activationFunction = Softmax()
         )
     )
 
@@ -75,26 +71,15 @@ fun testNeuralNetwork() {
         doubleArrayOf(0.0, 0.0, 1.0)
     )
 
-    val epochs = 1000
+    val epochs = 512
 
-    for (i in 0 until epochs) {
-//        val output = nn.forward(input)
-        val output = nn.forward(inputs)
+    nn.train(epochs = epochs, input = input, target = target)
+//    nn.train(epochs = epochs, inputs = inputs, targets = targets)
 
-//        println(output.joinToString(", "))
-        output.forEach { row -> println(row.joinToString(", ")) }
+    nn.cacheAsJson()
 
-//        val loss = LossFunctions.categoricalCrossEntropy(predicted = output, actual = target)
-//        println("Epoch $i, Loss $loss")
-        val losses = LossFunctions.categoricalCrossEntropyBatch(predicted = output, actual = targets)
-        println("Epoch $i, Loss $losses")
-
-//        val lossGradient = LossFunctions.categoricalCrossEntropyGradient(predicted = output, actual = target)
-        val lossGradients = LossFunctions.categoricalCrossEntropyGradientBatch(predicted = output, actual = targets)
-
-//        val gradients = nn.backward(lossGradient)
-        val gradients = nn.backward(lossGradients)
-
-//        sgdUpdate(weights, biases, gradients, learningRate) // Update weights/biases
-    }
+    val nn2 = NeuralNetwork(tag = "training")
+    nn2.restoreFromJson()
+    nn2.cacheAsJson(fileName = "training2")
+    println()
 }

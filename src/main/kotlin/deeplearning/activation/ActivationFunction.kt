@@ -9,4 +9,12 @@ package deeplearning.activation
  * The error gradient at each neuron depends on the rate of change of its activation function
  * (i.e., how sensitive the output is to changes in input).
  */
-sealed interface ActivationFunction : ForwardPropagationFunction, BackwardPropagationFunction
+interface ActivationFunction {
+    val type: ActivationFunctionType
+
+    fun forward(input: DoubleArray): DoubleArray
+    fun forward(inputs: Array<DoubleArray>): Array<DoubleArray>
+
+    fun backward(input: DoubleArray): DoubleArray
+    fun backward(inputs: Array<DoubleArray>): Array<DoubleArray>
+}

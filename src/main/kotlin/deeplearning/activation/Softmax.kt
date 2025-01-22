@@ -17,6 +17,8 @@ import kotlin.math.exp
  */
 data class Softmax(private val overflowGuard: Boolean = true) : ActivationFunction {
 
+    override val type: ActivationFunctionType = ActivationFunctionType.Softmax
+
     override fun forward(input: DoubleArray): DoubleArray {
         return softmax(input)
     }

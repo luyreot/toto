@@ -1,7 +1,6 @@
 package deeplearning.model
 
-import deeplearning.activation.BackwardPropagationFunction
-import deeplearning.activation.ForwardPropagationFunction
+import deeplearning.activation.ActivationFunction
 
 /**
  * Good practices.
@@ -28,8 +27,14 @@ import deeplearning.activation.ForwardPropagationFunction
 interface Layer {
     val layerType: LayerType
 
-    val activationFunction: ForwardPropagationFunction
-    val activationFunctionDerivative: BackwardPropagationFunction
+    var learningRate: Double
+
+    val neurons: Array<Neuron>
+    val weights: Array<DoubleArray>
+    val verifyInputs: Boolean
+
+    val activationFunction: ActivationFunction
+    val activationFunctionDerivative: ActivationFunction
 
     fun forward(input: DoubleArray): DoubleArray
     fun forward(inputs: Array<DoubleArray>): Array<DoubleArray>

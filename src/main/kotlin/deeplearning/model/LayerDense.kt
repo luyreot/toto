@@ -1,18 +1,16 @@
 package deeplearning.model
 
-import deeplearning.LEARNING_RATE
 import deeplearning.activation.ActivationFunction
-import deeplearning.activation.BackwardPropagationFunction
-import deeplearning.activation.ForwardPropagationFunction
 import deeplearning.util.Matrix.multiply
 
 class LayerDense(
     override val layerType: LayerType,
-    override val activationFunction: ForwardPropagationFunction,
-    override val activationFunctionDerivative: BackwardPropagationFunction,
-    private val neurons: Array<Neuron>,
-    private val weights: Array<DoubleArray>,
-    private val verifyInputs: Boolean = true
+    override val neurons: Array<Neuron>,
+    override val weights: Array<DoubleArray>,
+    override val verifyInputs: Boolean = true,
+    override val activationFunction: ActivationFunction,
+    override val activationFunctionDerivative: ActivationFunction,
+    override var learningRate: Double = 0.0
 ) : Layer {
 
     private var input: DoubleArray = doubleArrayOf()
@@ -24,7 +22,7 @@ class LayerDense(
         neurons: Array<Neuron>,
         weights: Array<DoubleArray>,
         verifyArrays: Boolean = true
-    ) : this(layerType, activationFunction, activationFunction, neurons, weights, verifyArrays)
+    ) : this(layerType, neurons, weights, verifyArrays, activationFunction, activationFunction)
 
     init {
         if (verifyInputs) {
@@ -45,7 +43,8 @@ class LayerDense(
             weights = weights,
             biases = neurons.map { it.bias }.toDoubleArray()
         )
-        return activationFunction.forward(output)
+        val activation = activationFunction.forward(output)
+        return activation
     }
 
     override fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
@@ -56,7 +55,8 @@ class LayerDense(
             weights = weights,
             biases = neurons.map { it.bias }.toDoubleArray()
         )
-        return activationFunction.forward(output)
+        val activation = activationFunction.forward(output)
+        return activation
     }
 
     override fun backward(lossGradient: DoubleArray): DoubleArray {
@@ -69,10 +69,10 @@ class LayerDense(
         // Update gradients for weights and biases
         for (n in neurons.indices) {
             for (j in weights[n].indices) {
-                weights[n][j] -= input[j] * activationGradient[n] * LEARNING_RATE
+                weights[n][j] -= input[j] * activationGradient[n] * learningRate
                 prevDelta[j] += weights[n][j] * activationGradient[n]
             }
-            neurons[n].bias -= activationGradient[n] * LEARNING_RATE
+            neurons[n].bias -= activationGradient[n] * learningRate
         }
 
         return prevDelta
@@ -123,9 +123,9 @@ class LayerDense(
         // Update weights and biases
         for (n in neurons.indices) {
             for (j in weights[n].indices) {
-                weights[n][j] -= weightGradients[n][j] * LEARNING_RATE
+                weights[n][j] -= weightGradients[n][j] * learningRate
             }
-            neurons[n].bias -= biasGradients[n] * LEARNING_RATE
+            neurons[n].bias -= biasGradients[n] * learningRate
         }
 
         return prevDeltas

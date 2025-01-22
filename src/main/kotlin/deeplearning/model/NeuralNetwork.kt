@@ -1,5 +1,7 @@
 package deeplearning.model
 
+import deeplearning.loss.LossFunctions
+
 /**
  * Goal is to:
  * - accept various types of data, including probabilities and occurrences of numbers.
@@ -9,16 +11,69 @@ package deeplearning.model
  * depending on how the data is structured and the patterns that will be learnt.
  */
 class NeuralNetwork(
+    val tag: String,
     val layers: MutableList<Layer> = mutableListOf()
 ) {
 
+    var learningRate: Double = 0.01
+    var loss: Double = 0.0
+    var epochs: Int = 0
+
     fun addLayer(layer: Layer) {
+        layer.learningRate = learningRate
         layers.add(layer)
     }
 
     fun addLayers(vararg layers: Layer) {
+        layers.forEach { it.learningRate = learningRate }
         this.layers.addAll(layers)
     }
+
+    // region training
+
+    fun train(
+        epochs: Int,
+        input: DoubleArray,
+        target: DoubleArray
+    ) {
+        this.loss = 0.0
+        this.epochs = epochs
+
+        for (i in 0..epochs) {
+            val output = forward(input)
+            println(output.joinToString(", "))
+
+            loss = LossFunctions.categoricalCrossEntropy(predicted = output, actual = target)
+            println("Epoch $i, Loss $loss")
+
+            val lossGradient = LossFunctions.categoricalCrossEntropyGradient(predicted = output, actual = target)
+            backward(lossGradient)
+        }
+    }
+
+    fun train(
+        epochs: Int,
+        inputs: Array<DoubleArray>,
+        targets: Array<DoubleArray>
+    ) {
+        this.loss = 0.0
+        this.epochs = epochs
+
+        for (i in 0..epochs) {
+            val output = forward(inputs)
+            output.forEach { row -> println(row.joinToString(", ")) }
+
+            loss = LossFunctions.categoricalCrossEntropyBatch(predicted = output, actual = targets)
+            println("Epoch $i, Loss $loss")
+
+            val lossGradients = LossFunctions.categoricalCrossEntropyGradientBatch(predicted = output, actual = targets)
+            backward(lossGradients)
+        }
+    }
+
+    // endregion training
+
+    // region forward propagation
 
     fun forward(input: DoubleArray): DoubleArray {
         var output = input
@@ -36,6 +91,10 @@ class NeuralNetwork(
         return output
     }
 
+    // endregion forward propagation
+
+    // region back propagation
+
     fun backward(lossGradient: DoubleArray): DoubleArray {
         var gradient = lossGradient
         for (layer in layers.reversed()) {
@@ -51,4 +110,6 @@ class NeuralNetwork(
         }
         return gradients
     }
+
+    // region back propagation
 }

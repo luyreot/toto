@@ -17,6 +17,8 @@ import kotlin.math.max
  */
 data object ReLU : ActivationFunction {
 
+    override val type: ActivationFunctionType = ActivationFunctionType.ReLU
+
     override fun forward(input: DoubleArray): DoubleArray {
         return input.map { relu(it) }.toDoubleArray()
     }

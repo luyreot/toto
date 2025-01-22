@@ -8,6 +8,8 @@ import kotlin.math.exp
  */
 data object Sigmoid : ActivationFunction {
 
+    override val type: ActivationFunctionType = ActivationFunctionType.Sigmoid
+
     override fun forward(input: DoubleArray): DoubleArray {
         return input.map { sigmoid(it) }.toDoubleArray()
     }
