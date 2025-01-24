@@ -1,5 +1,10 @@
 package deeplearning.model
 
 enum class LayerType {
-    INPUT, HIDDEN, OUTPUT
+    /**
+     * Passes the inputs over to the next layer without performing any operations.
+     */
+    INPUT,
+    HIDDEN,
+    OUTPUT
 }

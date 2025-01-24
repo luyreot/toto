@@ -2,14 +2,15 @@ package deeplearning.model
 
 import deeplearning.activation.ActivationFunction
 import deeplearning.util.Matrix.multiply
+import deeplearning.util.Util.generateRandomWeights
 
 class LayerDense(
     override val layerType: LayerType,
     override val neurons: Array<Neuron>,
     override val weights: Array<DoubleArray>,
-    override val verifyInputs: Boolean = true,
     override val activationFunction: ActivationFunction,
     override val activationFunctionDerivative: ActivationFunction,
+    override val verifyInputs: Boolean = true,
     override var learningRate: Double = 0.0
 ) : Layer {
 
@@ -20,9 +21,21 @@ class LayerDense(
         layerType: LayerType,
         activationFunction: ActivationFunction,
         neurons: Array<Neuron>,
-        weights: Array<DoubleArray>,
-        verifyArrays: Boolean = true
-    ) : this(layerType, neurons, weights, verifyArrays, activationFunction, activationFunction)
+        weights: Array<DoubleArray>
+    ) : this(layerType, neurons, weights, activationFunction, activationFunction)
+
+    constructor(
+        layerType: LayerType,
+        activationFunction: ActivationFunction,
+        numNeurons: Int,
+        numInputs: Int
+    ) : this(
+        layerType,
+        Array<Neuron>(numNeurons) { Neuron() },
+        generateRandomWeights(numNeurons = numNeurons, numInputs = numInputs),
+        activationFunction,
+        activationFunction
+    )
 
     init {
         if (verifyInputs) {

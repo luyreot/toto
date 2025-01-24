@@ -31,6 +31,11 @@ class NeuralNetwork(
 
     // region training
 
+    fun updateLearningRate(rate: Double) {
+        learningRate = rate
+        layers.forEach { it.learningRate = rate }
+    }
+
     fun train(
         epochs: Int,
         input: DoubleArray,
