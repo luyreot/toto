@@ -1,12 +1,12 @@
-package data
+package myalgo
 
-import model.Drawing
-import model.UniquePattern
+import myalgo.model.Drawing
+import myalgo.model.UniquePattern
 
 /**
- * Track the intervals at which each group pattern has occurred.
+ * Track the intervals at which each odd/even pattern has occurred.
  */
-class GroupPatternIntervals(
+class OddEvenPatternIntervals(
     private val patterns: Set<UniquePattern>,
     private val drawings: List<Drawing>
 ) {
@@ -22,7 +22,7 @@ class GroupPatternIntervals(
     private fun setIntervals() {
         patterns.forEach { pattern ->
             val indexes = drawings.mapIndexed { index, drawing ->
-                if (drawing.groupPattern.contentEquals(pattern.array)) index else null
+                if (drawing.oddEvenPattern.contentEquals(pattern.array)) index else null
             }.filterNotNull()
 
             _intervals[pattern] = mutableMapOf()

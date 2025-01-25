@@ -1,12 +1,12 @@
-package data
+package myalgo
 
-import model.Drawing
-import model.UniquePattern
+import myalgo.model.Drawing
+import myalgo.model.UniquePattern
 
 /**
- * Track how often each low/high pattern has been drawn.
+ * Track how often each group pattern has been drawn.
  */
-class LowHighPatterns(
+class GroupPatterns(
     private val drawings: List<Drawing>
 ) {
 
@@ -15,16 +15,16 @@ class LowHighPatterns(
     private val _patterns = mutableMapOf<UniquePattern, Int>()
 
     init {
-        setLowHighPatternOccurrences()
+        setGroupPatternOccurrences()
     }
 
-    private fun setLowHighPatternOccurrences() {
+    private fun setGroupPatternOccurrences() {
         drawings
-            .map { drawing -> UniquePattern(drawing.lowHighPattern) }
+            .map { drawing -> UniquePattern(drawing.groupPattern) }
             .toSet()
             .forEach { pattern ->
                 _patterns[pattern] = drawings.count { drawing ->
-                    drawing.lowHighPattern.contentEquals(pattern.array)
+                    drawing.groupPattern.contentEquals(pattern.array)
                 }
             }
     }

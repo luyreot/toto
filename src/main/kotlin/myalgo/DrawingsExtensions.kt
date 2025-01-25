@@ -1,7 +1,7 @@
-package extension
+package myalgo
 
-import model.Drawing
-import model.UniqueDrawing
+import myalgo.model.Drawing
+import myalgo.model.UniqueDrawing
 
 fun List<Drawing>.filterDrawingsAfterYear(year: Int): List<Drawing> = filter {
     it.year >= year

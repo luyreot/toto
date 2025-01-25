@@ -1,4 +1,4 @@
-package model
+package myalgo.model
 
 data class UniqueIntArray(val numbers: IntArray) {
 

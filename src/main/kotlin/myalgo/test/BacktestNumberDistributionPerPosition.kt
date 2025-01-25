@@ -1,7 +1,7 @@
-package test
+package myalgo.test
 
-import algo.PredictViaNumberDistributionPerPosition
-import data.Drawings
+import myalgo.PredictViaNumberDistributionPerPosition
+import myalgo.Drawings
 import model.TotoType
 import util.Constants
 

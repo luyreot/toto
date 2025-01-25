@@ -1,12 +1,9 @@
-package algo
+package myalgo
 
-import data.Drawings
-import data.NumberDistributionPerPosition
-import data.SubsequentDrawingCombinations
 import extension.clear
-import model.Drawing
+import myalgo.model.Drawing
 import model.TotoType
-import model.UniqueIntArray
+import myalgo.model.UniqueIntArray
 import kotlin.random.Random
 
 class PredictViaNumberDistributionPerPosition(

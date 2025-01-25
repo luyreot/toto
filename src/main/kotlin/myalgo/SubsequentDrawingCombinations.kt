@@ -1,14 +1,14 @@
-package data
+package myalgo
 
-import model.Drawing
-import model.UniquePattern
+import myalgo.model.Drawing
+import myalgo.model.UniquePattern
 
 /**
- * Track correlations between numbers from the same drawings.
+ * Track correlations between numbers from subsequent drawings.
  * The [size] determines the size of the combination and how many numbers will be chained together.
  * Track how ofter a particular combination occurs.
  */
-class SameDrawingCombinations(
+class SubsequentDrawingCombinations(
     private val drawings: List<Drawing>,
     private val size: Int
 ) {
@@ -31,50 +31,57 @@ class SameDrawingCombinations(
     private fun createCombinations() {
         // Extract all drawings.
         val drawings = this.drawings.map { it.numbers }
-        drawings.forEach { drawing ->
-            // Generate and store the resulting sequences.
-            generateCombinations(drawing).forEach { sequence ->
-                combinations.merge(UniquePattern(sequence.toIntArray()), 1, Int::plus)
-            }
-        }
-        val sorted = combinations
-            .toList()
-            .sortedBy { (_, value) -> value }
-            .reversed()
-            .toMap()
-        combinations.clear()
-        combinations.putAll(sorted)
-    }
-
-    /**
-     * The method uses a helper function `generate` which is called recursively to create all possible combinations.
-     * When the size of the current combination matches the desired size, it is added to the combinations list.
-     * Otherwise, it continues to explore the array, including or excluding each element to generate all possible combinations.
-     */
-    private fun generateCombinations(drawing: IntArray): List<List<Int>> {
-        // List to store all the generated combinations.
-        val combinations = mutableListOf<List<Int>>()
-
-        // Recursive helper function to generate combinations.
-        fun generate(currentIndex: Int, currentCombination: List<Int>) {
-            // If the current combination size matches the desired size, add it to the list of combinations.
-            if (currentCombination.size == size) {
-                combinations.add(currentCombination)
+        // Control to know when to exit the for loop.
+        val control = size - 1
+        drawings.forEachIndexed { drawingIndex, _ ->
+            // We exit the loop when there are not enough drawings to create a combination.
+            if (drawingIndex + control >= drawings.size) {
+                val sorted = combinations
+                    .toList()
+                    .sortedBy { (_, value) -> value }
+                    .reversed()
+                    .toMap()
+                combinations.clear()
+                combinations.putAll(sorted)
                 return
             }
 
-            // Loop through the array starting from the current index.
-            for (i in currentIndex until drawing.size) {
-                // Recursively call the generate function with the next index and the updated combination.
-                generate(i + 1, currentCombination + drawing[i])
+            // Create arrays to store drawings from which the numbers will be extracted.
+            val array = Array(size) { intArrayOf() }
+
+            // Populate the array of arrays with the drawings.
+            for (i in 0 until size) {
+                val index = drawingIndex + i
+                array[i] = drawings[index]
+            }
+
+            // Generate and store the resulting sequences.
+            generateCombinations(array).forEach { sequence ->
+                combinations.merge(UniquePattern(sequence.toIntArray()), 1, Int::plus)
             }
         }
+    }
 
-        // Call the generate function to start generating combinations with an empty initial combination.
-        generate(0, emptyList())
+    fun generateCombinations(
+        array: Array<IntArray>,
+        currentIndex: Int = 0,
+        currentSequence: List<Int> = listOf()
+    ): List<List<Int>> {
+        // Exit when a number was extracted from each array.
+        // Return the extracted number sequence.
+        if (currentIndex == array.size) {
+            return listOf(currentSequence)
+        }
 
-        // Return the list of all generated combinations.
-        return combinations
+        // Get the array from which the number should be extracted.
+        val currentArray = array[currentIndex]
+        // Extract a number from the current array
+        return currentArray.flatMap { number ->
+            // Call the method with the same array of arrays,
+            // increment index by 1 in order to extract a number from the next sub-array
+            // and add the extracted number to the sequence.
+            generateCombinations(array, currentIndex + 1, currentSequence + number)
+        }
     }
 
     private fun calculateMediansAndMeans() {

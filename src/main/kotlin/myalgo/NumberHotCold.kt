@@ -1,6 +1,6 @@
-package data
+package myalgo
 
-import model.Drawing
+import myalgo.model.Drawing
 import model.TotoType
 import kotlin.math.pow
 import kotlin.math.sqrt

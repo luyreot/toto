@@ -1,7 +1,7 @@
-package data
+package myalgo
 
-import model.Drawing
-import model.UniquePattern
+import myalgo.model.Drawing
+import myalgo.model.UniquePattern
 
 /**
  * Track how often each odd/even pattern has been drawn.

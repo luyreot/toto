@@ -1,8 +1,7 @@
-package data
+package myalgo
 
-import extension.toUniqueDrawing
-import model.Drawing
 import model.TotoType
+import myalgo.model.Drawing
 import org.json.JSONArray
 import org.json.JSONObject
 import util.IO
@@ -50,7 +49,7 @@ class Drawings(
                         throw IllegalArgumentException("Drawing is not ${totoType.name}! Size is ${numbers.size}")
                     }
 
-                    if (numbers.any { totoType.isNumberValid.invoke(it).not() }) {
+                    if (numbers.any { isNumberValid(it).not() }) {
                         throw IllegalArgumentException("Illegal number for ${totoType.name}! - $numbers")
                     }
 
@@ -63,9 +62,9 @@ class Drawings(
                         year = file.name.toInt(),
                         issue = index + 1, // Skip adding 0 index issues
                         numbers = numbers,
-                        groupPattern = numbers.map { totoType.getNumberGroup.invoke(it) }.toIntArray(),
-                        lowHighPattern = numbers.map { totoType.getNumberLowHigh.invoke(it) }.toIntArray(),
-                        oddEvenPattern = numbers.map { totoType.getNumberOddEven.invoke(it) }.toIntArray()
+                        groupPattern = numbers.map { getNumberGroup(it) }.toIntArray(),
+                        lowHighPattern = numbers.map { getNumberLowHigh(it) }.toIntArray(),
+                        oddEvenPattern = numbers.map { getNumberOddEven(it) }.toIntArray()
                     ).let {
                         _drawings.add(it)
                     }
@@ -75,6 +74,30 @@ class Drawings(
             }
 
 //        println(yearDrawings)
+    }
+
+    private fun isNumberValid(num: Int): Boolean {
+        return num in 1..totoType.totalNumbers
+    }
+
+    private fun getNumberGroup(num: Int): Int {
+        return when (totoType) {
+            TotoType.T_6X49 -> num.div(10)
+            TotoType.T_6X42 -> num.div(8)
+            TotoType.T_5X35 -> num.div(8)
+        }
+    }
+
+    private fun getNumberLowHigh(num: Int): Int {
+        return when (totoType) {
+            TotoType.T_6X49 -> if (num <= 25) 0 else 1
+            TotoType.T_6X42 -> if (num <= 21) 0 else 1
+            TotoType.T_5X35 -> if (num <= 18) 0 else 1
+        }
+    }
+
+    private fun getNumberOddEven(num: Int): Int {
+        return if ((num and 1) == 0) 1 else 0
     }
 
     private fun printDuplicateDrawings() {

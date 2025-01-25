@@ -1,7 +1,7 @@
-package test
+package myalgo.test
 
-import data.CooccurrenceMatrix
-import data.Drawings
+import myalgo.CooccurrenceMatrix
+import myalgo.Drawings
 import model.TotoType
 
 class BacktestCooccurrenceMatrix(

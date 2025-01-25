@@ -1,4 +1,4 @@
-package model
+package myalgo.model
 
 class UniqueDrawing(
     year: Int,

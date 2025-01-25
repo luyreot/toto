@@ -1,4 +1,4 @@
-package model
+package myalgo.model
 
 import util.Logg
 
@@ -13,7 +13,7 @@ import util.Logg
  * 0 - odd, 1 - even
  * 5,14,22,25,34,49 -> 0,1,1,0,1,0
  *
- * An low/high pattern for a toto drawing will look like this:
+ * A low/high pattern for a toto drawing will look like this:
  * 0 - <= 25, 1 - > 25 (when the toto type is 6x49)
  * 5,14,22,25,34,49 -> 0,0,0,0,1,1
  *

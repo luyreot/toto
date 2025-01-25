@@ -1,6 +1,6 @@
-package test
+package myalgo.test
 
-import data.Drawings
+import myalgo.Drawings
 import model.TotoType
 
 class BackTestNumberOccurrencesAgainstPreviousDrawings {
