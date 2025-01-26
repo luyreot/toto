@@ -8,10 +8,11 @@ import util.IO
 // Network
 private const val KEY_LEARNING_RATE = "learningRate"
 private const val KEY_LOSS = "loss"
-private const val KEY_EPOCHS = "epochs"
+private const val KEY_EPOCH = "epoch"
 private const val KEY_LAYERS = "layers"
 
 // Layer
+private const val KEY_LAYER_TAG = "tag"
 private const val KEY_LAYER_TYPE = "type"
 private const val KEY_BIASES = "biases"
 private const val KEY_WEIGHTS = "weights"
@@ -19,13 +20,14 @@ private const val KEY_ACTIVATION_FUNCTION = "activationFunction"
 private const val KEY_ACTIVATION_FUNCTION_DERIVATIVE = "activationFunctionDerivative"
 private const val KEY_LAYER_LEARNING_RATE = "layerLearningRate"
 
-fun NeuralNetwork.cacheAsJson(fileName: String = tag) {
+fun NeuralNetwork.cacheAsJson(fileName: String = label) {
     val json = JSONObject()
 
     val jsonArrLayers = JSONArray()
     layers.forEach { layer ->
         val jsonLayer = JSONObject()
 
+        jsonLayer.put(KEY_LAYER_TAG, layer.tag)
         jsonLayer.put(KEY_LAYER_TYPE, layer.layerType.name)
 
         val jsonArrBiases = JSONArray()
@@ -51,7 +53,7 @@ fun NeuralNetwork.cacheAsJson(fileName: String = tag) {
     json.put(KEY_LAYERS, jsonArrLayers)
     json.put(KEY_LEARNING_RATE, learningRate)
     json.put(KEY_LOSS, loss)
-    json.put(KEY_EPOCHS, epochs)
+    json.put(KEY_EPOCH, epoch)
 
     IO.saveTxtFile(
         fileName = "files/nn/$fileName.json",
@@ -59,18 +61,19 @@ fun NeuralNetwork.cacheAsJson(fileName: String = tag) {
     )
 }
 
-fun NeuralNetwork.restoreFromJson(fileName: String = tag) {
+fun NeuralNetwork.restoreFromJson(fileName: String = label) {
     val fileContents = IO.getTxtFileContents(fileName = "files/nn/$fileName.json")
     val json = JSONObject(fileContents.first())
 
     this.learningRate = json.getDouble(KEY_LEARNING_RATE)
     this.loss = json.getDouble(KEY_LOSS)
-    this.epochs = json.getInt(KEY_EPOCHS)
+    this.epoch = json.getInt(KEY_EPOCH)
 
     this.layers.clear()
     val jsonArrLayers = json.getJSONArray(KEY_LAYERS)
     this.layers.addAll(
         jsonArrLayers.map { JSONObject(it.toString()) }.map { jsonLayer ->
+            val layerTag = jsonLayer.getString(KEY_LAYER_TAG)
             val layerType = LayerType.valueOf(jsonLayer.getString(KEY_LAYER_TYPE))
 
             val neurons = jsonLayer.getJSONArray(KEY_BIASES)
@@ -98,6 +101,7 @@ fun NeuralNetwork.restoreFromJson(fileName: String = tag) {
             val learningRate = jsonLayer.getDouble(KEY_LAYER_LEARNING_RATE)
 
             LayerDense(
+                tag = layerTag,
                 layerType = layerType,
                 neurons = neurons,
                 weights = weights.toTypedArray(),

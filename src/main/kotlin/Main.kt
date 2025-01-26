@@ -1,5 +1,5 @@
 import crawler.WebCrawler
-import deeplearning.testNeuralNetwork
+import deeplearning.trainNeuralNetwork
 import model.TotoType
 import myalgo.Drawings
 import myalgo.predictViaNumberDistributionPerPosition
@@ -23,12 +23,13 @@ object Main {
         }
 
         val totoType = TotoType.T_6X49
-        val allDrawings = Drawings(totoType, 0)
 
         if (deepLearning) {
-            testNeuralNetwork()
+            trainNeuralNetwork(totoType)
             return
         }
+
+        val allDrawings = Drawings(totoType, 0)
 
 //        allDataClasses(totoType)
         predictViaNumberDistributionPerPosition(totoType, allDrawings)

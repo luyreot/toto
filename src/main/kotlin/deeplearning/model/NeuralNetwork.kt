@@ -11,13 +11,14 @@ import deeplearning.loss.LossFunctions
  * depending on how the data is structured and the patterns that will be learnt.
  */
 class NeuralNetwork(
-    val tag: String,
-    val layers: MutableList<Layer> = mutableListOf()
+    val label: String,
+    val layers: MutableList<Layer> = mutableListOf(),
+    val sleep: Boolean = true
 ) {
 
     var learningRate: Double = 0.01
     var loss: Double = 0.0
-    var epochs: Int = 0
+    var epoch: Int = 0
 
     fun addLayer(layer: Layer) {
         layer.learningRate = learningRate
@@ -37,43 +38,57 @@ class NeuralNetwork(
     }
 
     fun train(
-        epochs: Int,
+        epoch: Int,
         input: DoubleArray,
         target: DoubleArray
     ) {
-        this.loss = 0.0
-        this.epochs = epochs
+        loss = 0.0
+        this.epoch = epoch
 
-        for (i in 0..epochs) {
-            val output = forward(input)
-            println(output.joinToString(", "))
+        val output = forward(input)
+//        println(output.joinToString(", "))
 
-            loss = LossFunctions.categoricalCrossEntropy(predicted = output, actual = target)
-            println("Epoch $i, Loss $loss")
+        sleep()
 
-            val lossGradient = LossFunctions.categoricalCrossEntropyGradient(predicted = output, actual = target)
-            backward(lossGradient)
-        }
+        loss = LossFunctions.categoricalCrossEntropy(predictions = output, targets = target)
+        println("Loss $loss")
+
+        sleep()
+
+        val lossGradient = LossFunctions.categoricalCrossEntropyDerivative(predictions = output, targets = target)
+
+        sleep()
+
+        backward(lossGradient)
+
+        sleep()
     }
 
     fun train(
-        epochs: Int,
+        epoch: Int,
         inputs: Array<DoubleArray>,
         targets: Array<DoubleArray>
     ) {
-        this.loss = 0.0
-        this.epochs = epochs
+        loss = 0.0
+        this.epoch = epoch
 
-        for (i in 0..epochs) {
-            val output = forward(inputs)
-            output.forEach { row -> println(row.joinToString(", ")) }
+        val output = forward(inputs)
+//        output.forEach { row -> println(row.joinToString(", ")) }
 
-            loss = LossFunctions.categoricalCrossEntropyBatch(predicted = output, actual = targets)
-            println("Epoch $i, Loss $loss")
+        sleep()
 
-            val lossGradients = LossFunctions.categoricalCrossEntropyGradientBatch(predicted = output, actual = targets)
-            backward(lossGradients)
-        }
+        loss = LossFunctions.categoricalCrossEntropyBatch(predictions = output, targets = targets)
+        println("Loss $loss")
+
+        sleep()
+
+        val lossGradients = LossFunctions.categoricalCrossEntropyGradientBatch(predicted = output, actual = targets)
+
+        sleep()
+
+        backward(lossGradients)
+
+        sleep()
     }
 
     // endregion training
@@ -117,4 +132,13 @@ class NeuralNetwork(
     }
 
     // region back propagation
+
+    private fun sleep() {
+        if (!sleep) return
+        try {
+            Thread.sleep(250)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 }

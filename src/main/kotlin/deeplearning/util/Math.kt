@@ -12,6 +12,12 @@ object Math {
      * k: The expected occurrences in a single draw. For simplicity, we usually set k = 1, k=1 (the number appears once in the draw).
      */
     fun calculatePoissonProbability(frequency: Double, k: Int = 1): Double {
+        // Ensure frequency is positive and k is non-negative
+        if (frequency <= 0.0) {
+            return 0.0
+        }
+        //require(frequency > 0) { "Frequency must be positive." }
+        require(k >= 0) { "k must be non-negative." }
         return (frequency.pow(k) * exp(-frequency)) / factorial(k)
     }
 }

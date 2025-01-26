@@ -25,6 +25,8 @@ import deeplearning.activation.ActivationFunction
  * These gradients are used to update the weights during the optimization step (e.g., gradient descent).
  */
 interface Layer {
+    val tag: String
+
     val layerType: LayerType
 
     var learningRate: Double
