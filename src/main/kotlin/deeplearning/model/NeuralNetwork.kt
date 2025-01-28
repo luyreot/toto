@@ -1,6 +1,8 @@
 package deeplearning.model
 
-import deeplearning.loss.LossFunctions
+import deeplearning.loss.*
+import model.TotoType
+import kotlin.math.ln
 
 /**
  * Goal is to:
@@ -9,11 +11,17 @@ import deeplearning.loss.LossFunctions
  *
  * This falls under the category of sequence prediction or time-series forecasting,
  * depending on how the data is structured and the patterns that will be learnt.
+ *
+ * TODO
+ * - add Adam optimizer
+ * - add L2 regularization to prevent overfitting
  */
 class NeuralNetwork(
+    val totoType: TotoType,
     val label: String,
     val layers: MutableList<Layer> = mutableListOf(),
-    val sleep: Boolean = true
+    var lossFunction: LossFunction,
+    private val sleep: Boolean = true
 ) {
 
     var learningRate: Double = 0.01
@@ -30,6 +38,37 @@ class NeuralNetwork(
         this.layers.addAll(layers)
     }
 
+    /**
+     * A good rule of thumb is to set the initial bias
+     * b = ln(p / 1 - p), where p is the proportion of 1s in the dataset.
+     */
+    fun optimizeOutputLayerBiasesForBinaryImbalances() {
+        verifyOutputLayer()
+        layers.find { it.layerType == LayerType.OUTPUT }?.let { outputLayer ->
+            val updatedBias = ln(totoType.size.toDouble() / (totoType.totalNumbers - totoType.size))
+            outputLayer.neurons.forEach { neuron ->
+                neuron.bias = updatedBias
+            }
+        }
+    }
+
+    private fun verifyInputLayer() {
+        val inputLayers = layers.count { it.layerType == LayerType.INPUT }
+        if (inputLayers > 1) {
+            throw IllegalArgumentException("Cannot have more than one input layer.")
+        }
+    }
+
+    private fun verifyOutputLayer() {
+        val outputLayers = layers.count { it.layerType == LayerType.OUTPUT }
+        if (outputLayers < 1) {
+            throw IllegalArgumentException("There must be one output layer.")
+        }
+        if (outputLayers > 1) {
+            throw IllegalArgumentException("Cannot have more than one output layer.")
+        }
+    }
+
     // region training
 
     fun updateLearningRate(rate: Double) {
@@ -39,27 +78,28 @@ class NeuralNetwork(
 
     fun train(
         epoch: Int,
-        input: DoubleArray,
-        target: DoubleArray
+        inputs: DoubleArray,
+        targets: DoubleArray
     ) {
         loss = 0.0
+        var lossGradients: DoubleArray
         this.epoch = epoch
 
-        val output = forward(input)
-//        println(output.joinToString(", "))
+        val output = forward(inputs)
+        //println(output.joinToString(", "))
 
         sleep()
 
-        loss = LossFunctions.categoricalCrossEntropy(predictions = output, targets = target)
+        calculateLoss(predictions = output, targets = targets).let {
+            loss = it.first
+            lossGradients = it.second
+        }
+
         println("Loss $loss")
 
         sleep()
 
-        val lossGradient = LossFunctions.categoricalCrossEntropyDerivative(predictions = output, targets = target)
-
-        sleep()
-
-        backward(lossGradient)
+        backward(lossGradients)
 
         sleep()
     }
@@ -70,19 +110,20 @@ class NeuralNetwork(
         targets: Array<DoubleArray>
     ) {
         loss = 0.0
+        var lossGradients: Array<DoubleArray>
         this.epoch = epoch
 
         val output = forward(inputs)
-//        output.forEach { row -> println(row.joinToString(", ")) }
+        //output.forEach { row -> println(row.joinToString(", ")) }
 
         sleep()
 
-        loss = LossFunctions.categoricalCrossEntropyBatch(predictions = output, targets = targets)
+        calculateLoss(predictions = output, targets = targets).let {
+            loss = it.first
+            lossGradients = it.second
+        }
+
         println("Loss $loss")
-
-        sleep()
-
-        val lossGradients = LossFunctions.categoricalCrossEntropyGradientBatch(predicted = output, actual = targets)
 
         sleep()
 
@@ -95,7 +136,7 @@ class NeuralNetwork(
 
     // region forward propagation
 
-    fun forward(input: DoubleArray): DoubleArray {
+    private fun forward(input: DoubleArray): DoubleArray {
         var output = input
         for (layer in layers) {
             output = layer.forward(output)
@@ -103,7 +144,7 @@ class NeuralNetwork(
         return output
     }
 
-    fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
+    private fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
         var output = inputs
         for (layer in layers) {
             output = layer.forward(output)
@@ -115,7 +156,94 @@ class NeuralNetwork(
 
     // region back propagation
 
-    fun backward(lossGradient: DoubleArray): DoubleArray {
+    private fun calculateLoss(
+        predictions: DoubleArray,
+        targets: DoubleArray
+    ): Pair<Double, DoubleArray> = lossFunction.let { lf ->
+        when (lf) {
+            is BinaryCrossEntropy -> {
+                val loss = lf.calculateLoss(predictions = predictions, targets = targets)
+                sleep()
+                val gradients = lf.calculateGradient(predictions = predictions, targets = targets)
+                Pair(loss, gradients)
+            }
+
+            is CategoricalCrossEntropy -> {
+                val loss = lf.calculateLoss(predictions = predictions, targets = targets)
+                sleep()
+                val gradients = lf.calculateGradient(predictions = predictions, targets = targets)
+                Pair(loss, gradients)
+            }
+
+            // TODO: Not tested
+            is MeanSquaredError -> {
+                val loss = lf.calculateLoss(predictions = predictions, targets = targets)
+                sleep()
+                val gradients = lf.calculateLossDerivative(predictions = predictions, targets = targets)
+                Pair(loss, gradients)
+            }
+
+            // TODO: Not tested
+            is WeightedBinaryCrossEntropy -> {
+                val weights = DoubleArray(targets.size) { i ->
+                    if (targets[i] == 1.0) totoType.totalNumbers.toDouble() / totoType.size else 1.0
+                }
+                sleep()
+                val loss = lf.calculateLoss(predictions = predictions, targets = targets, weights = weights)
+                sleep()
+                val gradients = lf.calculateGradient(predictions = predictions, targets = targets, weights = weights)
+                Pair(loss, gradients)
+            }
+
+            else -> throw IllegalArgumentException("Unknown loss function type ${lf.type}.")
+        }
+    }
+
+    private fun calculateLoss(
+        predictions: Array<DoubleArray>,
+        targets: Array<DoubleArray>
+    ): Pair<Double, Array<DoubleArray>> = lossFunction.let { lf ->
+        when (lf) {
+            is BinaryCrossEntropy -> {
+                val loss = lf.calculateLoss(predictions = predictions, targets = targets)
+                sleep()
+                val gradients = lf.calculateGradient(predictions = predictions, targets = targets)
+                Pair(loss, gradients)
+            }
+
+            is CategoricalCrossEntropy -> {
+                val loss = lf.calculateLoss(predictions = predictions, targets = targets)
+                sleep()
+                val gradients = lf.calculateGradient(predictions = predictions, targets = targets)
+                Pair(loss, gradients)
+            }
+
+            // TODO: Not tested
+            is MeanSquaredError -> {
+                val loss = lf.calculateLoss(predictions = predictions, targets = targets)
+                sleep()
+                val gradients = lf.calculateLossDerivative(predictions = predictions, targets = targets)
+                Pair(loss, gradients)
+            }
+
+            is WeightedBinaryCrossEntropy -> {
+                val weights = Array(targets.size) { i ->
+                    DoubleArray(targets[i].size) { j ->
+                        if (targets[i][j] == 1.0) totoType.totalNumbers.toDouble() / totoType.size else 1.0
+                    }
+                }
+                sleep()
+                val loss = lf.calculateLoss(predictions = predictions, targets = targets, weights = weights)
+                sleep()
+                val gradients = lf.calculateGradient(predictions = predictions, targets = targets, weights = weights)
+                Pair(loss, gradients)
+            }
+
+            else -> throw IllegalArgumentException("Unknown loss function type ${lf.type}.")
+        }
+    }
+
+    private fun backward(lossGradient: DoubleArray): DoubleArray {
         var gradient = lossGradient
         for (layer in layers.reversed()) {
             gradient = layer.backward(gradient)
@@ -123,7 +251,7 @@ class NeuralNetwork(
         return gradient
     }
 
-    fun backward(lossGradients: Array<DoubleArray>): Array<DoubleArray> {
+    private fun backward(lossGradients: Array<DoubleArray>): Array<DoubleArray> {
         var gradients = lossGradients
         for (layer in layers.reversed()) {
             gradients = layer.backward(gradients)

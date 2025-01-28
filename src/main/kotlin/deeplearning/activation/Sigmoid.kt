@@ -5,6 +5,11 @@ import kotlin.math.exp
 /**
  * Granular - can optimize well with it.
  * Has an issue - vanishing gradient problem.
+ *
+ * Sigmoid is appropriate when your output layer has a single neuron,
+ * and we're solving a binary classification problem where each input belongs to one of two classes.
+ * Sigmoid squashes the output into the range [0, 1],
+ * representing the probability of belonging to the positive class (class 1).
  */
 data object Sigmoid : ActivationFunction {
 

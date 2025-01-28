@@ -1,8 +1,12 @@
 package deeplearning
 
+import deeplearning.activation.ReLU
+import deeplearning.activation.Sigmoid
+import deeplearning.loss.WeightedBinaryCrossEntropy
+import deeplearning.model.LayerDense
+import deeplearning.model.LayerType
 import deeplearning.model.NeuralNetwork
 import deeplearning.model.cacheAsJson
-import deeplearning.model.restoreFromJson
 import deeplearning.util.Data.appearedInDraw
 import deeplearning.util.Data.getDrawFeatures
 import deeplearning.util.Data.loadDrawings
@@ -11,19 +15,22 @@ import model.TotoType
 
 fun trainNeuralNetwork(totoType: TotoType) {
     val drawings = loadDrawings(totoType)
-    val dataSize = if (totoType == TotoType.T_5X35) 1024 else 512
+    val dataSize = if (totoType == TotoType.T_5X35) 2048 else 1024
     val drawingsSubset = drawings.takeLast(dataSize)
-    val windowSize = 32
+    val windowSize = 16
 
-    val nn = NeuralNetwork(label = "training-${totoType.name}")
+    val nn = NeuralNetwork(
+        totoType = totoType,
+        label = "training-${totoType.name}",
+        lossFunction = WeightedBinaryCrossEntropy
+    )
 
-    nn.restoreFromJson()
-    val epochs = nn.epoch
-    /*
+//    nn.restoreFromJson()
+//    /*
     val inputLayerNeurons = 3 // Number of features
-    val hiddenLayerNeurons = 512
+    val hiddenLayerNeurons = 256
     val outputLayerNeurons = 1
-    
+
     nn.addLayers(
         // Input Layer is represented by the inputs array
         // Hidden Layer(s)
@@ -41,6 +48,13 @@ fun trainNeuralNetwork(totoType: TotoType) {
             numNeurons = hiddenLayerNeurons,
             numInputs = hiddenLayerNeurons
         ),
+        LayerDense(
+            tag = "Hidden Layer 3",
+            layerType = LayerType.HIDDEN,
+            activationFunction = ReLU,
+            numNeurons = hiddenLayerNeurons,
+            numInputs = hiddenLayerNeurons
+        ),
         // Output Layer
         LayerDense(
             tag = "Output Layer",
@@ -50,10 +64,11 @@ fun trainNeuralNetwork(totoType: TotoType) {
             numInputs = hiddenLayerNeurons
         )
     )
-    val epochs = 100
-    */
+//    */
 
-    for (epoch in 0..epochs) {
+    val epochs = 100
+    val epochStart = nn.epoch
+    for (epoch in epochStart..epochs) {
         println("Epoch $epoch/$epochs")
 
         for (drawIndex in windowSize - 1 until drawingsSubset.size) {
@@ -90,7 +105,6 @@ fun trainNeuralNetwork(totoType: TotoType) {
 
             val normalizedInput = normalizeFeatures(features)
 
-//            nn.updateLearningRate(0.1)
             nn.train(epoch = epoch, inputs = normalizedInput, targets = target)
             nn.cacheAsJson()
         }

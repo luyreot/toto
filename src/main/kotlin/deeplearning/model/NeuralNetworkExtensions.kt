@@ -1,6 +1,7 @@
 package deeplearning.model
 
 import deeplearning.activation.ActivationFunctionType
+import deeplearning.loss.*
 import org.json.JSONArray
 import org.json.JSONObject
 import util.IO
@@ -8,6 +9,7 @@ import util.IO
 // Network
 private const val KEY_LEARNING_RATE = "learningRate"
 private const val KEY_LOSS = "loss"
+private const val KEY_LOSS_FUNCTION = "lossFunction"
 private const val KEY_EPOCH = "epoch"
 private const val KEY_LAYERS = "layers"
 
@@ -53,6 +55,7 @@ fun NeuralNetwork.cacheAsJson(fileName: String = label) {
     json.put(KEY_LAYERS, jsonArrLayers)
     json.put(KEY_LEARNING_RATE, learningRate)
     json.put(KEY_LOSS, loss)
+    json.put(KEY_LOSS_FUNCTION, lossFunction.type.name)
     json.put(KEY_EPOCH, epoch)
 
     IO.saveTxtFile(
@@ -67,6 +70,15 @@ fun NeuralNetwork.restoreFromJson(fileName: String = label) {
 
     this.learningRate = json.getDouble(KEY_LEARNING_RATE)
     this.loss = json.getDouble(KEY_LOSS)
+    val lossFunctionType = LossFunctionType.valueOf(json.getString(KEY_LOSS_FUNCTION))
+
+    this.lossFunction = when (lossFunctionType) {
+        LossFunctionType.BinaryCrossEntropy -> BinaryCrossEntropy
+        LossFunctionType.WeightedBinaryCrossEntropy -> WeightedBinaryCrossEntropy
+        LossFunctionType.CategoricalCrossEntropy -> CategoricalCrossEntropy
+        LossFunctionType.MeanSquaredError -> MeanSquaredError
+    }
+
     this.epoch = json.getInt(KEY_EPOCH)
 
     this.layers.clear()

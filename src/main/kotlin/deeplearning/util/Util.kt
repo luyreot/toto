@@ -2,8 +2,12 @@ package deeplearning.util
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.sqrt
 import kotlin.random.Random
 
+/**
+ * TODO: Implement Xavier Initialization: For sigmoid/tanh activations.
+ */
 object Util {
 
     fun generateRandomWeights(numNeurons: Int, numInputs: Int): Array<DoubleArray> {
@@ -12,6 +16,22 @@ object Util {
             val randomWeights = DoubleArray(numInputs)
             for (j in 0 until numInputs) {
                 randomWeights[j] = getRandomDouble(-1, 1)
+            }
+            weights[i] = randomWeights
+        }
+        return weights
+    }
+
+    /**
+     * He Initialization: For ReLU activations.
+     */
+    fun generateRandomWeightsHe(numNeurons: Int, numInputs: Int): Array<DoubleArray> {
+        val stdDev = sqrt(2.0 / numInputs)
+        val weights = Array(numNeurons) { doubleArrayOf() }
+        for (i in 0 until numNeurons) {
+            val randomWeights = DoubleArray(numInputs)
+            for (j in 0 until numInputs) {
+                randomWeights[j] = getRandomDouble(-1, 1) * stdDev
             }
             weights[i] = randomWeights
         }
