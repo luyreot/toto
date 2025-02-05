@@ -1,6 +1,8 @@
 package deeplearning.model
 
 import deeplearning.loss.*
+import deeplearning.optimization.OptimizationFunction
+import deeplearning.optimization.SGD
 import model.TotoType
 import kotlin.math.ln
 
@@ -11,22 +13,21 @@ import kotlin.math.ln
  *
  * This falls under the category of sequence prediction or time-series forecasting,
  * depending on how the data is structured and the patterns that will be learnt.
- *
- * TODO
- * - add Adam optimizer
- * - add L2 regularization to prevent overfitting
  */
 class NeuralNetwork(
     val totoType: TotoType,
     val label: String,
     val layers: MutableList<Layer> = mutableListOf(),
     var lossFunction: LossFunction,
-    private val sleep: Boolean = true
+    var optimizationFunction: OptimizationFunction,
+    private var sleep: Boolean = true
 ) {
 
     var learningRate: Double = 0.01
     var loss: Double = 0.0
     var epoch: Int = 0
+
+    private var sleepDuration: Long = 250
 
     fun addLayer(layer: Layer) {
         layer.learningRate = learningRate
@@ -45,7 +46,8 @@ class NeuralNetwork(
     fun optimizeOutputLayerBiasesForBinaryImbalances() {
         verifyOutputLayer()
         layers.find { it.layerType == LayerType.OUTPUT }?.let { outputLayer ->
-            val updatedBias = ln(totoType.size.toDouble() / (totoType.totalNumbers - totoType.size))
+            val p = totoType.size.toDouble() / totoType.totalNumbers
+            val updatedBias = ln(p / (1 - p))
             outputLayer.neurons.forEach { neuron ->
                 neuron.bias = updatedBias
             }
@@ -88,6 +90,10 @@ class NeuralNetwork(
         val output = forward(inputs)
         //println(output.joinToString(", "))
 
+        if (output[0] == 1.0 && targets[0] == 1.0) {
+            println()
+        }
+
         sleep()
 
         calculateLoss(predictions = output, targets = targets).let {
@@ -100,6 +106,10 @@ class NeuralNetwork(
         sleep()
 
         backward(lossGradients)
+
+        sleep()
+
+        optimize()
 
         sleep()
     }
@@ -128,6 +138,10 @@ class NeuralNetwork(
         sleep()
 
         backward(lossGradients)
+
+        sleep()
+
+        optimize()
 
         sleep()
     }
@@ -261,10 +275,29 @@ class NeuralNetwork(
 
     // region back propagation
 
+    // region optimize
+
+    private fun optimize() {
+        optimizationFunction.let { of ->
+            when (of) {
+                is SGD -> {
+                    layers.map { it as LayerDense }.forEach { layer ->
+                        of.optimizeWithL2RegularizationAndClippedGradients(
+                            layer = layer,
+                            learningRate = learningRate,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    // endregion optimize
+
     private fun sleep() {
         if (!sleep) return
         try {
-            Thread.sleep(250)
+            Thread.sleep(sleepDuration)
         } catch (e: Exception) {
             e.printStackTrace()
         }

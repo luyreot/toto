@@ -2,7 +2,7 @@ package deeplearning.model
 
 import deeplearning.activation.ActivationFunction
 import deeplearning.util.Matrix.multiply
-import deeplearning.util.Util.generateRandomWeights
+import deeplearning.util.Util.generateRandomWeightsHe
 
 class LayerDense(
     override val tag: String,
@@ -17,6 +17,9 @@ class LayerDense(
 
     private var input: DoubleArray = doubleArrayOf()
     private var inputs: Array<DoubleArray> = arrayOf(doubleArrayOf())
+
+    var accumulatedWeight: Array<DoubleArray> = arrayOf(doubleArrayOf())
+    var accumulatedBias: DoubleArray = doubleArrayOf()
 
     constructor(
         tag: String,
@@ -36,10 +39,13 @@ class LayerDense(
         tag,
         layerType,
         Array<Neuron>(numNeurons) { Neuron() },
-        generateRandomWeights(numNeurons = numNeurons, numInputs = numInputs),
+        generateRandomWeightsHe(numNeurons = numNeurons, numInputs = numInputs),
         activationFunction,
         activationFunction
-    )
+    ) {
+        accumulatedWeight = Array(weights.size) { DoubleArray(weights[0].size) }
+        accumulatedBias = DoubleArray(neurons.size)
+    }
 
     init {
         if (verifyInputs) {
@@ -86,10 +92,13 @@ class LayerDense(
         // Update gradients for weights and biases
         for (n in neurons.indices) {
             for (j in weights[n].indices) {
-                weights[n][j] -= input[j] * activationGradient[n] * learningRate
+                // Accumulate weight gradient
+                accumulatedWeight[n][j] += input[j] * activationGradient[n]
                 prevDelta[j] += weights[n][j] * activationGradient[n]
             }
-            neurons[n].bias -= activationGradient[n] * learningRate
+
+            // Accumulate bias gradient
+            accumulatedBias[n] += activationGradient[n]
         }
 
         return prevDelta
@@ -99,9 +108,9 @@ class LayerDense(
         val batchSize = inputs.size
 
         // Initialize gradient accumulators
-        val weightGradients = Array(weights.size) { DoubleArray(weights[0].size) }
-        val biasGradients = DoubleArray(neurons.size)
-        val prevDeltas = Array(batchSize) { DoubleArray(weights[0].size) }
+        val weightGradients = Array(weights.size) { DoubleArray(weights[0].size) { 0.0 } }
+        val biasGradients = DoubleArray(neurons.size) { 0.0 }
+        val prevDeltas = Array(batchSize) { DoubleArray(weights[0].size) { 0.0 } }
 
         // Loop through each input in the batch
         for (i in inputs.indices) {
@@ -111,7 +120,7 @@ class LayerDense(
             // Compute activation gradient for this data point
             val activationGradient = activationFunctionDerivative.backward(lossGradient)
 
-            // Update gradients for weights and biases
+            // Compute weight & bias gradients
             for (n in neurons.indices) {
                 for (j in weights[n].indices) {
                     weightGradients[n][j] += input[j] * activationGradient[n]
@@ -119,15 +128,15 @@ class LayerDense(
                 biasGradients[n] += activationGradient[n]
             }
 
-            // Compute previous deltas for this data point
-            for (n in neurons.indices) {
-                for (j in weights[n].indices) {
+            // Compute previous deltas **before** averaging
+            for (j in weights[0].indices) {
+                for (n in neurons.indices) {
                     prevDeltas[i][j] += weights[n][j] * activationGradient[n]
                 }
             }
         }
 
-        // Average gradients over the batch
+        // **Average gradients over batch size**
         for (n in weightGradients.indices) {
             for (j in weightGradients[n].indices) {
                 weightGradients[n][j] = weightGradients[n][j] / batchSize
@@ -137,12 +146,12 @@ class LayerDense(
             biasGradients[n] = biasGradients[n] / batchSize
         }
 
-        // Update weights and biases
+        // **Update weights and biases using SGD**
         for (n in neurons.indices) {
             for (j in weights[n].indices) {
-                weights[n][j] -= weightGradients[n][j] * learningRate
+                weights[n][j] -= learningRate * weightGradients[n][j]
             }
-            neurons[n].bias -= biasGradients[n] * learningRate
+            neurons[n].bias -= learningRate * biasGradients[n]
         }
 
         return prevDeltas

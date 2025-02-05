@@ -7,49 +7,67 @@ import deeplearning.model.LayerDense
 import deeplearning.model.LayerType
 import deeplearning.model.NeuralNetwork
 import deeplearning.model.cacheAsJson
-import deeplearning.util.Data.appearedInDraw
+import deeplearning.optimization.SGD
 import deeplearning.util.Data.getDrawFeatures
 import deeplearning.util.Data.loadDrawings
-import deeplearning.util.Data.normalizeFeatures
+import deeplearning.util.Data.normalizeBasedOnMeanVariance
 import model.TotoType
 
 fun trainNeuralNetwork(totoType: TotoType) {
-    val drawings = loadDrawings(totoType)
-    val dataSize = if (totoType == TotoType.T_5X35) 2048 else 1024
-    val drawingsSubset = drawings.takeLast(dataSize)
-    val windowSize = 16
-
     val nn = NeuralNetwork(
         totoType = totoType,
         label = "training-${totoType.name}",
-        lossFunction = WeightedBinaryCrossEntropy
+        lossFunction = WeightedBinaryCrossEntropy,
+        optimizationFunction = SGD,
+        sleep = false
     )
 
 //    nn.restoreFromJson()
 //    /*
     val inputLayerNeurons = 3 // Number of features
-    val hiddenLayerNeurons = 256
+    val hiddenLayerNeurons = 128
     val outputLayerNeurons = 1
 
     nn.addLayers(
         // Input Layer is represented by the inputs array
         // Hidden Layer(s)
         LayerDense(
-            tag = "Hidden Layer 1",
+            tag = "Hidden 1",
             layerType = LayerType.HIDDEN,
             activationFunction = ReLU,
             numNeurons = hiddenLayerNeurons,
             numInputs = inputLayerNeurons
         ),
         LayerDense(
-            tag = "Hidden Layer 2",
+            tag = "Hidden 2",
             layerType = LayerType.HIDDEN,
             activationFunction = ReLU,
             numNeurons = hiddenLayerNeurons,
             numInputs = hiddenLayerNeurons
         ),
         LayerDense(
-            tag = "Hidden Layer 3",
+            tag = "Hidden 3",
+            layerType = LayerType.HIDDEN,
+            activationFunction = ReLU,
+            numNeurons = hiddenLayerNeurons,
+            numInputs = hiddenLayerNeurons
+        ),
+        LayerDense(
+            tag = "Hidden 4",
+            layerType = LayerType.HIDDEN,
+            activationFunction = ReLU,
+            numNeurons = hiddenLayerNeurons,
+            numInputs = hiddenLayerNeurons
+        ),
+        LayerDense(
+            tag = "Hidden 5",
+            layerType = LayerType.HIDDEN,
+            activationFunction = ReLU,
+            numNeurons = hiddenLayerNeurons,
+            numInputs = hiddenLayerNeurons
+        ),
+        LayerDense(
+            tag = "Hidden 6",
             layerType = LayerType.HIDDEN,
             activationFunction = ReLU,
             numNeurons = hiddenLayerNeurons,
@@ -57,7 +75,7 @@ fun trainNeuralNetwork(totoType: TotoType) {
         ),
         // Output Layer
         LayerDense(
-            tag = "Output Layer",
+            tag = "Output",
             layerType = LayerType.OUTPUT,
             activationFunction = Sigmoid,
             numNeurons = outputLayerNeurons,
@@ -65,47 +83,101 @@ fun trainNeuralNetwork(totoType: TotoType) {
         )
     )
 //    */
+//    nn.optimizeOutputLayerBiasesForBinaryImbalances()
+
+    val drawings = loadDrawings(totoType)
+
+    val number = 1
+    val indexes = drawings.mapIndexedNotNull { index, draw ->
+        if (draw.numbers.contains(number)) index else null
+    }
+
+    val features = mutableListOf<DoubleArray>()
+    val targets = mutableListOf<DoubleArray>()
+    for (i in indexes.indices) {
+        if (indexes[i] == 0) continue
+
+        val index = indexes[i]
+
+        getDrawFeatures(
+            number = number,
+            draws = drawings,
+            drawIndex = index - 1,
+            windowSize = Int.MAX_VALUE
+        ).let {
+            features.add(
+                doubleArrayOf(
+                    it.frequency,
+                    it.gapSinceLast.toDouble(),
+                    it.poissonProbability,
+//                    it.inDraw.toDouble()
+                )
+            )
+        }
+        targets.add(doubleArrayOf(1.0))
+
+        // last
+        if (index == drawings.size - 1) {
+            break
+        }
+
+        getDrawFeatures(
+            number = number,
+            draws = drawings,
+            drawIndex = index,
+            windowSize = Int.MAX_VALUE
+        ).let {
+            features.add(
+                doubleArrayOf(
+                    it.frequency,
+                    it.gapSinceLast.toDouble(),
+                    it.poissonProbability,
+//                    it.inDraw.toDouble()
+                )
+            )
+        }
+        targets.add(
+            doubleArrayOf(
+                if (drawings[index + 1].numbers.contains(number)) 1.0 else 0.0
+            )
+        )
+
+        // last
+//        if (index + 1 == drawings.size - 1) {
+//            break
+//        }
+//
+//        getDrawFeatures(
+//            number = number,
+//            draws = drawings,
+//            drawIndex = index + 1,
+//            windowSize = Int.MAX_VALUE
+//        ).let {
+//            features.add(
+//                doubleArrayOf(
+//                    it.frequency,
+//                    it.gapSinceLast.toDouble(),
+//                    it.poissonProbability,
+//                    it.inDraw.toDouble()
+//                )
+//            )
+//        }
+//        targets.add(
+//            doubleArrayOf(
+//                if (drawings[index + 2].numbers.contains(number)) 1.0 else 0.0
+//            )
+//        )
+    }
+    normalizeBasedOnMeanVariance(features)
+//    smoothTargets(0.001, targets)
 
     val epochs = 100
     val epochStart = nn.epoch
     for (epoch in epochStart..epochs) {
         println("Epoch $epoch/$epochs")
 
-        for (drawIndex in windowSize - 1 until drawingsSubset.size) {
-            println("Draw index $drawIndex/${drawingsSubset.size}")
-
-            if (drawIndex + 1 >= drawingsSubset.size) {
-                break
-            }
-
-            val features: Array<DoubleArray> = Array(totoType.totalNumbers) { doubleArrayOf() }
-            val target: Array<DoubleArray> = Array(totoType.totalNumbers) { doubleArrayOf() }
-
-            for (number in 1..totoType.totalNumbers) {
-                val numberFeatures: DoubleArray = getDrawFeatures(
-                    number = number,
-                    draws = drawingsSubset,
-                    drawIndex = drawIndex,
-                    windowSize = windowSize
-                ).let { feature ->
-                    doubleArrayOf(
-                        feature.frequency,
-                        feature.gapSinceLast.toDouble(),
-                        feature.poissonProbability
-                    )
-                }
-                features[number - 1] = numberFeatures
-
-                val appearedInNextDraw = appearedInDraw(
-                    number = number,
-                    draw = drawingsSubset[drawIndex + 1]
-                ).toDouble()
-                target[number - 1] = doubleArrayOf(appearedInNextDraw)
-            }
-
-            val normalizedInput = normalizeFeatures(features)
-
-            nn.train(epoch = epoch, inputs = normalizedInput, targets = target)
+        features.forEachIndexed { index, input ->
+            nn.train(epoch = epoch, inputs = input, targets = targets[index])
             nn.cacheAsJson()
         }
     }

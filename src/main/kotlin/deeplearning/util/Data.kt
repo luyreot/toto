@@ -6,6 +6,7 @@ import deeplearning.util.Math.calculatePoissonProbability
 import model.TotoType
 import util.IO
 import kotlin.math.pow
+import kotlin.math.sqrt
 
 object Data {
 
@@ -86,7 +87,7 @@ object Data {
         return if (number in draw.numbers) 1 else 0
     }
 
-    fun normalizeFeatures(features: Array<DoubleArray>): Array<DoubleArray> {
+    fun normalizeBatchByColumn(features: Array<DoubleArray>): Array<DoubleArray> {
         // Perform Min-Max normalization for each column
         val numFeatures = features[0].size
         val mins = DoubleArray(numFeatures) { col -> features.minOf { it[col] } }
@@ -99,11 +100,36 @@ object Data {
         }.toTypedArray()
     }
 
+    fun normalizeBasedOnMinMax(features: List<DoubleArray>) {
+        features.forEach { feature ->
+            val min = feature.min()
+            val max = feature.max()
+            for (i in feature.indices) {
+                feature[i] = 2 * ((feature[i] - min) / (max - min)) - 1
+            }
+        }
+    }
+
+    fun normalizeBasedOnMeanVariance(features: MutableList<DoubleArray>) {
+        val epsilon = 1e-5
+        for (i in features.indices) {
+            val mean = features[i].average()
+            val variance = features[i].map { (it - mean) * (it - mean) }.average()
+            features[i] = features[i].map { (it - mean) / sqrt(variance + epsilon) }.toDoubleArray()
+        }
+    }
+
+    fun smoothTargets(factor: Double, targets: List<DoubleArray>) {
+        targets.forEach {
+            it[0] = it[0] * (1.0 - factor) + 0.5 * factor
+        }
+    }
+
     /**
      * Standardization (Z-Score Normalization)
      * Each input feature is scaled to have a mean of 0 and a standard deviation of 1.
      */
-    fun normalizeFeatures(input: DoubleArray, mean: DoubleArray, std: DoubleArray): DoubleArray {
+    fun normalizeBasedOnMeanStandardDeviation(input: DoubleArray, mean: DoubleArray, std: DoubleArray): DoubleArray {
         return DoubleArray(input.size) { i ->
             (input[i] - mean[i]) / (std[i] + 1e-7) // Add epsilon to avoid division by zero
         }
@@ -149,5 +175,9 @@ object Data {
         val std = DoubleArray(numFeatures) { i -> kotlin.math.sqrt(variance[i]) }
 
         return Pair(mean, std)
+    }
+
+    fun clipGradient(value: Double, min: Double = -1.0, max: Double = 1.0): Double {
+        return value.coerceIn(min, max)
     }
 }
