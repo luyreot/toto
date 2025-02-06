@@ -11,11 +11,11 @@ object SGD : OptimizationFunction {
     override val type = OptimizationFunctionType.SGD
 
     fun optimize(layer: LayerDense, learningRate: Double) {
-        for (i in layer.neurons.indices) {
+        for (i in layer.biases.indices) {
             for (j in layer.weights[i].indices) {
                 layer.weights[i][j] -= learningRate * layer.accumulatedWeight[i][j]
             }
-            layer.neurons[i].bias -= learningRate * layer.accumulatedBias[i]
+            layer.biases[i] -= learningRate * layer.accumulatedBias[i]
         }
 
         for (i in layer.accumulatedWeight.indices) {
@@ -25,11 +25,11 @@ object SGD : OptimizationFunction {
     }
 
     fun optimizeWithClippedGradients(layer: LayerDense, learningRate: Double) {
-        for (i in layer.neurons.indices) {
+        for (i in layer.biases.indices) {
             for (j in layer.weights[i].indices) {
                 layer.weights[i][j] -= learningRate * clipGradient(layer.accumulatedWeight[i][j])
             }
-            layer.neurons[i].bias -= learningRate * clipGradient(layer.accumulatedBias[i])
+            layer.biases[i] -= learningRate * clipGradient(layer.accumulatedBias[i])
         }
 
         for (i in layer.accumulatedWeight.indices) {
@@ -43,7 +43,7 @@ object SGD : OptimizationFunction {
         learningRate: Double,
         lambda: Double = 0.01
     ) {
-        for (i in layer.neurons.indices) {
+        for (i in layer.biases.indices) {
             for (j in layer.weights[i].indices) {
                 // Apply L2 regularization (weight decay) to the gradient
                 val regularizedDWeight = layer.accumulatedWeight[i][j] + lambda * layer.weights[i][j]
@@ -51,8 +51,8 @@ object SGD : OptimizationFunction {
             }
 
             // Apply L2 regularization (weight decay) to the bias gradient (optional)
-            val regularizedDBias = layer.accumulatedBias[i] + lambda * layer.neurons[i].bias
-            layer.neurons[i].bias -= learningRate * regularizedDBias
+            val regularizedDBias = layer.accumulatedBias[i] + lambda * layer.biases[i]
+            layer.biases[i] -= learningRate * regularizedDBias
         }
 
         for (i in layer.accumulatedWeight.indices) {
@@ -66,7 +66,7 @@ object SGD : OptimizationFunction {
         learningRate: Double,
         lambda: Double = 0.01
     ) {
-        for (i in layer.neurons.indices) {
+        for (i in layer.biases.indices) {
             for (j in layer.weights[i].indices) {
                 // Apply L2 regularization (weight decay) to the gradient
                 val regularizedDWeight = layer.accumulatedWeight[i][j] + lambda * layer.weights[i][j]
@@ -74,8 +74,8 @@ object SGD : OptimizationFunction {
             }
 
             // Apply L2 regularization (weight decay) to the bias gradient (optional)
-            val regularizedDBias = layer.accumulatedBias[i] + lambda * layer.neurons[i].bias
-            layer.neurons[i].bias -= learningRate * clipGradient(regularizedDBias)
+            val regularizedDBias = layer.accumulatedBias[i] + lambda * layer.biases[i]
+            layer.biases[i] -= learningRate * clipGradient(regularizedDBias)
         }
 
         for (i in layer.accumulatedWeight.indices) {

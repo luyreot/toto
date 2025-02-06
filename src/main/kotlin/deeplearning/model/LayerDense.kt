@@ -6,7 +6,7 @@ import deeplearning.util.Matrix.multiply
 class LayerDense(
     override val tag: String,
     override val layerType: LayerType,
-    override val neurons: Array<Neuron>,
+    override val biases: DoubleArray,
     override val weights: Array<DoubleArray>,
     override val activationFunction: ActivationFunction,
     override val activationFunctionDerivative: ActivationFunction,
@@ -30,19 +30,19 @@ class LayerDense(
     ) : this(
         tag,
         layerType,
-        Array<Neuron>(numNeurons) { Neuron() },
+        DoubleArray(numNeurons) { 0.0 },
         weightInit(numNeurons, numInputs),
         activationFunction,
         activationFunction
     ) {
         accumulatedWeight = Array(weights.size) { DoubleArray(weights[0].size) }
-        accumulatedBias = DoubleArray(neurons.size)
+        accumulatedBias = DoubleArray(biases.size)
     }
 
     init {
         if (verifyInputs) {
-            require(neurons.size == weights.size) {
-                "Neurons (${neurons.size}) and Weights (${weights.size}) have different sizes."
+            require(biases.size == weights.size) {
+                "Neurons (${biases.size}) and Weights (${weights.size}) have different sizes."
             }
             require(weights.all { it.size == weights[0].size }) {
                 "Not all weights are of the same size.\n${weights.joinToString { "$it" }}"
@@ -56,7 +56,7 @@ class LayerDense(
         val output = multiply(
             input = input,
             weights = weights,
-            biases = neurons.map { it.bias }.toDoubleArray()
+            biases = biases
         )
         val activation = activationFunction.forward(output)
         return activation
@@ -68,7 +68,7 @@ class LayerDense(
         val output = multiply(
             inputs = inputs,
             weights = weights,
-            biases = neurons.map { it.bias }.toDoubleArray()
+            biases = biases
         )
         val activation = activationFunction.forward(output)
         return activation
@@ -82,7 +82,7 @@ class LayerDense(
         val prevDelta = DoubleArray(weights[0].size)
 
         // Update gradients for weights and biases
-        for (n in neurons.indices) {
+        for (n in biases.indices) {
             for (j in weights[n].indices) {
                 // Accumulate weight gradient
                 accumulatedWeight[n][j] += input[j] * activationGradient[n]
@@ -101,7 +101,7 @@ class LayerDense(
 
         // Initialize gradient accumulators
         val weightGradients = Array(weights.size) { DoubleArray(weights[0].size) { 0.0 } }
-        val biasGradients = DoubleArray(neurons.size) { 0.0 }
+        val biasGradients = DoubleArray(biases.size) { 0.0 }
         val prevDeltas = Array(batchSize) { DoubleArray(weights[0].size) { 0.0 } }
 
         // Loop through each input in the batch
@@ -113,7 +113,7 @@ class LayerDense(
             val activationGradient = activationFunctionDerivative.backward(lossGradient)
 
             // Compute weight & bias gradients
-            for (n in neurons.indices) {
+            for (n in biases.indices) {
                 for (j in weights[n].indices) {
                     weightGradients[n][j] += input[j] * activationGradient[n]
                 }
@@ -122,7 +122,7 @@ class LayerDense(
 
             // Compute previous deltas **before** averaging
             for (j in weights[0].indices) {
-                for (n in neurons.indices) {
+                for (n in biases.indices) {
                     prevDeltas[i][j] += weights[n][j] * activationGradient[n]
                 }
             }
@@ -139,11 +139,11 @@ class LayerDense(
         }
 
         // **Update weights and biases using SGD**
-        for (n in neurons.indices) {
+        for (n in biases.indices) {
             for (j in weights[n].indices) {
                 weights[n][j] -= learningRate * weightGradients[n][j]
             }
-            neurons[n].bias -= learningRate * biasGradients[n]
+            biases[n] -= learningRate * biasGradients[n]
         }
 
         return prevDeltas

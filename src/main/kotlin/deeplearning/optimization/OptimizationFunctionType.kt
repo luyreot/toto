@@ -11,7 +11,7 @@ enum class OptimizationFunctionType {
             SGD -> deeplearning.optimization.SGD
             Momentum -> TODO()
             RMSprop -> TODO()
-            Adam -> TODO()
+            Adam -> Adam()
         }
     }
 }

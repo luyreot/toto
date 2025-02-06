@@ -35,7 +35,7 @@ fun NeuralNetwork.cacheAsJson(fileName: String = label) {
         jsonLayer.put(KEY_LAYER_TYPE, layer.layerType.name)
 
         val jsonArrBiases = JSONArray()
-        layer.neurons.map { it.bias }.forEach { jsonArrBiases.put(it) }
+        layer.biases.forEach { jsonArrBiases.put(it) }
         jsonLayer.put(KEY_BIASES, jsonArrBiases)
 
         val jsonArrWeights = JSONArray()
@@ -88,9 +88,9 @@ fun NeuralNetwork.restoreFromJson(fileName: String = label) {
             val layerTag = jsonLayer.getString(KEY_LAYER_TAG)
             val layerType = LayerType.valueOf(jsonLayer.getString(KEY_LAYER_TYPE))
 
-            val neurons = jsonLayer.getJSONArray(KEY_BIASES)
+            val biases = jsonLayer.getJSONArray(KEY_BIASES)
                 .map { it.toString().toDouble() }
-                .map { Neuron(it) }.toTypedArray()
+                .toDoubleArray()
 
             val weights = mutableListOf<DoubleArray>()
             val jsonArrWeights = jsonLayer.getJSONArray(KEY_WEIGHTS)
@@ -115,7 +115,7 @@ fun NeuralNetwork.restoreFromJson(fileName: String = label) {
             LayerDense(
                 tag = layerTag,
                 layerType = layerType,
-                neurons = neurons,
+                biases = biases,
                 weights = weights.toTypedArray(),
                 activationFunction = activationFunction,
                 activationFunctionDerivative = activationFunctionDerivative,

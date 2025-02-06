@@ -31,7 +31,7 @@ interface Layer {
 
     var learningRate: Double
 
-    val neurons: Array<Neuron>
+    val biases: DoubleArray
     val weights: Array<DoubleArray>
     val verifyInputs: Boolean
 

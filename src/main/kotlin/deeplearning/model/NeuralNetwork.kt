@@ -48,8 +48,8 @@ class NeuralNetwork(
         layers.find { it.layerType == LayerType.OUTPUT }?.let { outputLayer ->
             val p = totoType.size.toDouble() / totoType.totalNumbers
             val updatedBias = ln(p / (1 - p))
-            outputLayer.neurons.forEach { neuron ->
-                neuron.bias = updatedBias
+            for (i in outputLayer.biases.indices) {
+                outputLayer.biases[i] = updatedBias
             }
         }
     }
