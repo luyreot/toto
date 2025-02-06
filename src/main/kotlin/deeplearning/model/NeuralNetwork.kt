@@ -23,7 +23,7 @@ class NeuralNetwork(
     private var sleep: Boolean = true
 ) {
 
-    var learningRate: Double = 0.01
+    var learningRate: Double = 0.000001
     var loss: Double = 0.0
     var epoch: Int = 0
 
@@ -90,10 +90,6 @@ class NeuralNetwork(
         val output = forward(inputs)
         //println(output.joinToString(", "))
 
-        if (output[0] == 1.0 && targets[0] == 1.0) {
-            println()
-        }
-
         sleep()
 
         calculateLoss(predictions = output, targets = targets).let {
@@ -101,7 +97,10 @@ class NeuralNetwork(
             lossGradients = it.second
         }
 
+        println("Target - ${targets.contentToString()}")
+        println("Output - ${output.contentToString()}")
         println("Loss $loss")
+        println("---")
 
         sleep()
 
@@ -282,7 +281,7 @@ class NeuralNetwork(
             when (of) {
                 is SGD -> {
                     layers.map { it as LayerDense }.forEach { layer ->
-                        of.optimizeWithL2RegularizationAndClippedGradients(
+                        of.optimizeWithL2Regularization(
                             layer = layer,
                             learningRate = learningRate,
                         )

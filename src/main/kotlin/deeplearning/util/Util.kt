@@ -38,6 +38,25 @@ object Util {
         return weights
     }
 
+    /**
+     * He Initialization: For Tanh activations.
+     */
+    fun generateRandomWeightsXavier(
+        neuronsInCurrentLayer: Int,
+        neuronsInPreviousLayer: Int
+    ): Array<DoubleArray> {
+        val limit = sqrt(6.0 / (neuronsInPreviousLayer + neuronsInCurrentLayer))
+        val weights = Array(neuronsInCurrentLayer) { doubleArrayOf() }
+        for (i in 0 until neuronsInCurrentLayer) {
+            val randomWeights = DoubleArray(neuronsInPreviousLayer)
+            for (j in 0 until neuronsInPreviousLayer) {
+                randomWeights[j] = Random.nextDouble(-limit, limit)
+            }
+            weights[i] = randomWeights
+        }
+        return weights
+    }
+
     fun getRandomDouble(min: Int, max: Int): Double {
         require(min < max) { "Invalid range [$min, $max]" }
         return min + Random.nextDouble() * (max - min)

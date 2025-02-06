@@ -2,7 +2,6 @@ package deeplearning.model
 
 import deeplearning.activation.ActivationFunction
 import deeplearning.util.Matrix.multiply
-import deeplearning.util.Util.generateRandomWeightsHe
 
 class LayerDense(
     override val tag: String,
@@ -25,21 +24,14 @@ class LayerDense(
         tag: String,
         layerType: LayerType,
         activationFunction: ActivationFunction,
-        neurons: Array<Neuron>,
-        weights: Array<DoubleArray>
-    ) : this(tag, layerType, neurons, weights, activationFunction, activationFunction)
-
-    constructor(
-        tag: String,
-        layerType: LayerType,
-        activationFunction: ActivationFunction,
         numNeurons: Int,
-        numInputs: Int
+        numInputs: Int,
+        weightInit: (x: Int, y: Int) -> Array<DoubleArray>
     ) : this(
         tag,
         layerType,
         Array<Neuron>(numNeurons) { Neuron() },
-        generateRandomWeightsHe(numNeurons = numNeurons, numInputs = numInputs),
+        weightInit(numNeurons, numInputs),
         activationFunction,
         activationFunction
     ) {

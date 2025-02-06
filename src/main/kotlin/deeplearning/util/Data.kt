@@ -69,7 +69,7 @@ object Data {
     }
 
     fun calculateFrequency(number: Int, draws: List<Draw>, drawIndex: Int, windowSize: Int): Double {
-        val recentDraws = draws.subList(maxOf(0, drawIndex - windowSize + 1), drawIndex + 1)
+        val recentDraws = draws.subList(maxOf(0, drawIndex - windowSize + 1), drawIndex)
         return recentDraws.count { it.numbers.contains(number) }.toDouble() / windowSize
     }
 
@@ -179,5 +179,17 @@ object Data {
 
     fun clipGradient(value: Double, min: Double = -1.0, max: Double = 1.0): Double {
         return value.coerceIn(min, max)
+    }
+
+    fun clipGradients(gradients: Array<DoubleArray>, maxNorm: Double = 1.0) {
+        val totalNorm = sqrt(gradients.sumOf { it.sumOf { x -> x * x } })
+        if (totalNorm > maxNorm) {
+            val scale = maxNorm / (totalNorm + 1e-7)
+            for (i in gradients.indices) {
+                for (j in gradients[i].indices) {
+                    gradients[i][j] *= scale
+                }
+            }
+        }
     }
 }

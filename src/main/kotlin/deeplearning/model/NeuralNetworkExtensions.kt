@@ -1,9 +1,8 @@
 package deeplearning.model
 
 import deeplearning.activation.ActivationFunctionType
-import deeplearning.loss.*
+import deeplearning.loss.LossFunctionType
 import deeplearning.optimization.OptimizationFunctionType
-import deeplearning.optimization.SGD
 import org.json.JSONArray
 import org.json.JSONObject
 import util.IO
@@ -74,21 +73,11 @@ fun NeuralNetwork.restoreFromJson(fileName: String = label) {
 
     this.learningRate = json.getDouble(KEY_LEARNING_RATE)
     this.loss = json.getDouble(KEY_LOSS)
-    val lossFunctionType = LossFunctionType.valueOf(json.getString(KEY_LOSS_FUNCTION))
-    val optimizationFunction = OptimizationFunctionType.valueOf(json.getString(KEY_OPTIMIZATION_FUNCTION))
 
-    this.lossFunction = when (lossFunctionType) {
-        LossFunctionType.BinaryCrossEntropy -> BinaryCrossEntropy
-        LossFunctionType.WeightedBinaryCrossEntropy -> WeightedBinaryCrossEntropy
-        LossFunctionType.CategoricalCrossEntropy -> CategoricalCrossEntropy
-        LossFunctionType.MeanSquaredError -> MeanSquaredError
-    }
-    this.optimizationFunction = when (optimizationFunction) {
-        OptimizationFunctionType.SGD -> SGD
-        OptimizationFunctionType.Momentum -> TODO()
-        OptimizationFunctionType.RMSprop -> TODO()
-        OptimizationFunctionType.Adam -> TODO()
-    }
+    this.lossFunction = LossFunctionType.valueOf(json.getString(KEY_LOSS_FUNCTION))
+        .getLossFunctionType()
+    this.optimizationFunction = OptimizationFunctionType.valueOf(json.getString(KEY_OPTIMIZATION_FUNCTION))
+        .getOptimizationFunctionType()
 
     this.epoch = json.getInt(KEY_EPOCH)
 

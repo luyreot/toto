@@ -1,8 +1,8 @@
 package deeplearning
 
 import deeplearning.activation.ReLU
-import deeplearning.activation.Sigmoid
-import deeplearning.loss.WeightedBinaryCrossEntropy
+import deeplearning.activation.Tanh
+import deeplearning.loss.MeanSquaredError
 import deeplearning.model.LayerDense
 import deeplearning.model.LayerType
 import deeplearning.model.NeuralNetwork
@@ -11,13 +11,15 @@ import deeplearning.optimization.SGD
 import deeplearning.util.Data.getDrawFeatures
 import deeplearning.util.Data.loadDrawings
 import deeplearning.util.Data.normalizeBasedOnMeanVariance
+import deeplearning.util.Util.generateRandomWeightsHe
+import deeplearning.util.Util.generateRandomWeightsXavier
 import model.TotoType
 
 fun trainNeuralNetwork(totoType: TotoType) {
     val nn = NeuralNetwork(
         totoType = totoType,
         label = "training-${totoType.name}",
-        lossFunction = WeightedBinaryCrossEntropy,
+        lossFunction = MeanSquaredError,
         optimizationFunction = SGD,
         sleep = false
     )
@@ -25,7 +27,7 @@ fun trainNeuralNetwork(totoType: TotoType) {
 //    nn.restoreFromJson()
 //    /*
     val inputLayerNeurons = 3 // Number of features
-    val hiddenLayerNeurons = 128
+    val hiddenLayerNeurons = 256
     val outputLayerNeurons = 1
 
     nn.addLayers(
@@ -36,50 +38,57 @@ fun trainNeuralNetwork(totoType: TotoType) {
             layerType = LayerType.HIDDEN,
             activationFunction = ReLU,
             numNeurons = hiddenLayerNeurons,
-            numInputs = inputLayerNeurons
+            numInputs = inputLayerNeurons,
+            weightInit = ::generateRandomWeightsHe
         ),
         LayerDense(
             tag = "Hidden 2",
             layerType = LayerType.HIDDEN,
             activationFunction = ReLU,
             numNeurons = hiddenLayerNeurons,
-            numInputs = hiddenLayerNeurons
+            numInputs = hiddenLayerNeurons,
+            weightInit = ::generateRandomWeightsHe
         ),
         LayerDense(
             tag = "Hidden 3",
             layerType = LayerType.HIDDEN,
             activationFunction = ReLU,
             numNeurons = hiddenLayerNeurons,
-            numInputs = hiddenLayerNeurons
+            numInputs = hiddenLayerNeurons,
+            weightInit = ::generateRandomWeightsHe
         ),
         LayerDense(
             tag = "Hidden 4",
             layerType = LayerType.HIDDEN,
             activationFunction = ReLU,
             numNeurons = hiddenLayerNeurons,
-            numInputs = hiddenLayerNeurons
+            numInputs = hiddenLayerNeurons,
+            weightInit = ::generateRandomWeightsHe
         ),
         LayerDense(
             tag = "Hidden 5",
             layerType = LayerType.HIDDEN,
             activationFunction = ReLU,
             numNeurons = hiddenLayerNeurons,
-            numInputs = hiddenLayerNeurons
+            numInputs = hiddenLayerNeurons,
+            weightInit = ::generateRandomWeightsHe
         ),
         LayerDense(
             tag = "Hidden 6",
             layerType = LayerType.HIDDEN,
             activationFunction = ReLU,
             numNeurons = hiddenLayerNeurons,
-            numInputs = hiddenLayerNeurons
+            numInputs = hiddenLayerNeurons,
+            weightInit = ::generateRandomWeightsHe
         ),
         // Output Layer
         LayerDense(
             tag = "Output",
             layerType = LayerType.OUTPUT,
-            activationFunction = Sigmoid,
+            activationFunction = Tanh,
             numNeurons = outputLayerNeurons,
-            numInputs = hiddenLayerNeurons
+            numInputs = hiddenLayerNeurons,
+            weightInit = ::generateRandomWeightsXavier
         )
     )
 //    */
@@ -114,7 +123,7 @@ fun trainNeuralNetwork(totoType: TotoType) {
                 )
             )
         }
-        targets.add(doubleArrayOf(1.0))
+        targets.add(doubleArrayOf(0.9))
 
         // last
         if (index == drawings.size - 1) {
@@ -138,7 +147,7 @@ fun trainNeuralNetwork(totoType: TotoType) {
         }
         targets.add(
             doubleArrayOf(
-                if (drawings[index + 1].numbers.contains(number)) 1.0 else 0.0
+                if (drawings[index + 1].numbers.contains(number)) 0.9 else -0.9
             )
         )
 
