@@ -8,17 +8,10 @@ object WeightedBinaryCrossEntropy : LossFunction {
 
     fun calculateLoss(predictions: DoubleArray, targets: DoubleArray, weights: DoubleArray): Double {
         val epsilon = 1e-7
-
-//        val totalZeros = targets.count { it == 0.0 }
-//        val totalOnes = targets.count { it == 1.0 }
-//        val weightForOnes = totalZeros.toDouble() / totalOnes.toDouble()
-//        val weightForZeros = 1.0 // Baseline
-
         return predictions.indices.sumOf { i ->
             val prediction = predictions[i].coerceIn(epsilon, 1 - epsilon) // Clamping to avoid log(0)
             val target = targets[i]
             val weight = weights[i] // Weight for each target
-//            val weight = if (target == 1.0) weightForOnes else weightForZeros
             -weight * (target * ln(prediction) + (1 - target) * ln(1 - prediction))
         } / predictions.size
     }
@@ -48,17 +41,10 @@ object WeightedBinaryCrossEntropy : LossFunction {
         weights: DoubleArray
     ): DoubleArray {
         val epsilon = 1e-7 // To prevent division by zero
-
-//        val totalZeros = targets.count { it == 0.0 }
-//        val totalOnes = targets.count { it == 1.0 }
-//        val weightForOnes = totalZeros.toDouble() / totalOnes.toDouble()
-//        val weightForZeros = 1.0 // Baseline
-
         return DoubleArray(predictions.size) { j ->
             val prediction = predictions[j].coerceIn(epsilon, 1 - epsilon)
             val target = targets[j]
             val weight = weights[j]
-//            val weight = if (target == 1.0) weightForOnes else weightForZeros
             weight * (prediction - target) / (prediction * (1 - prediction))
         }
     }

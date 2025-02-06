@@ -26,6 +26,7 @@ object Main {
 
         if (deepLearning) {
             trainNeuralNetwork(totoType)
+//            predictNeuralNetwork(totoType)
             return
         }
 

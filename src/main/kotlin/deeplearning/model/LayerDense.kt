@@ -1,6 +1,8 @@
 package deeplearning.model
 
 import deeplearning.activation.ActivationFunction
+import deeplearning.activation.Sigmoid
+import deeplearning.activation.Tanh
 import deeplearning.util.Matrix.multiply
 
 class LayerDense(
@@ -34,10 +36,7 @@ class LayerDense(
         weightInit(numNeurons, numInputs),
         activationFunction,
         activationFunction
-    ) {
-        accumulatedWeight = Array(weights.size) { DoubleArray(weights[0].size) }
-        accumulatedBias = DoubleArray(biases.size)
-    }
+    )
 
     init {
         if (verifyInputs) {
@@ -48,6 +47,8 @@ class LayerDense(
                 "Not all weights are of the same size.\n${weights.joinToString { "$it" }}"
             }
         }
+        accumulatedWeight = Array(weights.size) { DoubleArray(weights[0].size) }
+        accumulatedBias = DoubleArray(biases.size)
     }
 
     override fun forward(input: DoubleArray): DoubleArray {
@@ -76,7 +77,13 @@ class LayerDense(
 
     override fun backward(lossGradient: DoubleArray): DoubleArray {
         // Compute activation gradient
-        val activationGradient = activationFunctionDerivative.backward(lossGradient)
+        val activationGradient: DoubleArray = if (activationFunction is Sigmoid || activationFunction is Tanh) {
+            lossGradient
+                .zip(activationFunctionDerivative.backward(lossGradient)) { loss, act -> loss * act }
+                .toDoubleArray()
+        } else {
+            activationFunctionDerivative.backward(lossGradient)
+        }
 
         // Initialize arrays for the previous layer's deltas
         val prevDelta = DoubleArray(weights[0].size)
@@ -110,7 +117,13 @@ class LayerDense(
             val lossGradient = lossGradients[i]
 
             // Compute activation gradient for this data point
-            val activationGradient = activationFunctionDerivative.backward(lossGradient)
+            val activationGradient: DoubleArray = if (activationFunction is Sigmoid || activationFunction is Tanh) {
+                lossGradient
+                    .zip(activationFunctionDerivative.backward(lossGradient)) { loss, act -> loss * act }
+                    .toDoubleArray()
+            } else {
+                activationFunctionDerivative.backward(lossGradient)
+            }
 
             // Compute weight & bias gradients
             for (n in biases.indices) {
@@ -136,14 +149,6 @@ class LayerDense(
         }
         for (n in biasGradients.indices) {
             biasGradients[n] = biasGradients[n] / batchSize
-        }
-
-        // **Update weights and biases using SGD**
-        for (n in biases.indices) {
-            for (j in weights[n].indices) {
-                weights[n][j] -= learningRate * weightGradients[n][j]
-            }
-            biases[n] -= learningRate * biasGradients[n]
         }
 
         return prevDeltas

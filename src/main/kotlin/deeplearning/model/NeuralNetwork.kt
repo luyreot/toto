@@ -1,6 +1,7 @@
 package deeplearning.model
 
 import deeplearning.loss.*
+import deeplearning.optimization.Adam
 import deeplearning.optimization.OptimizationFunction
 import deeplearning.optimization.SGD
 import model.TotoType
@@ -23,7 +24,7 @@ class NeuralNetwork(
     private var sleep: Boolean = true
 ) {
 
-    var learningRate: Double = 0.000001
+    var learningRate: Double = 0.001
     var loss: Double = 0.0
     var epoch: Int = 0
 
@@ -149,7 +150,7 @@ class NeuralNetwork(
 
     // region forward propagation
 
-    private fun forward(input: DoubleArray): DoubleArray {
+    fun forward(input: DoubleArray): DoubleArray {
         var output = input
         for (layer in layers) {
             output = layer.forward(output)
@@ -157,7 +158,7 @@ class NeuralNetwork(
         return output
     }
 
-    private fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
+    fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
         var output = inputs
         for (layer in layers) {
             output = layer.forward(output)
@@ -283,8 +284,14 @@ class NeuralNetwork(
                     layers.map { it as LayerDense }.forEach { layer ->
                         of.optimizeWithL2Regularization(
                             layer = layer,
-                            learningRate = learningRate,
+                            learningRate = learningRate
                         )
+                    }
+                }
+
+                is Adam -> {
+                    layers.map { it as LayerDense }.forEach { layer ->
+                        of.optimize(layer)
                     }
                 }
             }

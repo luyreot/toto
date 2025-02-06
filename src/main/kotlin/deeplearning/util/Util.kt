@@ -15,7 +15,7 @@ object Util {
         for (i in 0 until numNeurons) {
             val randomWeights = DoubleArray(numInputs)
             for (j in 0 until numInputs) {
-                randomWeights[j] = getRandomDouble(-1, 1)
+                randomWeights[j] = getRandomDouble(-32, 32)
             }
             weights[i] = randomWeights
         }

@@ -7,3 +7,17 @@ class Features(
     val poissonProbability: Double,
     val inDraw: Int
 )
+
+fun Features.containsNan(): Boolean {
+    if (frequency.isNaN()) return true
+    if (poissonProbability.isNaN()) return true
+
+    return false
+}
+
+fun Features.toDoubleArray(): DoubleArray = doubleArrayOf(
+    frequency,
+    gapSinceLast.toDouble(),
+    poissonProbability,
+    inDraw.toDouble()
+)

@@ -13,14 +13,12 @@ object Data {
     fun getDrawFeatures(
         number: Int,
         draws: List<Draw>,
-        drawIndex: Int,
-        windowSize: Int
+        drawIndex: Int
     ): Features {
         val frequency = calculateFrequency(
             number = number,
             draws = draws,
-            drawIndex = drawIndex,
-            windowSize = windowSize
+            drawIndex = drawIndex
         )
         val gapSinceLast = calculateGapSinceLast(
             number = number,
@@ -28,7 +26,8 @@ object Data {
             drawIndex = drawIndex
         )
         val poissonProbability = calculatePoissonProbability(
-            frequency = frequency
+            frequency = frequency,
+            k = drawIndex
         )
         val inDraw = appearedInDraw(
             number = number,
@@ -68,9 +67,11 @@ object Data {
         return drawings
     }
 
-    fun calculateFrequency(number: Int, draws: List<Draw>, drawIndex: Int, windowSize: Int): Double {
-        val recentDraws = draws.subList(maxOf(0, drawIndex - windowSize + 1), drawIndex)
-        return recentDraws.count { it.numbers.contains(number) }.toDouble() / windowSize
+    fun calculateFrequency(number: Int, draws: List<Draw>, drawIndex: Int): Double {
+        val recentDraws = draws.subList(0, drawIndex)
+        val count = recentDraws.count { it.numbers.contains(number) }.toDouble()
+        val frequency = count / recentDraws.size
+        return frequency
     }
 
     fun calculateGapSinceLast(number: Int, draws: List<Draw>, drawIndex: Int): Int {
@@ -106,6 +107,16 @@ object Data {
             val max = feature.max()
             for (i in feature.indices) {
                 feature[i] = 2 * ((feature[i] - min) / (max - min)) - 1
+            }
+        }
+    }
+
+    fun normalizeBasedOnMinMaxPositive(features: List<DoubleArray>) {
+        features.forEach { feature ->
+            val min = feature.min()
+            val max = feature.max()
+            for (i in feature.indices) {
+                feature[i] = (feature[i] - min) / (max - min) + 1e-6
             }
         }
     }
