@@ -106,7 +106,13 @@ class LayerDense(
     override fun backward(lossGradients: Array<DoubleArray>): Array<DoubleArray> {
         val batchSize = inputs.size
 
-        // Initialize gradient accumulators
+        // Ensure accumulated gradients are initialized
+        if (accumulatedWeight.isEmpty()) {
+            accumulatedWeight = Array(weights.size) { DoubleArray(weights[0].size) { 0.0 } }
+            accumulatedBias = DoubleArray(biases.size) { 0.0 }
+        }
+
+        // Initialize batch gradient accumulators
         val weightGradients = Array(weights.size) { DoubleArray(weights[0].size) { 0.0 } }
         val biasGradients = DoubleArray(biases.size) { 0.0 }
         val prevDeltas = Array(batchSize) { DoubleArray(weights[0].size) { 0.0 } }
@@ -128,12 +134,12 @@ class LayerDense(
             // Compute weight & bias gradients
             for (n in biases.indices) {
                 for (j in weights[n].indices) {
-                    weightGradients[n][j] += input[j] * activationGradient[n]
+                    weightGradients[n][j] += input[j] * activationGradient[n] / batchSize // Average within loop
                 }
-                biasGradients[n] += activationGradient[n]
+                biasGradients[n] += activationGradient[n] / batchSize // Average within loop
             }
 
-            // Compute previous deltas **before** averaging
+            // Compute previous layer deltas
             for (j in weights[0].indices) {
                 for (n in biases.indices) {
                     prevDeltas[i][j] += weights[n][j] * activationGradient[n]
@@ -141,14 +147,14 @@ class LayerDense(
             }
         }
 
-        // **Average gradients over batch size**
-        for (n in weightGradients.indices) {
-            for (j in weightGradients[n].indices) {
-                weightGradients[n][j] = weightGradients[n][j] / batchSize
+        // Accumulate the computed gradients
+        for (n in weights.indices) {
+            for (j in weights[n].indices) {
+                accumulatedWeight[n][j] += weightGradients[n][j] // Store accumulated weights
             }
         }
-        for (n in biasGradients.indices) {
-            biasGradients[n] = biasGradients[n] / batchSize
+        for (n in biases.indices) {
+            accumulatedBias[n] += biasGradients[n] // Store accumulated biases
         }
 
         return prevDeltas

@@ -130,6 +130,15 @@ object Data {
         }
     }
 
+    fun normalizeBasedOnMeanVariance(features: DoubleArray) {
+        val epsilon = 1e-5
+        val mean = features.average()
+        val variance = features.map { (it - mean) * (it - mean) }.average()
+        for (i in features.indices) {
+            features[i] = (features[i] - mean) / sqrt(variance + epsilon)
+        }
+    }
+
     fun smoothTargets(factor: Double, targets: List<DoubleArray>) {
         targets.forEach {
             it[0] = it[0] * (1.0 - factor) + 0.5 * factor
@@ -202,5 +211,30 @@ object Data {
                 }
             }
         }
+    }
+
+    fun shiftRight(arr: DoubleArray): DoubleArray {
+        if (arr.isEmpty()) return arr // Handle empty array case
+
+        val shifted = DoubleArray(arr.size)
+        shifted[0] = arr.last() // Last element moves to the first position
+
+        for (i in 1 until arr.size) {
+            shifted[i] = arr[i - 1] // Shift others to the right
+        }
+
+        return shifted
+    }
+
+    fun shiftLeft(arr: DoubleArray): DoubleArray {
+        if (arr.isEmpty()) return arr // Handle empty array case
+
+        val shifted = DoubleArray(arr.size)
+        for (i in 0 until arr.size - 1) {
+            shifted[i] = arr[i + 1] // Shift elements to the left
+        }
+        shifted[arr.size - 1] = arr[0] // First element moves to last position
+
+        return shifted
     }
 }

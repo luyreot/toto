@@ -24,7 +24,7 @@ class NeuralNetwork(
     private var sleep: Boolean = true
 ) {
 
-    var learningRate: Double = 0.001
+    var learningRate: Double = 0.0001
     var loss: Double = 0.0
     var epoch: Int = 0
 
@@ -89,7 +89,6 @@ class NeuralNetwork(
         this.epoch = epoch
 
         val output = forward(inputs)
-        //println(output.joinToString(", "))
 
         sleep()
 
@@ -98,8 +97,8 @@ class NeuralNetwork(
             lossGradients = it.second
         }
 
-        println("Target - ${targets.contentToString()}")
         println("Output - ${output.contentToString()}")
+        println("Target - ${targets.contentToString()}")
         println("Loss $loss")
         println("---")
 
@@ -124,16 +123,26 @@ class NeuralNetwork(
         this.epoch = epoch
 
         val output = forward(inputs)
-        //output.forEach { row -> println(row.joinToString(", ")) }
 
         sleep()
+
+//        val outputShifted = output.map { shiftRight(it) }.toTypedArray()
 
         calculateLoss(predictions = output, targets = targets).let {
             loss = it.first
             lossGradients = it.second
         }
 
+        println("Output:")
+        output.contentDeepToString().replace("[", "").replace("]", "").replace("1.0", "1:0").let { println(it) }
+        println("Target:")
+        targets.contentDeepToString().replace("[", "").replace("]", "").replace("1.0", "1:0").let { println(it) }
+        val oneIndexes = targets.mapIndexedNotNull { index, target -> if (target.first() == 1.0) index else null }
+        var correctGuesses = 0
+        oneIndexes.forEach { index -> if (output[index].first() == 1.0) correctGuesses++ }
+        println("Correct guesses - $correctGuesses")
         println("Loss $loss")
+        println("---")
 
         sleep()
 
