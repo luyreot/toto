@@ -1,8 +1,8 @@
 import crawler.WebCrawler
-import deeplearning.trainNeuralNetworkBatch
 import model.TotoType
-import myalgo.Drawings
-import myalgo.predictViaNumberDistributionPerPosition
+import systems.deeplearning.trainNeuralNetworkBatch
+import systems.numbercorrelations.Drawings
+import systems.numbercorrelations.predictViaNumberDistributionPerPosition
 import util.Logg
 import util.deepLearning
 import util.webCrawl
@@ -35,8 +35,6 @@ object Main {
 
 //        allDataClasses(totoType)
         predictViaNumberDistributionPerPosition(totoType, allDrawings)
-//        backtestPredictViaNumberDistributionPerPosition(totoType, allDrawings)
-//        backtestCooccurrenceMatrix(totoType, allDrawings)
 
         Logg.p("=== MAIN END ===")
     }
