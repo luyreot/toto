@@ -7,24 +7,24 @@ class LeakyReLU(
     override val type: ActivationFunctionType = ActivationFunctionType.LeakyReLU
 
     override fun forward(input: DoubleArray): DoubleArray {
-        return input.map { relu(it) }.toDoubleArray()
+        return DoubleArray(input.size) { i -> leakyRelu(input[i]) }
     }
 
     override fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
-        return inputs.map { dim1 -> dim1.map { dim2 -> relu(dim2) }.toDoubleArray() }.toTypedArray()
+        return Array(inputs.size) { i -> DoubleArray(inputs[i].size) { j -> leakyRelu(inputs[i][j]) } }
     }
 
     override fun backward(input: DoubleArray): DoubleArray {
-        return input.map { reluDerivative(it) }.toDoubleArray()
+        return DoubleArray(input.size) { i -> leakyReluDerivative(input[i]) }
     }
 
     override fun backward(inputs: Array<DoubleArray>): Array<DoubleArray> {
-        return inputs.map { dim1 -> dim1.map { dim2 -> reluDerivative(dim2) }.toDoubleArray() }.toTypedArray()
+        return Array(inputs.size) { i -> DoubleArray(inputs[i].size) { j -> leakyReluDerivative(inputs[i][j]) } }
     }
 
     // Math
 
-    private fun relu(x: Double): Double = if (x > 0) x else alpha * x
+    private fun leakyRelu(x: Double): Double = if (x > 0) x else alpha * x
 
-    private fun reluDerivative(x: Double): Double = if (x > 0) 1.0 else alpha
+    private fun leakyReluDerivative(x: Double): Double = if (x > 0) 1.0 else alpha
 }

@@ -14,10 +14,12 @@ object Matrix {
         val output = DoubleArray(numNeurons)
 
         for (j in 0 until numNeurons) { // Iterate over each neuron
+            var sum = biases[j] // Start with bias
             // Dot product of input and weights[j]
-            output[j] = input.zip(weights[j]) { inputVal, weightVal ->
-                inputVal * weightVal
-            }.sum() + biases[j] // Add bias
+            for (i in input.indices) {
+                sum += input[i] * weights[j][i]
+            }
+            output[j] = sum
         }
 
         return output
@@ -31,6 +33,10 @@ object Matrix {
         weights: Array<DoubleArray>,
         biases: DoubleArray
     ): Array<DoubleArray> {
+        require(inputs.all { it.size == weights[0].size }) {
+            "All input vectors must have the same size as weight vectors"
+        }
+
         return inputs.map { input ->
             multiply(input, weights, biases)
         }.toTypedArray()

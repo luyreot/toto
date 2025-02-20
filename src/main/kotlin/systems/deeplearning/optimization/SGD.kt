@@ -5,6 +5,9 @@ import systems.deeplearning.util.Data.clipGradient
 
 /**
  * Stochastic Gradient Descent
+ *
+ * TODO - Optimization
+ * Use matrix operation instead of nested for loops.
  */
 object SGD : OptimizationFunction {
 
@@ -38,6 +41,12 @@ object SGD : OptimizationFunction {
         layer.accumulatedBias.fill(0.0) // Reset bias gradients
     }
 
+    /**
+     * L2 regularization (weight decay), which penalizes large weights.
+     *
+     * Although it’s fine to apply L2 regularization to the biases, some optimizers do not apply L2 regularization to biases.
+     * TODO - Add an option (or a flag) to disable bias regularization
+     */
     fun optimizeWithL2Regularization(
         layer: LayerDense,
         learningRate: Double,

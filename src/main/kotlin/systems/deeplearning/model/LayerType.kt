@@ -6,5 +6,6 @@ enum class LayerType {
      */
     INPUT,
     HIDDEN,
+    DROPOUT,
     OUTPUT
 }

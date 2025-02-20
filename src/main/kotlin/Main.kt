@@ -26,6 +26,7 @@ object Main {
 
         if (deepLearning) {
 //            trainNeuralNetworkForIndividualNumbers(totoType)
+//            trainNeuralNetworkNumber(totoType, 1)
             trainNeuralNetworkBatch(totoType)
 //            predictNeuralNetwork(totoType)
             return

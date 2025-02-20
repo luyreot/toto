@@ -2,46 +2,132 @@ package systems.deeplearning.util
 
 import model.TotoType
 import systems.deeplearning.model.Draw
-import systems.deeplearning.model.Features
-import systems.deeplearning.util.Math.calculatePoissonProbability
+import util.Constants.PAGE_YEAR
 import util.IO
 import kotlin.math.pow
 import kotlin.math.sqrt
+
+class NumberMeanOccurrences(
+    totoType: TotoType,
+    yearFilter: Int,
+    draws: List<Draw>
+) {
+
+    val data: Map<Int, Double>
+        get() = _data
+    private val _data = mutableMapOf<Int, Double>()
+
+    init {
+        val filteredDraws = draws.filter { it.year >= yearFilter && it.year != PAGE_YEAR.toInt() }
+        if (filteredDraws.isEmpty()) {
+            throw IllegalArgumentException("There are no draws for $yearFilter.")
+        }
+
+        val years = filteredDraws.map { it.year }.distinct()
+        for (number in 1..totoType.totalNumbers) {
+            val numberYearlyMeans = mutableListOf<Double>()
+            years.forEach { year ->
+                val yearDraws = filteredDraws.filter { it.year == year }
+                val numCount = yearDraws.count { it.numbers.contains(number) }
+                numberYearlyMeans.add(numCount.toDouble() / yearDraws.size)
+            }
+            _data[number] = numberYearlyMeans.sum() / numberYearlyMeans.size
+        }
+    }
+}
+
+class NumberMeanGapsSinceLast(
+    totoType: TotoType,
+    yearFilter: Int,
+    draws: List<Draw>
+) {
+
+    val dataMean: Map<Int, Double>
+        get() = _dataMean
+    private val _dataMean = mutableMapOf<Int, Double>()
+
+    val dataMedian: Map<Int, Double>
+        get() = _dataMedian
+    private val _dataMedian = mutableMapOf<Int, Double>()
+
+    // Gaps that indicate the number is 'hot'
+    val hotGapLessThan: Map<Int, Int>
+        get() = _hotGapLessThan
+    private val _hotGapLessThan = mutableMapOf<Int, Int>()
+    val hotGapMoreThan: Map<Int, Int>
+        get() = _hotGapMoreThan
+    private val _hotGapMoreThan = mutableMapOf<Int, Int>()
+
+    init {
+        val filteredDraws = draws.filter { it.year >= yearFilter && it.year != PAGE_YEAR.toInt() }.reversed()
+        if (filteredDraws.isEmpty()) {
+            throw IllegalArgumentException("There are no draws for $yearFilter.")
+        }
+
+        for (number in 1..totoType.totalNumbers) {
+            val numberIndexes = filteredDraws.mapIndexedNotNull { index, draw ->
+                if (draw.numbers.contains(number)) index else null
+            }
+            val gaps = mutableListOf<Int>()
+            for (i in 1 until numberIndexes.size) {
+                gaps.add(numberIndexes[i] - numberIndexes[i - 1])
+            }
+            // means
+            _dataMean[number] = gaps.sum().toDouble() / gaps.size
+            // medians
+            gaps.sort()
+            val isSizeOdd = gaps.size % 2 != 0
+            val middleIndex = gaps.size / 2
+            if (isSizeOdd) {
+                _dataMedian[number] = gaps[middleIndex].toDouble()
+            } else {
+                _dataMedian[number] = gaps[middleIndex].plus(gaps[middleIndex - 1]).toDouble().div(2)
+            }
+            // top gaps
+            val gapsCounted = gaps.groupingBy { it }.eachCount().toList().sortedBy { it.second }
+            _hotGapMoreThan[number] = gapsCounted.toMap().entries.take(8).map { it.key }.max()
+            _hotGapLessThan[number] = gapsCounted.reversed().toMap().entries.take(5).map { it.key }.max()
+        }
+    }
+}
 
 object Data {
 
     fun getDrawFeatures(
         number: Int,
         draws: List<Draw>,
-        drawIndex: Int
-    ): Features {
-        val frequency = calculateFrequency(
-            number = number,
-            draws = draws,
-            drawIndex = drawIndex
-        )
+        yearFilter: Int,
+        drawIndex: Int,
+        occurrences: NumberMeanOccurrences,
+        gaps: NumberMeanGapsSinceLast
+    ): DoubleArray {
         val gapSinceLast = calculateGapSinceLast(
             number = number,
             draws = draws,
             drawIndex = drawIndex
         )
-        val poissonProbability = calculatePoissonProbability(
-            frequency = frequency,
-            k = drawIndex
-        )
         val inDraw = appearedInDraw(
             number = number,
             draw = draws[drawIndex]
         )
-        val features = Features(
-            number = number,
-            frequency = frequency,
-            gapSinceLast = gapSinceLast,
-            poissonProbability = poissonProbability,
-            inDraw = inDraw
-        )
+        val hotOrCold = when {
+            gapSinceLast <= gaps.hotGapLessThan[number]!! -> 1.0
+            gapSinceLast >= gaps.hotGapMoreThan[number]!! -> 1.0
+            else -> 0.0
+        }
+        val currentYear = draws[drawIndex].year
+        val currentYearDrawId = draws[drawIndex].id
+        val sameYearDraws = draws.filter { it.year == currentYear && it.id <= currentYearDrawId }
+        val numCount = sameYearDraws.count { it.numbers.contains(number) }
+        val numMeanOcc = numCount.toDouble() / sameYearDraws.size
 
-        return features
+        return doubleArrayOf(
+            gapSinceLast.toDouble(),
+            inDraw.toDouble(),
+            hotOrCold,
+            gapSinceLast / gaps.dataMean[number]!!,
+            numMeanOcc - occurrences.data[number]!!
+        )
     }
 
     fun loadDrawings(totoType: TotoType): List<Draw> {
@@ -67,11 +153,8 @@ object Data {
         return drawings
     }
 
-    fun calculateFrequency(number: Int, draws: List<Draw>, drawIndex: Int): Double {
-        val recentDraws = draws.subList(0, drawIndex)
-        val count = recentDraws.count { it.numbers.contains(number) }.toDouble()
-        val frequency = count / recentDraws.size
-        return frequency
+    fun DoubleArray.containsNan(): Boolean {
+        return this.any { it.isNaN() }
     }
 
     fun calculateGapSinceLast(number: Int, draws: List<Draw>, drawIndex: Int): Int {
@@ -201,6 +284,12 @@ object Data {
         return value.coerceIn(min, max)
     }
 
+    /**
+     * This approach to clipping gradients by the norm is effective for preventing large gradients from causing
+     * instability in training. This is especially helpful when training very deep networks or using large learning rates.
+     *
+     * TODO: Add clipGradients method that utilizes clipping by value.
+     */
     fun clipGradients(gradients: Array<DoubleArray>, maxNorm: Double = 1.0) {
         val totalNorm = sqrt(gradients.sumOf { it.sumOf { x -> x * x } })
         if (totalNorm > maxNorm) {

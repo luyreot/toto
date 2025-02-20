@@ -4,7 +4,8 @@ enum class LossFunctionType {
     BinaryCrossEntropy,
     WeightedBinaryCrossEntropy,
     CategoricalCrossEntropy,
-    MeanSquaredError;
+    MeanSquaredError,
+    FocalLoss;
 
     fun getLossFunctionType(): LossFunction {
         return when (this) {
@@ -12,6 +13,7 @@ enum class LossFunctionType {
             WeightedBinaryCrossEntropy -> systems.deeplearning.loss.WeightedBinaryCrossEntropy
             CategoricalCrossEntropy -> systems.deeplearning.loss.CategoricalCrossEntropy
             MeanSquaredError -> systems.deeplearning.loss.MeanSquaredError
+            FocalLoss -> systems.deeplearning.loss.FocalLoss()
         }
     }
 }

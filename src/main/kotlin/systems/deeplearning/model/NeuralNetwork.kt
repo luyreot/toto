@@ -1,10 +1,11 @@
 package systems.deeplearning.model
 
+import model.TotoType
 import systems.deeplearning.loss.*
 import systems.deeplearning.optimization.Adam
+import systems.deeplearning.optimization.LRegularizationType
 import systems.deeplearning.optimization.OptimizationFunction
 import systems.deeplearning.optimization.SGD
-import model.TotoType
 import kotlin.math.ln
 
 /**
@@ -14,6 +15,9 @@ import kotlin.math.ln
  *
  * This falls under the category of sequence prediction or time-series forecasting,
  * depending on how the data is structured and the patterns that will be learnt.
+ *
+ * TODO:
+ * - Reduce the learning rate during training (e.g., decay schedule or step-based learning rate)
  */
 class NeuralNetwork(
     val totoType: TotoType,
@@ -21,22 +25,31 @@ class NeuralNetwork(
     val layers: MutableList<Layer> = mutableListOf(),
     var lossFunction: LossFunction,
     var optimizationFunction: OptimizationFunction,
+    var lRegularizationType: LRegularizationType,
     private var sleep: Boolean = true
 ) {
 
-    var learningRate: Double = 0.0001
+    var learningRate: Double = 0.01
+    var positiveTargetThreshold: Double = 0.5
+    var positiveOutputThreshold: Double = 1.0
     var loss: Double = 0.0
-    var epoch: Int = 0
+    var epoch: Int = 1
 
     private var sleepDuration: Long = 250
 
+    init {
+        (optimizationFunction as? Adam)?.learningRate = learningRate
+    }
+
     fun addLayer(layer: Layer) {
-        layer.learningRate = learningRate
+        if (layer is ActiveLayer) {
+            layer.learningRate = learningRate
+        }
         layers.add(layer)
     }
 
     fun addLayers(vararg layers: Layer) {
-        layers.forEach { it.learningRate = learningRate }
+        layers.filterIsInstance<ActiveLayer>().forEach { it.learningRate = learningRate }
         this.layers.addAll(layers)
     }
 
@@ -46,7 +59,7 @@ class NeuralNetwork(
      */
     fun optimizeOutputLayerBiasesForBinaryImbalances() {
         verifyOutputLayer()
-        layers.find { it.layerType == LayerType.OUTPUT }?.let { outputLayer ->
+        layers.filterIsInstance<ActiveLayer>().find { it.layerType == LayerType.OUTPUT }?.let { outputLayer ->
             val p = totoType.size.toDouble() / totoType.totalNumbers
             val updatedBias = ln(p / (1 - p))
             for (i in outputLayer.biases.indices) {
@@ -76,7 +89,7 @@ class NeuralNetwork(
 
     fun updateLearningRate(rate: Double) {
         learningRate = rate
-        layers.forEach { it.learningRate = rate }
+        layers.filterIsInstance<ActiveLayer>().forEach { it.learningRate = rate }
     }
 
     fun train(
@@ -97,8 +110,30 @@ class NeuralNetwork(
             lossGradients = it.second
         }
 
-        println("Output - ${output.contentToString()}")
-        println("Target - ${targets.contentToString()}")
+        println("Output:\n${output.contentToString()}")
+        println("Target:\n${targets.contentToString()}")
+
+        val targetNegativeCount = targets.count { it < positiveTargetThreshold }
+        val targetPositiveCount = targets.count { it >= positiveTargetThreshold }
+
+        if (targetNegativeCount + targetPositiveCount != targets.size) {
+            throw IllegalArgumentException("Incorrect target negative ($targetNegativeCount), positive ($targetPositiveCount) and total (${targets.size}) count calculation.")
+        }
+
+        val outputNegativeCount = output.count { it < positiveOutputThreshold }
+        val outputPositiveCount = output.count { it >= positiveOutputThreshold }
+
+        val outputNegativeMatches = targets.zip(output)
+            .count { (t, o) -> t < positiveTargetThreshold && o < positiveOutputThreshold }
+        val outputPositiveMatches = targets.zip(output)
+            .count { (t, o) -> t >= positiveTargetThreshold && o >= positiveOutputThreshold }
+
+        println("Predicted 0s: $outputNegativeCount")
+        println("Predicted 1s: $outputPositiveCount")
+        println("Matched 0s: $outputNegativeMatches/$targetNegativeCount")
+        println("Matched 1s: $outputPositiveMatches/$targetPositiveCount")
+        println("Matched:    ${outputNegativeMatches + outputPositiveMatches}/${targetNegativeCount + targetPositiveCount}")
+
         println("Loss $loss")
         println("---")
 
@@ -126,21 +161,55 @@ class NeuralNetwork(
 
         sleep()
 
-//        val outputShifted = output.map { shiftRight(it) }.toTypedArray()
-
         calculateLoss(predictions = output, targets = targets).let {
             loss = it.first
             lossGradients = it.second
         }
 
-        println("Output:")
-        output.contentDeepToString().replace("[", "").replace("]", "").replace("1.0", "1:0").let { println(it) }
-        println("Target:")
-        targets.contentDeepToString().replace("[", "").replace("]", "").replace("1.0", "1:0").let { println(it) }
-        val oneIndexes = targets.mapIndexedNotNull { index, target -> if (target.first() == 1.0) index else null }
-        var correctGuesses = 0
-        oneIndexes.forEach { index -> if (output[index].first() == 1.0) correctGuesses++ }
-        println("Correct guesses - $correctGuesses")
+        println("Batch size: ${output.size}")
+
+        val outputString = output.joinToString("\n") { it.contentToString() }
+        println("Output:\n$outputString")
+        val targetString = targets.joinToString("\n") { it.contentToString() }
+        println("Target:\n$targetString")
+
+        var totalNegativeCount = 0
+        var totalPositiveCount = 0
+        var totalOutputNegativeCount = 0
+        var totalOutputPositiveCount = 0
+        var matchedNegativeCount = 0
+        var matchedPositiveCount = 0
+
+        for (i in output.indices) {
+            val targetNegativeCount = targets[i].count { it < positiveTargetThreshold }
+            val targetPositiveCount = targets[i].count { it >= positiveTargetThreshold }
+
+            if (targetNegativeCount + targetPositiveCount != targets.size) {
+                throw IllegalArgumentException("Incorrect target negative ($targetNegativeCount), positive ($targetPositiveCount) and total (index - $i, size - ${targets[i].size}) count calculation.")
+            }
+
+            val outputNegativeCount = output[i].count { it < positiveOutputThreshold }
+            val outputPositiveCount = output[i].count { it >= positiveOutputThreshold }
+
+            val outputNegativeMatches = targets[i].zip(output[i])
+                .count { (t, o) -> t < positiveTargetThreshold && o < positiveOutputThreshold }
+            val outputPositiveMatches = targets[i].zip(output[i])
+                .count { (t, o) -> t >= positiveTargetThreshold && o >= positiveOutputThreshold }
+
+            totalNegativeCount += targetNegativeCount
+            totalPositiveCount += targetPositiveCount
+            totalOutputNegativeCount += outputNegativeCount
+            totalOutputPositiveCount += outputPositiveCount
+            matchedNegativeCount += outputNegativeMatches
+            matchedPositiveCount += outputPositiveMatches
+        }
+
+        println("Predicted 0s: $totalOutputNegativeCount")
+        println("Predicted 1s: $totalOutputPositiveCount")
+        println("Matched 0s: $matchedNegativeCount/$totalNegativeCount")
+        println("Matched 1s: $matchedPositiveCount/$totalPositiveCount")
+        println("Matched:    ${matchedNegativeCount + matchedPositiveCount}/${totalNegativeCount + totalPositiveCount}")
+
         println("Loss $loss")
         println("---")
 
@@ -160,17 +229,17 @@ class NeuralNetwork(
     // region forward propagation
 
     fun forward(input: DoubleArray): DoubleArray {
-        var output = input
+        var output = input.copyOf()
         for (layer in layers) {
-            output = layer.forward(output)
+            output = layer.forward(output).copyOf()
         }
         return output
     }
 
     fun forward(inputs: Array<DoubleArray>): Array<DoubleArray> {
-        var output = inputs
+        var output = inputs.map { it.copyOf() }.toTypedArray()
         for (layer in layers) {
-            output = layer.forward(output)
+            output = layer.forward(output).map { it.copyOf() }.toTypedArray()
         }
         return output
     }
@@ -198,7 +267,6 @@ class NeuralNetwork(
                 Pair(loss, gradients)
             }
 
-            // TODO: Not tested
             is MeanSquaredError -> {
                 val loss = lf.calculateLoss(predictions = predictions, targets = targets)
                 sleep()
@@ -206,15 +274,21 @@ class NeuralNetwork(
                 Pair(loss, gradients)
             }
 
-            // TODO: Not tested
             is WeightedBinaryCrossEntropy -> {
                 val weights = DoubleArray(targets.size) { i ->
-                    if (targets[i] == 1.0) totoType.totalNumbers.toDouble() / totoType.size else 1.0
+                    if (targets[i] >= positiveTargetThreshold) 10.0 else 0.0
                 }
                 sleep()
                 val loss = lf.calculateLoss(predictions = predictions, targets = targets, weights = weights)
                 sleep()
                 val gradients = lf.calculateGradient(predictions = predictions, targets = targets, weights = weights)
+                Pair(loss, gradients)
+            }
+
+            is FocalLoss -> {
+                val loss = lf.calculateLoss(predictions = predictions, targets = targets)
+                sleep()
+                val gradients = lf.calculateGradient(predictions = predictions, targets = targets)
                 Pair(loss, gradients)
             }
 
@@ -241,7 +315,6 @@ class NeuralNetwork(
                 Pair(loss, gradients)
             }
 
-            // TODO: Not tested
             is MeanSquaredError -> {
                 val loss = lf.calculateLoss(predictions = predictions, targets = targets)
                 sleep()
@@ -252,7 +325,7 @@ class NeuralNetwork(
             is WeightedBinaryCrossEntropy -> {
                 val weights = Array(targets.size) { i ->
                     DoubleArray(targets[i].size) { j ->
-                        if (targets[i][j] == 1.0) totoType.totalNumbers.toDouble() / totoType.size else 1.0
+                        if (targets[i][j] >= positiveTargetThreshold) 10.0 else 0.0
                     }
                 }
                 sleep()
@@ -262,22 +335,29 @@ class NeuralNetwork(
                 Pair(loss, gradients)
             }
 
+            is FocalLoss -> {
+                val loss = lf.calculateLoss(predictions = predictions, targets = targets)
+                sleep()
+                val gradients = lf.calculateGradient(predictions = predictions, targets = targets)
+                Pair(loss, gradients)
+            }
+
             else -> throw IllegalArgumentException("Unknown loss function type ${lf.type}.")
         }
     }
 
     private fun backward(lossGradient: DoubleArray): DoubleArray {
-        var gradient = lossGradient
+        var gradient = lossGradient.copyOf()
         for (layer in layers.reversed()) {
-            gradient = layer.backward(gradient)
+            gradient = layer.backward(gradient).copyOf()
         }
         return gradient
     }
 
     private fun backward(lossGradients: Array<DoubleArray>): Array<DoubleArray> {
-        var gradients = lossGradients
+        var gradients = lossGradients.map { it.copyOf() }.toTypedArray()
         for (layer in layers.reversed()) {
-            gradients = layer.backward(gradients)
+            gradients = layer.backward(gradients).map { it.copyOf() }.toTypedArray()
         }
         return gradients
     }
@@ -287,21 +367,22 @@ class NeuralNetwork(
     // region optimize
 
     private fun optimize() {
-        optimizationFunction.let { of ->
-            when (of) {
-                is SGD -> {
-                    layers.map { it as LayerDense }.forEach { layer ->
-                        of.optimizeWithL2Regularization(
-                            layer = layer,
-                            learningRate = learningRate
-                        )
-                    }
+        if (lRegularizationType != LRegularizationType.NONE) {
+            layers.filterIsInstance<LayerDense>().forEach { layer ->
+                when (lRegularizationType) {
+                    LRegularizationType.NONE -> {}
+                    LRegularizationType.L1 -> layer.applyL1Regularization()
+                    LRegularizationType.L2 -> layer.applyL2Regularization()
                 }
+            }
+        }
 
-                is Adam -> {
-                    layers.map { it as LayerDense }.forEach { layer ->
-                        of.optimize(layer)
-                    }
+        layers.filterIsInstance<LayerDense>().forEach { layer ->
+            optimizationFunction.let { of ->
+                when (of) {
+                    is SGD -> of.optimize(layer, learningRate)
+                    is Adam -> of.optimize(layer)
+                    else -> throw IllegalArgumentException("Unknown optimizer  ${of.type}.")
                 }
             }
         }

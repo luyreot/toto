@@ -1,10 +1,10 @@
 package systems.deeplearning.model
 
+import org.json.JSONArray
+import org.json.JSONObject
 import systems.deeplearning.activation.ActivationFunctionType
 import systems.deeplearning.loss.LossFunctionType
 import systems.deeplearning.optimization.OptimizationFunctionType
-import org.json.JSONArray
-import org.json.JSONObject
 import util.IO
 
 // Network
@@ -24,11 +24,12 @@ private const val KEY_ACTIVATION_FUNCTION = "activationFunction"
 private const val KEY_ACTIVATION_FUNCTION_DERIVATIVE = "activationFunctionDerivative"
 private const val KEY_LAYER_LEARNING_RATE = "layerLearningRate"
 
+// TODO add logic for dropout layers
 fun NeuralNetwork.cacheAsJson(fileName: String = label) {
     val json = JSONObject()
 
     val jsonArrLayers = JSONArray()
-    layers.forEach { layer ->
+    layers.filterIsInstance<LayerDense>().forEach { layer ->
         val jsonLayer = JSONObject()
 
         jsonLayer.put(KEY_LAYER_TAG, layer.tag)
@@ -67,6 +68,7 @@ fun NeuralNetwork.cacheAsJson(fileName: String = label) {
     )
 }
 
+// TODO add logic for dropout layers
 fun NeuralNetwork.restoreFromJson(fileName: String = label) {
     val fileContents = IO.getTxtFileContents(fileName = "files/nn/$fileName.json")
     val json = JSONObject(fileContents.first())

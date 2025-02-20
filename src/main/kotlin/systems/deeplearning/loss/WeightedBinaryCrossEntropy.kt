@@ -2,6 +2,10 @@ package systems.deeplearning.loss
 
 import kotlin.math.ln
 
+/**
+ * TODO - Optimizations
+ * - Add a check to ensure that the shapes of predictions, targets, and weights match (i.e., all arrays have the same dimensions)
+ */
 object WeightedBinaryCrossEntropy : LossFunction {
 
     override val type: LossFunctionType = LossFunctionType.WeightedBinaryCrossEntropy
@@ -9,7 +13,8 @@ object WeightedBinaryCrossEntropy : LossFunction {
     fun calculateLoss(predictions: DoubleArray, targets: DoubleArray, weights: DoubleArray): Double {
         val epsilon = 1e-7
         return predictions.indices.sumOf { i ->
-            val prediction = predictions[i].coerceIn(epsilon, 1 - epsilon) // Clamping to avoid log(0)
+            // Clamping to avoid log(0). Ensures that predictions never hit exactly 0 or 1, preventing log(0).
+            val prediction = predictions[i].coerceIn(epsilon, 1 - epsilon)
             val target = targets[i]
             val weight = weights[i] // Weight for each target
             -weight * (target * ln(prediction) + (1 - target) * ln(1 - prediction))

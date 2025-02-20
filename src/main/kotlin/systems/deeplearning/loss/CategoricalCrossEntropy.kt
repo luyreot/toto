@@ -5,12 +5,18 @@ import kotlin.math.ln
 /**
  * Categorical Cross-Entropy
  * Used for classification problems where outputs are probabilities.
+ *
+ * For typical categorical classification with one-hot encoded targets, the original approach is preferred
+ * due to its numerical stability, efficiency, and correct application of categorical cross-entropy derivatives.
+ *
+ * For soft targets or when working with non-one-hot labels, the alternative approach might be more appropriate,
+ * as it handles all classes equally and does not rely on the one-hot encoding assumption.
  */
 object CategoricalCrossEntropy : LossFunction {
     override val type: LossFunctionType = LossFunctionType.CategoricalCrossEntropy
 
     /**
-     * zip: The zip function combines the predicted and actual arrays element by element,
+     * The zip function combines the predicted and actual arrays element by element,
      * allowing you to iterate over both arrays simultaneously.
      * - predicted[i] is the predicted probability for class i.
      * - actual[i] is the true label, either 1 (for the correct class) or 0 (for other classes).
@@ -36,7 +42,27 @@ object CategoricalCrossEntropy : LossFunction {
         }.sum()
     }
 
-    fun calculateLossDerivative(predictions: DoubleArray, targets: DoubleArray): DoubleArray {
+    /**
+     * Handling of Zero Predictions:
+     * Uses coerceAtLeast(1e-15) on the prediction to avoid division by zero errors during the calculation of the gradient.
+     * This ensures that the prediction is never zero, which would result in division by zero errors when computing the derivative.
+     *
+     * Derivative Calculation:
+     * Uses the standard formula for categorical cross-entropy when using one-hot encoded vectors.
+     *
+     * Numerical Stability:
+     * Ensures that gradients are computed only where the target is 1 (for the true class),
+     * which can be more numerically stable when working with one-hot encoded labels.
+     * It effectively ignores the predictions where the target is 0.
+     *
+     * Efficiency:
+     * Computes only non-zero gradients for the class where the target is 1.
+     * This makes it more efficient in cases where most of the targets are 0.
+     *
+     * Better:
+     *
+     */
+    fun calculateGradient(predictions: DoubleArray, targets: DoubleArray): DoubleArray {
         return predictions.indices.map { i ->
             val pred = predictions[i].coerceAtLeast(1e-15)  // Ensure no division by zero
             if (targets[i] == 1.0) {
@@ -44,6 +70,38 @@ object CategoricalCrossEntropy : LossFunction {
             } else {
                 0.0  // If y_i is 0, the derivative is 0
             }
+        }.toDoubleArray()
+    }
+
+    /**
+     * Handling of Zero Predictions:
+     * Adds a small value (epsilon = 1e-15) to the prediction in the denominator.
+     * This is another way of avoiding division by zero errors. Both methods effectively prevent division by zero,
+     * but the alternative approach ensures that the denominator is never zero by adding a small number rather
+     * than modifying the prediction directly.
+     *
+     * Derivative Calculation:
+     * This approach is a bit different from the standard gradient formula, as it does not use the exact logic
+     * for one-hot encoded targets (which would typically be 0 for non-target classes).
+     * It applies the same formula to all predictions, even if the target is 0.
+     *
+     * Numerical Stability:
+     * Calculates a gradient even for the target classes where y_i = 0,
+     * which could lead to slightly different behavior depending on the input.
+     * However, it’s a more general way of computing the gradient that works even if targets aren't exactly one-hot encoded
+     * or if the model is not certain between multiple classes.
+     *
+     * Efficiency:
+     * Computes a gradient for every class, regardless of whether the target is 0 or 1.
+     * This could lead to more computational work, especially in scenarios where the labels are one-hot encoded and most targets are 0.
+     *
+     * Better:
+     *
+     */
+    fun calculateGradientAlt(predictions: DoubleArray, targets: DoubleArray): DoubleArray {
+        val epsilon = 1e-15 // To avoid division by zero
+        return predictions.indices.map { i ->
+            -targets[i] / (predictions[i] + epsilon)
         }.toDoubleArray()
     }
 
@@ -69,7 +127,10 @@ object CategoricalCrossEntropy : LossFunction {
         return totalLoss / predictions.size // Return average loss across the batch
     }
 
-    fun calculateLossDerivative(predictions: Array<DoubleArray>, targets: Array<DoubleArray>): Array<DoubleArray> {
+    /**
+     * See [calculateLossDerivative].
+     */
+    fun calculateGradient(predictions: Array<DoubleArray>, targets: Array<DoubleArray>): Array<DoubleArray> {
         // Ensure the sizes of predicted and actual match
         require(predictions.size == targets.size) { "Batch sizes of predicted and actual must match" }
 
@@ -86,17 +147,9 @@ object CategoricalCrossEntropy : LossFunction {
     }
 
     /**
-     * The loss gradient is the key ingredient for the backward pass.
-     * It is used to update the weights in the network so that the predictions get closer to the targets over time.
+     * See [calculateLossDerivativeAlt]
      */
-    fun calculateGradient(predictions: DoubleArray, targets: DoubleArray): DoubleArray {
-        val epsilon = 1e-15 // To avoid division by zero
-        return predictions.indices.map { i ->
-            -targets[i] / (predictions[i] + epsilon)
-        }.toDoubleArray()
-    }
-
-    fun calculateGradient(predictions: Array<DoubleArray>, targets: Array<DoubleArray>): Array<DoubleArray> {
+    fun calculateGradientAlt(predictions: Array<DoubleArray>, targets: Array<DoubleArray>): Array<DoubleArray> {
         val epsilon = 1e-15 // To avoid division by zero
         return Array(predictions.size) { i ->
             DoubleArray(predictions[i].size) { j ->

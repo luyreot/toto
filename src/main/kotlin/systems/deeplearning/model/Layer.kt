@@ -1,22 +1,6 @@
 package systems.deeplearning.model
 
-import systems.deeplearning.activation.ActivationFunction
-
 /**
- * Good practices.
- *
- * Input data
- * Scale data to a range, i.e. between -0.1 and 0.1 or -1 and 1.
- *
- * Weights
- * Initialize the weights in a down-scaled way, randomly, i.e. between -0.1 and 0.1 or -1 and 1.
- * This is done because we hope the values tend to be between those ranges.
- * If weights are big, i.e. 5, 10, etc., the data that goes through the network might get bigger and in the end 'explode'.
- *
- * Biases
- * Tend to init as 0. Sometimes the neurons will not fire, not produce an output. This means that the network is dead.
- * Then, init the biases with a non-zero value.
- *
  * Activation
  * Generally the output layer will have a different activation function than the input and hidden layers.
  *
@@ -29,16 +13,14 @@ interface Layer {
 
     val layerType: LayerType
 
-    var learningRate: Double
 
-    val biases: DoubleArray
-    val weights: Array<DoubleArray>
-    val verifyInputs: Boolean
-
-    val activationFunction: ActivationFunction
-    val activationFunctionDerivative: ActivationFunction
 
     fun forward(input: DoubleArray): DoubleArray
+
+    /**
+     * TODO - Optimizations
+     * - do parallel matrix multiplication
+     */
     fun forward(inputs: Array<DoubleArray>): Array<DoubleArray>
 
     /**
@@ -61,5 +43,6 @@ interface Layer {
      * [lossGradient] is effectively the delta of the output layer.
      */
     fun backward(lossGradient: DoubleArray): DoubleArray
+
     fun backward(lossGradients: Array<DoubleArray>): Array<DoubleArray>
 }

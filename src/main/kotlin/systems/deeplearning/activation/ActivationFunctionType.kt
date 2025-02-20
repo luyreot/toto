@@ -12,7 +12,7 @@ enum class ActivationFunctionType {
             ReLU -> systems.deeplearning.activation.ReLU
             LeakyReLU -> systems.deeplearning.activation.LeakyReLU()
             Sigmoid -> systems.deeplearning.activation.Sigmoid
-            Softmax -> systems.deeplearning.activation.Softmax()
+            Softmax -> systems.deeplearning.activation.Softmax
             Tahn -> systems.deeplearning.activation.Tanh
         }
     }

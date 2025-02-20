@@ -11,50 +11,23 @@ import kotlin.random.Random
 object Util {
 
     fun generateRandomWeights(numNeurons: Int, numInputs: Int): Array<DoubleArray> {
-        val weights = Array(numNeurons) { doubleArrayOf() }
-        for (i in 0 until numNeurons) {
-            val randomWeights = DoubleArray(numInputs)
-            for (j in 0 until numInputs) {
-                randomWeights[j] = getRandomDouble(-16, 16)
-            }
-            weights[i] = randomWeights
-        }
-        return weights
+        return Array(numNeurons) { DoubleArray(numInputs) { Random.nextDouble(-1.0, 1.0) } }
     }
 
     /**
-     * He Initialization: For ReLU activations.
+     * He Initialization: Suitable for ReLU activations.
      */
     fun generateRandomWeightsHe(numNeurons: Int, numInputs: Int): Array<DoubleArray> {
         val stdDev = sqrt(2.0 / numInputs)
-        val weights = Array(numNeurons) { doubleArrayOf() }
-        for (i in 0 until numNeurons) {
-            val randomWeights = DoubleArray(numInputs)
-            for (j in 0 until numInputs) {
-                randomWeights[j] = getRandomDouble(-1, 1) * stdDev
-            }
-            weights[i] = randomWeights
-        }
-        return weights
+        return Array(numNeurons) { DoubleArray(numInputs) { Random.nextDouble(-1.0, 1.0) * stdDev } }
     }
 
     /**
-     * He Initialization: For Tanh activations.
+     * Xavier Initialization: Suitable for Tanh and Sigmoid activations.
      */
-    fun generateRandomWeightsXavier(
-        neuronsInCurrentLayer: Int,
-        neuronsInPreviousLayer: Int
-    ): Array<DoubleArray> {
+    fun generateRandomWeightsXavier(neuronsInCurrentLayer: Int, neuronsInPreviousLayer: Int): Array<DoubleArray> {
         val limit = sqrt(6.0 / (neuronsInPreviousLayer + neuronsInCurrentLayer))
-        val weights = Array(neuronsInCurrentLayer) { doubleArrayOf() }
-        for (i in 0 until neuronsInCurrentLayer) {
-            val randomWeights = DoubleArray(neuronsInPreviousLayer)
-            for (j in 0 until neuronsInPreviousLayer) {
-                randomWeights[j] = Random.nextDouble(-limit, limit)
-            }
-            weights[i] = randomWeights
-        }
-        return weights
+        return Array(neuronsInCurrentLayer) { DoubleArray(neuronsInPreviousLayer) { Random.nextDouble(-limit, limit) } }
     }
 
     fun getRandomDouble(min: Int, max: Int): Double {

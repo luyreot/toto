@@ -2,72 +2,79 @@ package systems.deeplearning
 
 import model.TotoType
 import systems.deeplearning.activation.ReLU
-import systems.deeplearning.activation.Sigmoid
-import systems.deeplearning.loss.BinaryCrossEntropy
+import systems.deeplearning.activation.Tanh
+import systems.deeplearning.loss.FocalLoss
 import systems.deeplearning.model.*
 import systems.deeplearning.optimization.Adam
-import systems.deeplearning.util.Data.getDrawFeatures
+import systems.deeplearning.optimization.LRegularizationType
 import systems.deeplearning.util.Data.loadDrawings
-import systems.deeplearning.util.Data.normalizeBasedOnMeanVariance
-import systems.deeplearning.util.Util.generateRandomWeights
+import systems.deeplearning.util.Data.normalizeBasedOnMinMax
+import systems.deeplearning.util.Util.generateRandomWeightsHe
 import systems.deeplearning.util.Util.generateRandomWeightsXavier
 
-fun predictNeuralNetwork(totoType: TotoType) {
-    val draws = loadDrawings(totoType)
+fun trainNeuralNetworkBatch(totoType: TotoType) {
+    val yearFilter = 2019
+    val draws = loadDrawings(totoType).filter { it.year >= yearFilter - 1 }
+    val batchSize = 10
 
-    val subdraws = draws
+    val featuresSingle = mutableListOf<DoubleArray>()
+    val targetsSingle = mutableListOf<DoubleArray>()
 
-    val lastIndex = subdraws.size - 1
-    val results = mutableMapOf<Int, Double>()
-
-    for (number in 1..totoType.totalNumbers) {
-        val nn = NeuralNetwork(
-            totoType = totoType,
-            label = "training-${totoType.name}-$number",
-            lossFunction = BinaryCrossEntropy,
-            optimizationFunction = Adam(),
-            sleep = false
-        )
-        nn.restoreFromJson()
-
-        val features = getDrawFeatures(
-            number = number,
-            draws = subdraws,
-            drawIndex = lastIndex
-        ).let {
-            doubleArrayOf(
-                it.frequency,
-                it.gapSinceLast.toDouble(),
-                it.poissonProbability,
-                it.inDraw.toDouble()
-            )
+    draws.indices.forEach { index ->
+        if (draws[index].year < yearFilter) {
+            return@forEach
         }
 
-        val output = nn.forward(features)
-        results[number] = output.first()
+        val features = DoubleArray(totoType.totalNumbers) { 0.0 }
+        val targets = DoubleArray(totoType.totalNumbers) { 0.0 }
+
+        draws[index].numbers.forEach draw@{ number ->
+            targets[number - 1] = 1.0
+
+            for (num in 1..totoType.totalNumbers) {
+                for (i in index - 1 downTo 0) {
+                    if (num in draws[i].numbers) {
+                        features[num - 1] = (index - i).toDouble()
+                        break
+                    }
+                }
+            }
+        }
+
+//        normalizeBasedOnMeanVariance(features)
+        featuresSingle.add(features)
+        targetsSingle.add(targets)
     }
 
-    val numbersNotInNextDraw = results.filter { it.value == 0.0 }.map { it.key }
-    val numbersInNextDraw = results.filter { it.value == 1.0 }.map { it.key }
+    featuresSingle.removeLast()
+    normalizeBasedOnMinMax(featuresSingle)
+    targetsSingle.removeFirst()
 
-    println("Numbers not in next draw:")
-    println(numbersNotInNextDraw.toList())
-    println("Numbers in next draw:")
-    println(numbersInNextDraw.toList())
-}
-
-fun trainNeuralNetworkBatch(totoType: TotoType) {
     val nn = NeuralNetwork(
         totoType = totoType,
         label = "training-${totoType.name}",
-        lossFunction = BinaryCrossEntropy,
+        lossFunction = FocalLoss(targetThreshold = 0.5, gamma = 2.0),
         optimizationFunction = Adam(),
+        lRegularizationType = LRegularizationType.L2,
         sleep = true
     )
 
-    val inputLayerNeurons = 4 // Number of features
-    val hiddenLayerNeurons = 128
-    val outputLayerNeurons = 1
+    nn.learningRate = 0.001
+    nn.positiveOutputThreshold = 0.0
+
+//    nn.restoreFromJson()
+
+//    /*
+    val hiddenLayer1Neurons = 512
+    val hiddenLayer1Inputs = totoType.totalNumbers
+    val dropoutLayer1Rate = 0.5
+    val hiddenLayer2Neurons = 256
+    val hiddenLayer2Inputs = hiddenLayer1Neurons
+    val dropoutLayer2Rate = 0.4
+    val hiddenLayer3Neurons = 128
+    val hiddenLayer3Inputs = hiddenLayer2Neurons
+    val outputLayerNeurons = totoType.totalNumbers
+    val outputLayerInputs = hiddenLayer3Neurons
 
     nn.addLayers(
         // Input Layer is represented by the inputs array
@@ -76,236 +83,58 @@ fun trainNeuralNetworkBatch(totoType: TotoType) {
             tag = "Hidden 1",
             layerType = LayerType.HIDDEN,
             activationFunction = ReLU,
-            numNeurons = hiddenLayerNeurons,
-            numInputs = inputLayerNeurons,
-            weightInit = ::generateRandomWeights
+            numNeurons = hiddenLayer1Neurons,
+            numInputs = hiddenLayer1Inputs,
+            weightInit = ::generateRandomWeightsHe
+        ),
+        LayerDropout(
+            tag = "Dropout 1",
+            layerType = LayerType.DROPOUT,
+            dropoutRate = dropoutLayer1Rate
         ),
         LayerDense(
             tag = "Hidden 2",
             layerType = LayerType.HIDDEN,
             activationFunction = ReLU,
-            numNeurons = hiddenLayerNeurons,
-            numInputs = hiddenLayerNeurons,
-            weightInit = ::generateRandomWeights
+            numNeurons = hiddenLayer2Neurons,
+            numInputs = hiddenLayer2Inputs,
+            weightInit = ::generateRandomWeightsHe
+        ),
+        LayerDropout(
+            tag = "Dropout 2",
+            layerType = LayerType.DROPOUT,
+            dropoutRate = dropoutLayer2Rate
         ),
         LayerDense(
             tag = "Hidden 3",
             layerType = LayerType.HIDDEN,
             activationFunction = ReLU,
-            numNeurons = hiddenLayerNeurons,
-            numInputs = hiddenLayerNeurons,
-            weightInit = ::generateRandomWeights
-        ),
-        LayerDense(
-            tag = "Hidden 4",
-            layerType = LayerType.HIDDEN,
-            activationFunction = ReLU,
-            numNeurons = hiddenLayerNeurons,
-            numInputs = hiddenLayerNeurons,
-            weightInit = ::generateRandomWeights
+            numNeurons = hiddenLayer3Neurons,
+            numInputs = hiddenLayer3Inputs,
+            weightInit = ::generateRandomWeightsHe
         ),
         // Output Layer
         LayerDense(
             tag = "Output",
             layerType = LayerType.OUTPUT,
-            activationFunction = Sigmoid,
+            activationFunction = Tanh,
             numNeurons = outputLayerNeurons,
-            numInputs = hiddenLayerNeurons,
-            weightInit = ::generateRandomWeights
+            numInputs = outputLayerInputs,
+            weightInit = ::generateRandomWeightsXavier
         )
     )
-
+//    */
 //    nn.optimizeOutputLayerBiasesForBinaryImbalances()
-
-    val draws = loadDrawings(totoType)
-    val features = mutableListOf<Array<DoubleArray>>()
-    val targets = mutableListOf<Array<DoubleArray>>()
-
-    draws.indices.forEach { index ->
-        if (index >= draws.size - 1) {
-            return@forEach
-        }
-
-        val featuresArr = Array(totoType.totalNumbers) { doubleArrayOf() }
-        val targetsArr = Array(totoType.totalNumbers) { doubleArrayOf() }
-
-        for (number in 1..totoType.totalNumbers) {
-            val drawFeatures = getDrawFeatures(
-                number = number,
-                draws = draws,
-                drawIndex = index
-            )
-
-            if (drawFeatures.containsNan()) {
-                return@forEach
-            }
-
-            val featuresArray = drawFeatures.toDoubleArray()
-            normalizeBasedOnMeanVariance(featuresArray)
-            val inNextDraw = if (draws[index + 1].numbers.contains(number)) 1.0 else 0.0
-
-            featuresArr[number - 1] = featuresArray
-            targetsArr[number - 1] = doubleArrayOf(inNextDraw)
-        }
-
-        features.add(featuresArr)
-        targets.add(targetsArr)
-    }
 
     val epochs = 100
     val epochStart = nn.epoch
     for (epoch in epochStart..epochs) {
         println("Epoch $epoch/$epochs")
 
-        features.forEachIndexed { index, input ->
-            println("Features Index - $index / ${features.size}")
-            nn.train(epoch = epoch, inputs = input, targets = targets[index])
+        for (i in featuresSingle.indices) {
+            println("Features Index - $i / ${featuresSingle.size}")
+            nn.train(epoch = epoch, inputs = featuresSingle[i], targets = targetsSingle[i])
             nn.cacheAsJson()
         }
     }
 }
-
-fun trainNeuralNetworkForIndividualNumbers(totoType: TotoType) {
-    val draws = loadDrawings(totoType)
-
-    for (number in 1..totoType.totalNumbers) {
-        println("Number - $number")
-
-        val nn = NeuralNetwork(
-            totoType = totoType,
-            label = "training-${totoType.name}-$number",
-            lossFunction = BinaryCrossEntropy,
-            optimizationFunction = Adam(),
-            sleep = true
-        )
-
-//        nn.restoreFromJson()
-//        /*
-        val inputLayerNeurons = 4 // Number of features
-        val hiddenLayerNeurons = 256
-        val outputLayerNeurons = 1
-
-        nn.addLayers(
-            // Input Layer is represented by the inputs array
-            // Hidden Layer(s)
-            LayerDense(
-                tag = "Hidden 1",
-                layerType = LayerType.HIDDEN,
-                activationFunction = ReLU,
-                numNeurons = hiddenLayerNeurons,
-                numInputs = inputLayerNeurons,
-                weightInit = ::generateRandomWeights
-            ),
-            LayerDense(
-                tag = "Hidden 2",
-                layerType = LayerType.HIDDEN,
-                activationFunction = ReLU,
-                numNeurons = hiddenLayerNeurons,
-                numInputs = hiddenLayerNeurons,
-                weightInit = ::generateRandomWeights
-            ),
-            LayerDense(
-                tag = "Hidden 3",
-                layerType = LayerType.HIDDEN,
-                activationFunction = ReLU,
-                numNeurons = hiddenLayerNeurons,
-                numInputs = hiddenLayerNeurons,
-                weightInit = ::generateRandomWeights
-            ),
-            LayerDense(
-                tag = "Hidden 4",
-                layerType = LayerType.HIDDEN,
-                activationFunction = ReLU,
-                numNeurons = hiddenLayerNeurons,
-                numInputs = hiddenLayerNeurons,
-                weightInit = ::generateRandomWeights
-            ),
-            LayerDense(
-                tag = "Hidden 5",
-                layerType = LayerType.HIDDEN,
-                activationFunction = ReLU,
-                numNeurons = hiddenLayerNeurons,
-                numInputs = hiddenLayerNeurons,
-                weightInit = ::generateRandomWeights
-            ),
-            LayerDense(
-                tag = "Hidden 6",
-                layerType = LayerType.HIDDEN,
-                activationFunction = ReLU,
-                numNeurons = hiddenLayerNeurons,
-                numInputs = hiddenLayerNeurons,
-                weightInit = ::generateRandomWeights
-            ),
-            // Output Layer
-            LayerDense(
-                tag = "Output",
-                layerType = LayerType.OUTPUT,
-                activationFunction = Sigmoid,
-                numNeurons = outputLayerNeurons,
-                numInputs = hiddenLayerNeurons,
-                weightInit = ::generateRandomWeightsXavier
-            )
-        )
-//        */
-//        nn.optimizeOutputLayerBiasesForBinaryImbalances()
-
-        val indexes = draws.mapIndexedNotNull { index, draw ->
-            if (draw.numbers.contains(number)) index else null
-        }
-
-        val features = mutableListOf<DoubleArray>()
-        val targets = mutableListOf<DoubleArray>()
-        for (i in indexes.indices) {
-            if (indexes[i] == 0) continue
-
-            val index = indexes[i]
-
-            var feature = getDrawFeatures(
-                number = number,
-                draws = draws,
-                drawIndex = index - 1
-            )
-            if (!feature.containsNan()) {
-                features.add(feature.toDoubleArray())
-                targets.add(doubleArrayOf(1.0))
-            }
-
-            // last
-            if (index == draws.size - 1) {
-                break
-            }
-
-            feature = getDrawFeatures(
-                number = number,
-                draws = draws,
-                drawIndex = index
-            )
-            if (!feature.containsNan()) {
-                features.add(feature.toDoubleArray())
-                targets.add(
-                    doubleArrayOf(
-                        if (draws[index + 1].numbers.contains(number)) 1.0 else 0.0
-                    )
-                )
-            }
-        }
-
-        normalizeBasedOnMeanVariance(features)
-//        smoothTargets(0.001, targets)
-
-        val epochs = 100
-        val epochStart = nn.epoch
-        for (epoch in epochStart..epochs) {
-            println("Epoch $epoch/$epochs")
-
-            features.forEachIndexed { index, input ->
-                println("Features Index - $index / ${features.size}")
-                nn.train(epoch = epoch, inputs = input, targets = targets[index])
-                nn.cacheAsJson()
-            }
-
-            break
-        }
-    }
-}
-
