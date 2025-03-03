@@ -29,7 +29,7 @@ class NeuralNetwork(
     private var sleep: Boolean = true
 ) {
 
-    var learningRate: Double = 0.01
+    var learningRate: Double = 0.001
     var positiveTargetThreshold: Double = 0.5
     var positiveOutputThreshold: Double = 1.0
     var loss: Double = 0.0

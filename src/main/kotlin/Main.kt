@@ -1,6 +1,6 @@
 import crawler.WebCrawler
 import model.TotoType
-import systems.deeplearning.trainNeuralNetworkBatch
+import systems.deeplearning.nnTrainIndividualNumber
 import systems.numbercorrelations.Drawings
 import systems.numbercorrelations.predictViaNumberDistributionPerPosition
 import util.Logg
@@ -25,10 +25,11 @@ object Main {
         val totoType = TotoType.T_6X49
 
         if (deepLearning) {
-//            trainNeuralNetworkForIndividualNumbers(totoType)
-//            trainNeuralNetworkNumber(totoType, 1)
-            trainNeuralNetworkBatch(totoType)
-//            predictNeuralNetwork(totoType)
+//            nnTrainDrawFullNumberSet(totoType)
+//            nnTestDrawFullNumberSet(totoType)
+
+            nnTrainIndividualNumber(totoType, 1)
+
             return
         }
 

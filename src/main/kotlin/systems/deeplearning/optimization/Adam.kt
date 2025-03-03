@@ -18,6 +18,9 @@ import kotlin.math.sqrt
  * Epsilon Stability:
  * Using epsilon = 1e-8, which is standard for numerical stability.
  * However, it’s always good to experiment with different values of epsilon depending on the specific scale of your weights, gradients, and learning rate.
+ *
+ * TODO:
+ * - add caching/restoring of parameters
  */
 class Adam(
     val beta1: Double = 0.9,  // First moment decay rate

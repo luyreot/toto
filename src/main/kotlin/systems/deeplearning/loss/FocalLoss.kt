@@ -9,8 +9,8 @@ import kotlin.math.pow
  * Helps in imbalanced classification where most outputs are 0s.
  */
 data class FocalLoss(
-    private var targetThreshold: Double = 1.0,
-    private var gamma: Double = 2.0
+    var targetThreshold: Double = 1.0,
+    var gamma: Double = 2.0
 ) : LossFunction {
 
     override val type: LossFunctionType = LossFunctionType.FocalLoss

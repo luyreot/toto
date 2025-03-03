@@ -171,7 +171,7 @@ object Data {
         return if (number in draw.numbers) 1 else 0
     }
 
-    fun normalizeBatchByColumn(features: Array<DoubleArray>): Array<DoubleArray> {
+    fun minMaxNormalizeBatchByColumn(features: Array<DoubleArray>): Array<DoubleArray> {
         // Perform Min-Max normalization for each column
         val numFeatures = features[0].size
         val mins = DoubleArray(numFeatures) { col -> features.minOf { it[col] } }
@@ -184,13 +184,34 @@ object Data {
         }.toTypedArray()
     }
 
-    fun normalizeBasedOnMinMax(features: List<DoubleArray>) {
-        features.forEach { feature ->
-            val min = feature.min()
-            val max = feature.max()
-            for (i in feature.indices) {
-                feature[i] = 2 * ((feature[i] - min) / (max - min)) - 1
+    fun minMaxNormalizeByColumn(arrays: List<DoubleArray>): MutableList<DoubleArray> {
+        if (arrays.isEmpty()) return mutableListOf()
+
+        val numColumns = arrays[0].size
+
+        // Find min and max for each column
+        val minValues = DoubleArray(numColumns) { col -> arrays.minOf { it[col] } }
+        val maxValues = DoubleArray(numColumns) { col -> arrays.maxOf { it[col] } }
+
+        // Normalize each column
+        return arrays.map { row ->
+            DoubleArray(numColumns) { col ->
+                val min = minValues[col]
+                val max = maxValues[col]
+                if (max == min) 0.0 else (row[col] - min) / (max - min) // Avoid division by zero
             }
+        }.toMutableList()
+    }
+
+    fun normalizeBasedOnMinMax(features: List<DoubleArray>) {
+        features.forEach { normalizeBasedOnMinMax(it) }
+    }
+
+    fun normalizeBasedOnMinMax(feature: DoubleArray) {
+        val min = feature.min()
+        val max = feature.max()
+        for (i in feature.indices) {
+            feature[i] = 2 * ((feature[i] - min) / (max - min)) - 1
         }
     }
 
@@ -302,27 +323,27 @@ object Data {
         }
     }
 
-    fun shiftRight(arr: DoubleArray): DoubleArray {
-        if (arr.isEmpty()) return arr // Handle empty array case
+    fun DoubleArray.shiftRight(): DoubleArray {
+        if (isEmpty()) return this // Handle empty array case
 
-        val shifted = DoubleArray(arr.size)
-        shifted[0] = arr.last() // Last element moves to the first position
+        val shifted = DoubleArray(size)
+        shifted[0] = last() // Last element moves to the first position
 
-        for (i in 1 until arr.size) {
-            shifted[i] = arr[i - 1] // Shift others to the right
+        for (i in 1 until size) {
+            shifted[i] = get(i - 1) // Shift others to the right
         }
 
         return shifted
     }
 
-    fun shiftLeft(arr: DoubleArray): DoubleArray {
-        if (arr.isEmpty()) return arr // Handle empty array case
+    fun DoubleArray.shiftLeft(): DoubleArray {
+        if (isEmpty()) return this // Handle empty array case
 
-        val shifted = DoubleArray(arr.size)
-        for (i in 0 until arr.size - 1) {
-            shifted[i] = arr[i + 1] // Shift elements to the left
+        val shifted = DoubleArray(size)
+        for (i in 0 until size - 1) {
+            shifted[i] = get(i + 1) // Shift elements to the left
         }
-        shifted[arr.size - 1] = arr[0] // First element moves to last position
+        shifted[size - 1] = get(0) // First element moves to last position
 
         return shifted
     }

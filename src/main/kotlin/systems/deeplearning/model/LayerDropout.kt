@@ -15,8 +15,8 @@ import kotlin.random.Random
 class LayerDropout(
     override val tag: String,
     override val layerType: LayerType,
-    private val dropoutRate: Double,
-    private val dropoutValue: Double = 0.0
+    var dropoutRate: Double,
+    var dropoutValue: Double = 0.0
 ) : Layer {
 
     lateinit var mask: BooleanArray

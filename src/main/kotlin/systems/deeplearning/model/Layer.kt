@@ -13,8 +13,6 @@ interface Layer {
 
     val layerType: LayerType
 
-
-
     fun forward(input: DoubleArray): DoubleArray
 
     /**
