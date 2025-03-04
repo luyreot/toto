@@ -1,6 +1,6 @@
-package systems.numbercorrelations.model
+package util
 
-data class UniqueIntArray(val numbers: IntArray) {
+data class UniqueIntArray(val array: IntArray) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -8,10 +8,10 @@ data class UniqueIntArray(val numbers: IntArray) {
 
         other as UniqueIntArray
 
-        return numbers.contentEquals(other.numbers)
+        return array.contentEquals(other.array)
     }
 
     override fun hashCode(): Int {
-        return numbers.contentHashCode()
+        return array.contentHashCode()
     }
 }

@@ -50,6 +50,6 @@ fun predictViaNumberDistributionPerPosition(totoType: TotoType, allDrawings: Dra
             numbersToUse,
             drawingsToGenerate
         )
-        results.forEach { Logg.printIntArray(it.numbers) }
+        results.forEach { Logg.printIntArray(it.array) }
     }
 }

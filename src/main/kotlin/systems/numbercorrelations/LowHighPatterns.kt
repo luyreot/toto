@@ -1,7 +1,7 @@
 package systems.numbercorrelations
 
 import systems.numbercorrelations.model.Drawing
-import systems.numbercorrelations.model.UniquePattern
+import util.UniqueIntArray
 
 /**
  * Track how often each low/high pattern has been drawn.
@@ -10,9 +10,9 @@ class LowHighPatterns(
     private val drawings: List<Drawing>
 ) {
 
-    val patterns: Map<UniquePattern, Int>
+    val patterns: Map<UniqueIntArray, Int>
         get() = _patterns
-    private val _patterns = mutableMapOf<UniquePattern, Int>()
+    private val _patterns = mutableMapOf<UniqueIntArray, Int>()
 
     init {
         setLowHighPatternOccurrences()
@@ -20,7 +20,7 @@ class LowHighPatterns(
 
     private fun setLowHighPatternOccurrences() {
         drawings
-            .map { drawing -> UniquePattern(drawing.lowHighPattern) }
+            .map { drawing -> UniqueIntArray(drawing.lowHighPattern) }
             .toSet()
             .forEach { pattern ->
                 _patterns[pattern] = drawings.count { drawing ->

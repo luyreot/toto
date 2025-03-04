@@ -1,11 +1,10 @@
 import crawler.WebCrawler
 import model.TotoType
 import systems.deeplearning.nnTrainIndividualNumber
+import systems.gapanalysis.analysePredict
 import systems.numbercorrelations.Drawings
 import systems.numbercorrelations.predictViaNumberDistributionPerPosition
-import util.Logg
-import util.deepLearning
-import util.webCrawl
+import util.*
 
 object Main {
 
@@ -24,19 +23,28 @@ object Main {
 
         val totoType = TotoType.T_6X49
 
+        if (numberCorrelations) {
+            val allDrawings = Drawings(totoType, 0)
+//            allDataClasses(totoType)
+            predictViaNumberDistributionPerPosition(totoType, allDrawings)
+
+            return
+        }
+
         if (deepLearning) {
 //            nnTrainDrawFullNumberSet(totoType)
 //            nnTestDrawFullNumberSet(totoType)
-
             nnTrainIndividualNumber(totoType, 1)
 
             return
         }
 
-        val allDrawings = Drawings(totoType, 0)
+        if (gapAnalysis) {
+            analysePredict(totoType, 2020, 20000)
+//            backtest(totoType, 2020, 2024)
 
-//        allDataClasses(totoType)
-        predictViaNumberDistributionPerPosition(totoType, allDrawings)
+            return
+        }
 
         Logg.p("=== MAIN END ===")
     }

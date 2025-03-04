@@ -1,7 +1,7 @@
 package systems.numbercorrelations
 
 import systems.numbercorrelations.model.Drawing
-import systems.numbercorrelations.model.UniquePattern
+import util.UniqueIntArray
 
 /**
  * Track how often correlations exist between:
@@ -13,17 +13,17 @@ class NumberToPatternCorrelations(
     private val drawings: List<Drawing>
 ) {
 
-    val numberToGroupPatterns: Map<Int, Map<UniquePattern, Int>>
+    val numberToGroupPatterns: Map<Int, Map<UniqueIntArray, Int>>
         get() = _numberToGroupPatterns
-    private val _numberToGroupPatterns = mutableMapOf<Int, MutableMap<UniquePattern, Int>>()
+    private val _numberToGroupPatterns = mutableMapOf<Int, MutableMap<UniqueIntArray, Int>>()
 
-    val numberToLowHighPatterns: Map<Int, Map<UniquePattern, Int>>
+    val numberToLowHighPatterns: Map<Int, Map<UniqueIntArray, Int>>
         get() = _numberToLowHighPatterns
-    private val _numberToLowHighPatterns = mutableMapOf<Int, MutableMap<UniquePattern, Int>>()
+    private val _numberToLowHighPatterns = mutableMapOf<Int, MutableMap<UniqueIntArray, Int>>()
 
-    val numberToOddEvenPatterns: Map<Int, Map<UniquePattern, Int>>
+    val numberToOddEvenPatterns: Map<Int, Map<UniqueIntArray, Int>>
         get() = _numberToOddEvenPatterns
-    private val _numberToOddEvenPatterns = mutableMapOf<Int, MutableMap<UniquePattern, Int>>()
+    private val _numberToOddEvenPatterns = mutableMapOf<Int, MutableMap<UniqueIntArray, Int>>()
 
     init {
         setCorrelations()
@@ -43,20 +43,20 @@ class NumberToPatternCorrelations(
         if (_numberToGroupPatterns.containsKey(number).not()) {
             _numberToGroupPatterns[number] = mutableMapOf()
         }
-        _numberToGroupPatterns[number]?.merge(UniquePattern(groupPattern), 1, Int::plus)
+        _numberToGroupPatterns[number]?.merge(UniqueIntArray(groupPattern), 1, Int::plus)
     }
 
     private fun setNumberToLowHighPatternCorrelation(number: Int, lowHighPattern: IntArray) {
         if (_numberToLowHighPatterns.containsKey(number).not()) {
             _numberToLowHighPatterns[number] = mutableMapOf()
         }
-        _numberToLowHighPatterns[number]?.merge(UniquePattern(lowHighPattern), 1, Int::plus)
+        _numberToLowHighPatterns[number]?.merge(UniqueIntArray(lowHighPattern), 1, Int::plus)
     }
 
     private fun setNumberToOddEvenPatternCorrelation(number: Int, oddEvenPattern: IntArray) {
         if (_numberToOddEvenPatterns.containsKey(number).not()) {
             _numberToOddEvenPatterns[number] = mutableMapOf()
         }
-        _numberToOddEvenPatterns[number]?.merge(UniquePattern(oddEvenPattern), 1, Int::plus)
+        _numberToOddEvenPatterns[number]?.merge(UniqueIntArray(oddEvenPattern), 1, Int::plus)
     }
 }

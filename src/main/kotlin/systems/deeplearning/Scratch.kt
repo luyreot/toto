@@ -7,11 +7,11 @@ import systems.deeplearning.loss.FocalLoss
 import systems.deeplearning.model.*
 import systems.deeplearning.optimization.Adam
 import systems.deeplearning.optimization.LRegularizationType
-import systems.deeplearning.util.Data.loadDrawings
 import systems.deeplearning.util.Data.minMaxNormalizeByColumn
 import systems.deeplearning.util.Data.normalizeBasedOnMinMax
 import systems.deeplearning.util.Util.generateRandomWeightsHe
 import systems.deeplearning.util.Util.generateRandomWeightsXavier
+import util.loadDrawings
 
 fun nnTrainDrawFullNumberSet(totoType: TotoType) {
     val yearFilter = 2019

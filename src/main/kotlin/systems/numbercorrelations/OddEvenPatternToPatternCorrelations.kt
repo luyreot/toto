@@ -1,7 +1,7 @@
 package systems.numbercorrelations
 
 import systems.numbercorrelations.model.Drawing
-import systems.numbercorrelations.model.UniquePattern
+import util.UniqueIntArray
 
 /**
  * Track how often correlations exist between:
@@ -12,13 +12,13 @@ class OddEvenPatternToPatternCorrelations(
     private val drawings: List<Drawing>
 ) {
 
-    val oddEvenToGroupPatterns: Map<UniquePattern, Map<UniquePattern, Int>>
+    val oddEvenToGroupPatterns: Map<UniqueIntArray, Map<UniqueIntArray, Int>>
         get() = _oddEvenToGroupPatterns
-    private val _oddEvenToGroupPatterns = mutableMapOf<UniquePattern, MutableMap<UniquePattern, Int>>()
+    private val _oddEvenToGroupPatterns = mutableMapOf<UniqueIntArray, MutableMap<UniqueIntArray, Int>>()
 
-    val oddEvenToLowHighPatterns: Map<UniquePattern, Map<UniquePattern, Int>>
+    val oddEvenToLowHighPatterns: Map<UniqueIntArray, Map<UniqueIntArray, Int>>
         get() = _oddEvenToLowHighPatterns
-    private val _oddEvenToLowHighPatterns = mutableMapOf<UniquePattern, MutableMap<UniquePattern, Int>>()
+    private val _oddEvenToLowHighPatterns = mutableMapOf<UniqueIntArray, MutableMap<UniqueIntArray, Int>>()
 
     init {
         setCorrelations()
@@ -26,22 +26,22 @@ class OddEvenPatternToPatternCorrelations(
 
     private fun setCorrelations() {
         drawings.forEach { drawing ->
-            setOddEvenToGroupPatternCorrelation(UniquePattern(drawing.oddEvenPattern), drawing.groupPattern)
-            setOddEvenToLowHighPatternCorrelation(UniquePattern(drawing.oddEvenPattern), drawing.lowHighPattern)
+            setOddEvenToGroupPatternCorrelation(UniqueIntArray(drawing.oddEvenPattern), drawing.groupPattern)
+            setOddEvenToLowHighPatternCorrelation(UniqueIntArray(drawing.oddEvenPattern), drawing.lowHighPattern)
         }
     }
 
-    private fun setOddEvenToGroupPatternCorrelation(oddEvenPattern: UniquePattern, groupPattern: IntArray) {
+    private fun setOddEvenToGroupPatternCorrelation(oddEvenPattern: UniqueIntArray, groupPattern: IntArray) {
         if (_oddEvenToGroupPatterns.containsKey(oddEvenPattern).not()) {
             _oddEvenToGroupPatterns[oddEvenPattern] = mutableMapOf()
         }
-        _oddEvenToGroupPatterns[oddEvenPattern]?.merge(UniquePattern(groupPattern), 1, Int::plus)
+        _oddEvenToGroupPatterns[oddEvenPattern]?.merge(UniqueIntArray(groupPattern), 1, Int::plus)
     }
 
-    private fun setOddEvenToLowHighPatternCorrelation(oddEvenPattern: UniquePattern, lowHighPattern: IntArray) {
+    private fun setOddEvenToLowHighPatternCorrelation(oddEvenPattern: UniqueIntArray, lowHighPattern: IntArray) {
         if (_oddEvenToLowHighPatterns.containsKey(oddEvenPattern).not()) {
             _oddEvenToLowHighPatterns[oddEvenPattern] = mutableMapOf()
         }
-        _oddEvenToLowHighPatterns[oddEvenPattern]?.merge(UniquePattern(lowHighPattern), 1, Int::plus)
+        _oddEvenToLowHighPatterns[oddEvenPattern]?.merge(UniqueIntArray(lowHighPattern), 1, Int::plus)
     }
 }

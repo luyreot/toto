@@ -1,7 +1,7 @@
 package systems.numbercorrelations
 
 import systems.numbercorrelations.model.Drawing
-import systems.numbercorrelations.model.UniquePattern
+import util.UniqueIntArray
 
 /**
  * Track correlations between numbers from the same drawings.
@@ -13,15 +13,15 @@ class SameDrawingCombinations(
     private val size: Int
 ) {
 
-    val combinationsByMedian: Map<UniquePattern, Int>
+    val combinationsByMedian: Map<UniqueIntArray, Int>
         get() = _combinationsByMedian
-    private val _combinationsByMedian = mutableMapOf<UniquePattern, Int>()
+    private val _combinationsByMedian = mutableMapOf<UniqueIntArray, Int>()
 
-    val combinationsByMean: Map<UniquePattern, Int>
+    val combinationsByMean: Map<UniqueIntArray, Int>
         get() = _combinationsByMean
-    private val _combinationsByMean = mutableMapOf<UniquePattern, Int>()
+    private val _combinationsByMean = mutableMapOf<UniqueIntArray, Int>()
 
-    private val combinations = mutableMapOf<UniquePattern, Int>()
+    private val combinations = mutableMapOf<UniqueIntArray, Int>()
 
     init {
         createCombinations()
@@ -34,7 +34,7 @@ class SameDrawingCombinations(
         drawings.forEach { drawing ->
             // Generate and store the resulting sequences.
             generateCombinations(drawing).forEach { sequence ->
-                combinations.merge(UniquePattern(sequence.toIntArray()), 1, Int::plus)
+                combinations.merge(UniqueIntArray(sequence.toIntArray()), 1, Int::plus)
             }
         }
         val sorted = combinations
@@ -108,6 +108,6 @@ class SameDrawingCombinations(
     }
 
     private fun removeLastArrayPosition(
-        combination: UniquePattern
-    ): UniquePattern = UniquePattern(combination.array.sliceArray(0 until combination.array.size - 1))
+        combination: UniqueIntArray
+    ): UniqueIntArray = UniqueIntArray(combination.array.sliceArray(0 until combination.array.size - 1))
 }

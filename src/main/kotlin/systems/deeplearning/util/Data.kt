@@ -1,9 +1,8 @@
 package systems.deeplearning.util
 
 import model.TotoType
-import systems.deeplearning.model.Draw
 import util.Constants.PAGE_YEAR
-import util.IO
+import util.Draw
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -128,29 +127,6 @@ object Data {
             gapSinceLast / gaps.dataMean[number]!!,
             numMeanOcc - occurrences.data[number]!!
         )
-    }
-
-    fun loadDrawings(totoType: TotoType): List<Draw> {
-        val drawings = mutableListOf<Draw>()
-
-        IO.getFiles(totoType.filePath)?.sorted()?.forEach { file ->
-            IO.getTxtFileContents(file).forEachIndexed { index, line ->
-                val numbers: IntArray = line.split(",").map { it.toInt() }.toIntArray()
-
-                require(numbers.size == totoType.size) { "Drawing is not ${totoType.name}! Size is ${numbers.size}" }
-                require(numbers.all { it in 1..totoType.totalNumbers }) { "Illegal number for ${totoType.name}! - $numbers" }
-
-                drawings.add(
-                    Draw(
-                        year = file.name.toInt(),
-                        id = index + 1,
-                        numbers = numbers
-                    )
-                )
-            }
-        }
-
-        return drawings
     }
 
     fun DoubleArray.containsNan(): Boolean {

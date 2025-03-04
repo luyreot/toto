@@ -1,9 +1,9 @@
 package systems.numbercorrelations
 
 import extension.clear
-import systems.numbercorrelations.model.Drawing
 import model.TotoType
-import systems.numbercorrelations.model.UniqueIntArray
+import systems.numbercorrelations.model.Drawing
+import util.UniqueIntArray
 import kotlin.random.Random
 
 class PredictViaNumberDistributionPerPosition(

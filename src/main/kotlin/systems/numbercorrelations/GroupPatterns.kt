@@ -1,7 +1,7 @@
 package systems.numbercorrelations
 
 import systems.numbercorrelations.model.Drawing
-import systems.numbercorrelations.model.UniquePattern
+import util.UniqueIntArray
 
 /**
  * Track how often each group pattern has been drawn.
@@ -10,9 +10,9 @@ class GroupPatterns(
     private val drawings: List<Drawing>
 ) {
 
-    val patterns: Map<UniquePattern, Int>
+    val patterns: Map<UniqueIntArray, Int>
         get() = _patterns
-    private val _patterns = mutableMapOf<UniquePattern, Int>()
+    private val _patterns = mutableMapOf<UniqueIntArray, Int>()
 
     init {
         setGroupPatternOccurrences()
@@ -20,7 +20,7 @@ class GroupPatterns(
 
     private fun setGroupPatternOccurrences() {
         drawings
-            .map { drawing -> UniquePattern(drawing.groupPattern) }
+            .map { drawing -> UniqueIntArray(drawing.groupPattern) }
             .toSet()
             .forEach { pattern ->
                 _patterns[pattern] = drawings.count { drawing ->

@@ -1,19 +1,19 @@
 package systems.numbercorrelations
 
 import systems.numbercorrelations.model.Drawing
-import systems.numbercorrelations.model.UniquePattern
+import util.UniqueIntArray
 
 /**
  * Track the intervals at which each odd/even pattern has occurred.
  */
 class OddEvenPatternIntervals(
-    private val patterns: Set<UniquePattern>,
+    private val patterns: Set<UniqueIntArray>,
     private val drawings: List<Drawing>
 ) {
 
-    val intervals: Map<UniquePattern, Map<Int, Int>>
+    val intervals: Map<UniqueIntArray, Map<Int, Int>>
         get() = _intervals
-    private val _intervals = mutableMapOf<UniquePattern, MutableMap<Int, Int>>()
+    private val _intervals = mutableMapOf<UniqueIntArray, MutableMap<Int, Int>>()
 
     init {
         setIntervals()
