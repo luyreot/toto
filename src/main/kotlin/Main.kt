@@ -21,7 +21,7 @@ object Main {
             return
         }
 
-        val totoType = TotoType.T_6X49
+        val totoType = TotoType.T_5X35
 
         if (numberCorrelations) {
             val allDrawings = Drawings(totoType, 0)

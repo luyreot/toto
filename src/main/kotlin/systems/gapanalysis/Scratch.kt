@@ -255,7 +255,7 @@ fun analysePredict(totoType: TotoType, yearFilter: Int, timeToGenerate: Long = 6
         var numberOfPredictions = when (totoType) {
             TotoType.T_6X49 -> 4
             TotoType.T_6X42 -> 4
-            TotoType.T_5X35 -> 4
+            TotoType.T_5X35 -> 12
         }
 
         while (numberOfPredictions > 0) {
