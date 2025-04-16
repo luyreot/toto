@@ -6,6 +6,7 @@ import systems.deeplearning.optimization.Adam
 import systems.deeplearning.optimization.LRegularizationType
 import systems.deeplearning.optimization.OptimizationFunction
 import systems.deeplearning.optimization.SGD
+import kotlin.math.abs
 import kotlin.math.ln
 
 /**
@@ -21,7 +22,7 @@ import kotlin.math.ln
  */
 class NeuralNetwork(
     val totoType: TotoType,
-    val label: String,
+    var label: String,
     val layers: MutableList<Layer> = mutableListOf(),
     var lossFunction: LossFunction,
     var optimizationFunction: OptimizationFunction,
@@ -95,7 +96,8 @@ class NeuralNetwork(
     fun train(
         epoch: Int,
         inputs: DoubleArray,
-        targets: DoubleArray
+        targets: DoubleArray,
+        print: Boolean = true
     ) {
         loss = 0.0
         var lossGradients: DoubleArray
@@ -110,8 +112,10 @@ class NeuralNetwork(
             lossGradients = it.second
         }
 
-        println("Output:\n${output.contentToString()}")
-        println("Target:\n${targets.contentToString()}")
+        if (print) {
+            println("Output:\n${output.contentToString()}")
+            println("Target:\n${targets.contentToString()}")
+        }
 
         val targetNegativeCount = targets.count { it < positiveTargetThreshold }
         val targetPositiveCount = targets.count { it >= positiveTargetThreshold }
@@ -128,14 +132,14 @@ class NeuralNetwork(
         val outputPositiveMatches = targets.zip(output)
             .count { (t, o) -> t >= positiveTargetThreshold && o >= positiveOutputThreshold }
 
-        println("Predicted 0s: $outputNegativeCount")
-        println("Predicted 1s: $outputPositiveCount")
-        println("Matched 0s: $outputNegativeMatches/$targetNegativeCount")
-        println("Matched 1s: $outputPositiveMatches/$targetPositiveCount")
-        println("Matched:    ${outputNegativeMatches + outputPositiveMatches}/${targetNegativeCount + targetPositiveCount}")
-
-        println("Loss $loss")
-        println("---")
+        if (print) {
+            println("Predicted 0s: $outputNegativeCount")
+            println("Predicted 1s: $outputPositiveCount")
+            println("Matched 0s: $outputNegativeMatches/$targetNegativeCount")
+            println("Matched 1s: $outputPositiveMatches/$targetPositiveCount")
+            println("Matched:    ${outputNegativeMatches + outputPositiveMatches}/${targetNegativeCount + targetPositiveCount}")
+            println("Loss $loss")
+        }
 
         sleep()
 
@@ -151,7 +155,8 @@ class NeuralNetwork(
     fun train(
         epoch: Int,
         inputs: Array<DoubleArray>,
-        targets: Array<DoubleArray>
+        targets: Array<DoubleArray>,
+        print: Boolean = true
     ) {
         loss = 0.0
         var lossGradients: Array<DoubleArray>
@@ -166,12 +171,14 @@ class NeuralNetwork(
             lossGradients = it.second
         }
 
-        println("Batch size: ${output.size}")
-
         val outputString = output.joinToString("\n") { it.contentToString() }
-        println("Output:\n$outputString")
         val targetString = targets.joinToString("\n") { it.contentToString() }
-        println("Target:\n$targetString")
+
+        if (print) {
+            println("Batch size: ${output.size}")
+            println("Output:\n$outputString")
+            println("Target:\n$targetString")
+        }
 
         var totalNegativeCount = 0
         var totalPositiveCount = 0
@@ -204,14 +211,14 @@ class NeuralNetwork(
             matchedPositiveCount += outputPositiveMatches
         }
 
-        println("Predicted 0s: $totalOutputNegativeCount")
-        println("Predicted 1s: $totalOutputPositiveCount")
-        println("Matched 0s: $matchedNegativeCount/$totalNegativeCount")
-        println("Matched 1s: $matchedPositiveCount/$totalPositiveCount")
-        println("Matched:    ${matchedNegativeCount + matchedPositiveCount}/${totalNegativeCount + totalPositiveCount}")
-
-        println("Loss $loss")
-        println("---")
+        if (print) {
+            println("Predicted 0s: $totalOutputNegativeCount")
+            println("Predicted 1s: $totalOutputPositiveCount")
+            println("Matched 0s: $matchedNegativeCount/$totalNegativeCount")
+            println("Matched 1s: $matchedPositiveCount/$totalPositiveCount")
+            println("Matched:    ${matchedNegativeCount + matchedPositiveCount}/${totalNegativeCount + totalPositiveCount}")
+            println("Loss $loss")
+        }
 
         sleep()
 
@@ -276,13 +283,27 @@ class NeuralNetwork(
 
             is WeightedBinaryCrossEntropy -> {
                 val weights = DoubleArray(targets.size) { i ->
-                    if (targets[i] >= positiveTargetThreshold) 10.0 else 0.0
+                    if (targets[i] >= positiveTargetThreshold) 4.0 else 1.0
                 }
                 sleep()
-                val loss = lf.calculateLoss(predictions = predictions, targets = targets, weights = weights)
+                val baseLoss = lf.calculateLoss(predictions = predictions, targets = targets, weights = weights)
                 sleep()
-                val gradients = lf.calculateGradient(predictions = predictions, targets = targets, weights = weights)
-                Pair(loss, gradients)
+                val baseGradients =
+                    lf.calculateGradient(predictions = predictions, targets = targets, weights = weights)
+                sleep()
+                val targetAvg = targets.average()
+                val predictionAvg = predictions.average()
+
+                val lambda = 0.01
+
+                val direction = if (predictionAvg > targetAvg) -1.0 else 1.0
+                val penaltyGradient = lambda * direction / predictions.size
+//                val penaltyGradient = lambda * (predictionAvg - targetAvg) / predictions.size
+
+                val totalGradients = DoubleArray(predictions.size) { i -> baseGradients[i] + penaltyGradient }
+                val activationPenalty = abs(predictionAvg - targetAvg) * lambda
+                val totalLoss = baseLoss + activationPenalty
+                Pair(totalLoss, totalGradients)
             }
 
             is FocalLoss -> {
@@ -325,14 +346,45 @@ class NeuralNetwork(
             is WeightedBinaryCrossEntropy -> {
                 val weights = Array(targets.size) { i ->
                     DoubleArray(targets[i].size) { j ->
-                        if (targets[i][j] >= positiveTargetThreshold) 10.0 else 0.0
+                        if (targets[i][j] >= positiveTargetThreshold) 4.0 else 1.0
                     }
                 }
                 sleep()
-                val loss = lf.calculateLoss(predictions = predictions, targets = targets, weights = weights)
+                val baseLoss = lf.calculateLoss(predictions = predictions, targets = targets, weights = weights)
                 sleep()
-                val gradients = lf.calculateGradient(predictions = predictions, targets = targets, weights = weights)
-                Pair(loss, gradients)
+                val baseGradients =
+                    lf.calculateGradient(predictions = predictions, targets = targets, weights = weights)
+                sleep()
+                var predictionSum = 0.0
+                var targetSum = 0.0
+                var totalCount = 0
+
+                for (i in predictions.indices) {
+                    for (j in predictions[i].indices) {
+                        predictionSum += predictions[i][j]
+                        targetSum += targets[i][j]
+                        totalCount++
+                    }
+                }
+
+                val predictionAvg = predictionSum / totalCount
+                val targetAvg = targetSum / totalCount
+
+                val lambda = 0.01
+
+                val direction = if (predictionAvg > targetAvg) -1.0 else 1.0
+                val penaltyGradient = lambda * direction / totalCount
+//                val penaltyGradient = lambda * (predictionAvg - targetAvg) / totalCount
+
+                val totalGradients = Array(predictions.size) { i ->
+                    DoubleArray(predictions[i].size) { j ->
+                        baseGradients[i][j] + penaltyGradient
+                    }
+                }
+                val activationPenalty = abs(predictionAvg - targetAvg) * lambda
+                val totalLoss = baseLoss + activationPenalty
+
+                Pair(totalLoss, totalGradients)
             }
 
             is FocalLoss -> {

@@ -1,6 +1,8 @@
+
 import crawler.WebCrawler
 import model.TotoType
-import systems.deeplearning.nnTrainIndividualNumber
+import systems.deeplearning.analyzeNetwork
+import systems.deeplearning.predictNumbers
 import systems.gapanalysis.analysePredict
 import systems.numbercorrelations.Drawings
 import systems.numbercorrelations.predictViaNumberDistributionPerPosition
@@ -21,7 +23,12 @@ object Main {
             return
         }
 
-        val totoType = TotoType.T_5X35
+        val totoType =
+            TotoType.T_5X35
+//            TotoType.T_6X49
+//            TotoType.T_6X42
+
+        println("Toto Type - ${totoType.name}")
 
         if (numberCorrelations) {
             val allDrawings = Drawings(totoType, 0)
@@ -32,9 +39,9 @@ object Main {
         }
 
         if (deepLearning) {
-//            nnTrainDrawFullNumberSet(totoType)
-//            nnTestDrawFullNumberSet(totoType)
-            nnTrainIndividualNumber(totoType, 1)
+//            trainNetwork(totoType)
+            analyzeNetwork(totoType)
+            predictNumbers(totoType)
 
             return
         }

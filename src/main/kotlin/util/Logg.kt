@@ -1,5 +1,7 @@
 package util
 
+import extension.replaceBrackets
+
 object Logg {
 
     fun p(msg: String?) {
@@ -11,6 +13,6 @@ object Logg {
     }
 
     fun printIntArray(array: IntArray) {
-        println(array.toList().toString().replace("[", "").replace("]", ""))
+        println(array.toList().toString().replaceBrackets())
     }
 }

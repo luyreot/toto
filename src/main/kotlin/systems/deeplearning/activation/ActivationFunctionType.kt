@@ -5,7 +5,7 @@ enum class ActivationFunctionType {
     LeakyReLU,
     Sigmoid,
     Softmax,
-    Tahn;
+    Tanh;
 
     fun getActivationFunctionInstance(): ActivationFunction {
         return when (this) {
@@ -13,7 +13,7 @@ enum class ActivationFunctionType {
             LeakyReLU -> systems.deeplearning.activation.LeakyReLU()
             Sigmoid -> systems.deeplearning.activation.Sigmoid
             Softmax -> systems.deeplearning.activation.Softmax
-            Tahn -> systems.deeplearning.activation.Tanh
+            Tanh -> systems.deeplearning.activation.Tanh
         }
     }
 }

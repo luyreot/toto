@@ -4,6 +4,6 @@ var webCrawl: Boolean = false
 
 var numberCorrelations: Boolean = false
 
-var deepLearning: Boolean = false
+var deepLearning: Boolean = true
 
-var gapAnalysis: Boolean = true
+var gapAnalysis: Boolean = false

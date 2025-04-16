@@ -1,5 +1,6 @@
 package systems.gapanalysis
 
+import extension.replaceBrackets
 import model.TotoType
 import util.Constants.PAGE_YEAR
 import util.Draw
@@ -259,7 +260,7 @@ fun analysePredict(totoType: TotoType, yearFilter: Int, timeToGenerate: Long = 6
         }
 
         while (numberOfPredictions > 0) {
-            println(get(indexes.random(random)).array.contentToString().replace("[", "").replace("]", ""))
+            println(get(indexes.random(random)).array.contentToString().replaceBrackets())
             numberOfPredictions--
         }
     }

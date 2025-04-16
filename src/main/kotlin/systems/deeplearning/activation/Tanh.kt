@@ -4,7 +4,7 @@ import kotlin.math.exp
 
 object Tanh : ActivationFunction {
 
-    override val type: ActivationFunctionType = ActivationFunctionType.Tahn
+    override val type: ActivationFunctionType = ActivationFunctionType.Tanh
 
     override fun forward(input: DoubleArray): DoubleArray {
         return DoubleArray(input.size) { i -> tanh(input[i]) }

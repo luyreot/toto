@@ -1,5 +1,6 @@
 package systems.numbercorrelations.model
 
+import extension.replaceBrackets
 import util.Logg
 
 /**
@@ -37,6 +38,6 @@ open class Drawing(
     }
 
     fun getNumbersAsString(): String {
-        return numbers.toList().toString().replace("[", "").replace("]", "")
+        return numbers.toList().toString().replaceBrackets()
     }
 }
