@@ -46,12 +46,6 @@ private fun getRecentWindow(totoType: TotoType): Int = when (totoType) {
     TotoType.T_5X35 -> 20
 }
 
-private fun getPredictionsSize(totoType: TotoType): Int = when (totoType) {
-    TotoType.T_6X49 -> 4
-    TotoType.T_6X42 -> TODO()
-    TotoType.T_5X35 -> 4
-}
-
 fun trainNetwork(totoType: TotoType) {
     val label = "training-${totoType.name}"
 
@@ -197,7 +191,7 @@ fun analyzeNetwork(totoType: TotoType) {
     )
 }
 
-fun predictNumbers(totoType: TotoType) {
+fun predictNumbers(totoType: TotoType): List<Int> {
     val label = when (totoType) {
         TotoType.T_6X49 -> "training-${totoType.name}-window30-epoch4"
         TotoType.T_6X42 -> TODO()
@@ -234,7 +228,7 @@ fun predictNumbers(totoType: TotoType) {
         TotoType.T_5X35 -> predictViaRescoredTopN(totoType, output, draws)
     }
 
-    generateCombinations(totoType, numbersToUse, getPredictionsSize(totoType))
+    return numbersToUse
 }
 
 private fun predictViaTopN(totoType: TotoType, output: DoubleArray): List<Int> {
@@ -280,7 +274,7 @@ private fun predictViaBucketizedTopN(totoType: TotoType, output: DoubleArray, dr
     return selected
 }
 
-fun generateCombinations(totoType: TotoType, numbers: List<Int>, size: Int): Set<UniqueIntArray> {
+fun generateCombinations(totoType: TotoType, predictedNumbers: List<Int>, predictionSize: Int): Set<UniqueIntArray> {
     val combinations = mutableSetOf<UniqueIntArray>()
 
     val allDraws = if (totoType != TotoType.T_5X35) {
@@ -289,8 +283,9 @@ fun generateCombinations(totoType: TotoType, numbers: List<Int>, size: Int): Set
         emptyList()
     }
 
-    while (combinations.size < size) {
-        val nextCombination = UniqueIntArray(numbers.shuffled(Random).take(totoType.size).sorted().toIntArray())
+    while (combinations.size < predictionSize) {
+        val nextCombination =
+            UniqueIntArray(predictedNumbers.shuffled(Random).take(totoType.size).sorted().toIntArray())
         if (allDraws.contains(nextCombination)) {
             continue
         }

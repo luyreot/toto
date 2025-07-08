@@ -1,12 +1,14 @@
-
 import crawler.WebCrawler
 import model.TotoType
 import systems.deeplearning.analyzeNetwork
+import systems.deeplearning.generateCombinations
 import systems.deeplearning.predictNumbers
 import systems.gapanalysis.analysePredict
 import systems.numbercorrelations.Drawings
 import systems.numbercorrelations.predictViaNumberDistributionPerPosition
 import util.*
+import visualizer.NumberViewer
+import javax.swing.SwingUtilities
 
 object Main {
 
@@ -28,12 +30,18 @@ object Main {
 //            TotoType.T_6X49
 //            TotoType.T_6X42
 
+        val predictionsSize: Int = when (totoType) {
+            TotoType.T_6X49 -> 4
+            TotoType.T_6X42 -> TODO()
+            TotoType.T_5X35 -> 4
+        }
+
         println("Toto Type - ${totoType.name}")
 
         if (numberCorrelations) {
             val allDrawings = Drawings(totoType, 0)
 //            allDataClasses(totoType)
-            predictViaNumberDistributionPerPosition(totoType, allDrawings)
+            predictViaNumberDistributionPerPosition(totoType, allDrawings, predictionsSize)
 
             return
         }
@@ -41,7 +49,14 @@ object Main {
         if (deepLearning) {
 //            trainNetwork(totoType)
             analyzeNetwork(totoType)
-            predictNumbers(totoType)
+
+            val predictedNumbers = predictNumbers(totoType)
+
+            generateCombinations(totoType, predictedNumbers, predictionsSize)
+
+            SwingUtilities.invokeLater {
+                NumberViewer(totoType, predictedNumbers, totoType.size, 1)
+            }
 
             return
         }
