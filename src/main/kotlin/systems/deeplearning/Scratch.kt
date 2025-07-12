@@ -274,22 +274,28 @@ private fun predictViaBucketizedTopN(totoType: TotoType, output: DoubleArray, dr
     return selected
 }
 
-fun generateCombinations(totoType: TotoType, predictedNumbers: List<Int>, predictionSize: Int): Set<UniqueIntArray> {
+fun generateCombinations(combinationSize: Int, numberPool: List<Int>, totalCombinations: Int): Set<UniqueIntArray> {
     val combinations = mutableSetOf<UniqueIntArray>()
 
-    val allDraws = if (totoType != TotoType.T_5X35) {
-        loadDrawings(totoType).map { UniqueIntArray(it.numbers) }
-    } else {
-        emptyList()
-    }
+    combinations.add(UniqueIntArray(numberPool.take(combinationSize).sorted().toIntArray()))
+    combinations.add(UniqueIntArray(numberPool.takeLast(combinationSize).sorted().toIntArray()))
 
-    while (combinations.size < predictionSize) {
-        val nextCombination =
-            UniqueIntArray(predictedNumbers.shuffled(Random).take(totoType.size).sorted().toIntArray())
-        if (allDraws.contains(nextCombination)) {
-            continue
+    val middlePool = numberPool.drop(combinationSize).dropLast(combinationSize)
+    if (middlePool.size < combinationSize) {
+        throw IllegalArgumentException("Not enough numbers (${numberPool.size}) in the original pool to generate combinations.")
+    }
+    if (middlePool.size == combinationSize) {
+        combinations.add(UniqueIntArray(middlePool.sorted().toIntArray()))
+    } else {
+        while (combinations.size < totalCombinations) {
+            val pool = middlePool.toMutableList()
+            for (i in 0 until combinationSize) {
+                val j = Random.nextInt(i, pool.size)
+                pool[i] = pool[j].also { pool[j] = pool[i] }
+            }
+            val candidate = pool.take(combinationSize).sorted().toIntArray()
+            combinations.add(UniqueIntArray(candidate))
         }
-        combinations.add(nextCombination)
     }
 
     println("Generated combinations:")

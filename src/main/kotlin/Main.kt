@@ -52,7 +52,7 @@ object Main {
 
             val predictedNumbers = predictNumbers(totoType)
 
-            generateCombinations(totoType, predictedNumbers, predictionsSize)
+            generateCombinations(totoType.size, predictedNumbers, predictionsSize)
 
             SwingUtilities.invokeLater {
                 NumberViewer(totoType, predictedNumbers, totoType.size, 1)
