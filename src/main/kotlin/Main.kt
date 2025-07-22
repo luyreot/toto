@@ -22,13 +22,7 @@ object Main {
                 crawl(TotoType.T_6X42)
                 crawl(TotoType.T_6X49)
             }
-            return
         }
-
-        val totoType =
-            TotoType.T_5X35
-//            TotoType.T_6X49
-//            TotoType.T_6X42
 
         val predictionsSize: Int = when (totoType) {
             TotoType.T_6X49 -> 4
@@ -54,8 +48,10 @@ object Main {
 
             generateCombinations(totoType.size, predictedNumbers, predictionsSize)
 
-            SwingUtilities.invokeLater {
-                NumberViewer(totoType, predictedNumbers, totoType.size, 1)
+            if (showUiPicker) {
+                SwingUtilities.invokeLater {
+                    NumberViewer(totoType, predictedNumbers, totoType.size, 1)
+                }
             }
 
             return
