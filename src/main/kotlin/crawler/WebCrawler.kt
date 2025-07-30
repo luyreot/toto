@@ -12,7 +12,7 @@ import util.Constants.PATH_TXT_5x35
 import util.Constants.PATH_TXT_6x42
 import util.Constants.PATH_TXT_6x49
 import util.IO
-import util.Logg
+import util.Logger
 import java.io.IOException
 
 class WebCrawler {
@@ -51,7 +51,7 @@ class WebCrawler {
         } else {
             currentDrawing += 1
         }
-        Logg.p("INFO: Current drawings count for $totoType - $PAGE_YEAR - $currentDrawing")
+        Logger.p("INFO: Current drawings count for $totoType - $PAGE_YEAR - $currentDrawing")
 
         // Fetch new drawings from web
         val pageUrl: String = when (totoType) {
@@ -64,14 +64,14 @@ class WebCrawler {
             val document: Document? = readPage(pageUrl + currentDrawing)
 
             if (document == null) {
-                Logg.p("ERROR! HTML Document is empty")
+                Logger.p("ERROR! HTML Document is empty")
                 break
             }
 
             // Gets the individual numbers as a list of elements
             val numbers: Elements = document.select(DOCUMENT_QUERY)
             if (numbers.isEmpty()) {
-                Logg.p("ERROR! Didn't select any elements")
+                Logger.p("ERROR! Didn't select any elements")
                 break
             }
 
@@ -97,12 +97,12 @@ class WebCrawler {
         } while (true)
 
         if (saveToFile) {
-            Logg.p("INFO: Saving new drawings...")
+            Logger.p("INFO: Saving new drawings...")
             IO.saveTxtFile(filePath, contentBuilder.toString())
             return
         }
 
-        Logg.p("INFO: No new drawings were added")
+        Logger.p("INFO: No new drawings were added")
     }
 
     private fun readPage(url: String): Document? {
@@ -119,18 +119,18 @@ class WebCrawler {
 
             return when (val statusCode = connection.response().statusCode()) {
                 0, 200 -> {
-                    Logg.p("SUCCESS! Received web page at $url")
+                    Logger.p("SUCCESS! Received web page at $url")
                     connection.maxBodySize(MAX_BODY_SIZE).get()
                 }
 
                 else -> {
-                    Logg.p("ERROR! Response status code for $url - $statusCode")
+                    Logger.p("ERROR! Response status code for $url - $statusCode")
                     null
                 }
             }
         } catch (ioe: IOException) {
-            Logg.p("ERROR! Failed getting the page body at $url")
-            Logg.p(ioe.message)
+            Logger.p("ERROR! Failed getting the page body at $url")
+            Logger.p(ioe.message)
         }
 
         return null

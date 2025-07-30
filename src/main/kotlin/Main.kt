@@ -1,11 +1,12 @@
+
 import crawler.WebCrawler
 import model.TotoType
 import systems.deeplearning.analyzeNetwork
 import systems.deeplearning.generateCombinations
 import systems.deeplearning.predictNumbers
-import systems.gapanalysis.analysePredict
-import systems.numbercorrelations.Drawings
-import systems.numbercorrelations.predictViaNumberDistributionPerPosition
+import systems.occurrence.doAlgo
+import systems.patterns.Drawings
+import systems.patterns.predictViaNumberDistributionPerPosition
 import util.*
 import visualizer.NumberViewer
 import javax.swing.SwingUtilities
@@ -14,7 +15,7 @@ object Main {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        Logg.p("=== MAIN START ===")
+        Logger.p("=== MAIN START ===")
 
         if (webCrawl) {
             WebCrawler().apply {
@@ -26,7 +27,7 @@ object Main {
 
         val predictionsSize: Int = when (totoType) {
             TotoType.T_6X49 -> 4
-            TotoType.T_6X42 -> TODO()
+            TotoType.T_6X42 -> 4
             TotoType.T_5X35 -> 4
         }
 
@@ -57,13 +58,12 @@ object Main {
             return
         }
 
-        if (gapAnalysis) {
-            analysePredict(totoType, 2020, 20000)
-//            backtest(totoType, 2020, 2024)
+        if (newAnalysis) {
+            doAlgo()
 
             return
         }
 
-        Logg.p("=== MAIN END ===")
+        Logger.p("=== MAIN END ===")
     }
 }
