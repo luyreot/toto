@@ -4,7 +4,6 @@ import model.TotoType
 import systems.deeplearning.analyzeNetwork
 import systems.deeplearning.generateCombinations
 import systems.deeplearning.predictNumbers
-import systems.occurrence.doAlgo
 import systems.patterns.Drawings
 import systems.patterns.predictViaNumberDistributionPerPosition
 import util.*
@@ -54,12 +53,6 @@ object Main {
                     NumberViewer(totoType, predictedNumbers, totoType.size, 1)
                 }
             }
-
-            return
-        }
-
-        if (newAnalysis) {
-            doAlgo()
 
             return
         }
