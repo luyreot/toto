@@ -1,9 +1,9 @@
-
 import crawler.WebCrawler
 import model.TotoType
 import systems.deeplearning.analyzeNetwork
 import systems.deeplearning.generateCombinations
 import systems.deeplearning.predictNumbers
+import systems.noname.generate
 import systems.patterns.Drawings
 import systems.patterns.predictViaNumberDistributionPerPosition
 import util.*
@@ -54,6 +54,11 @@ object Main {
                 }
             }
 
+            return
+        }
+
+        if (noName) {
+            generate(totoType, 4)
             return
         }
 
