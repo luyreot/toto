@@ -13,3 +13,5 @@ var showUiPicker: Boolean = false
 var numberCorrelations: Boolean = false
 
 var deepLearning: Boolean = false
+
+var noName: Boolean = true
