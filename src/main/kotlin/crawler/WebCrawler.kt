@@ -46,11 +46,13 @@ class WebCrawler {
         } else {
             pastDrawings.size
         }
+        /*
         if (currentDrawing == 0) {
             currentDrawing = 1
         } else {
             currentDrawing += 1
         }
+        */
         Logger.p("INFO: Current drawings count for $totoType - $PAGE_YEAR - $currentDrawing")
 
         // Fetch new drawings from web
