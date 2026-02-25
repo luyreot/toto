@@ -1,13 +1,13 @@
 plugins {
-    kotlin("jvm") version "1.9.21"
+    kotlin("jvm") version "2.1.0"
 }
 
 group = "trd"
 version = "1.0"
 
-val COROUTINES_CORE = "1.6.0"
-val JSOUP = "1.15.4"
-val JSON = "20231013"
+val COROUTINES_CORE = "1.10.2"
+val JSOUP = "1.22.1"
+val JSON = "20251224"
 
 repositories {
     mavenCentral()
