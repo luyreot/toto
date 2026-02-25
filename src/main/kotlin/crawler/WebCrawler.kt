@@ -17,19 +17,7 @@ import java.io.IOException
 
 class WebCrawler {
 
-    private companion object {
-        // A fake user agent so the web server thinks the robot is a normal web browser.
-        const val USER_AGENT: String =
-            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1"
-
-        // The max html file size to be read, doesn't work if the number is too low aka the page is too large
-        const val MAX_BODY_SIZE: Int = 10048000
-
-        // Alternative css query: "span[class*=ball-white]"
-        const val DOCUMENT_QUERY: String =
-            "div.tir_numbers > div.row > div.col-sm-6.text-right.nopadding > span.ball-white"
-    }
-
+    private val cookies = mutableMapOf<String, String>()
 
     fun crawl(totoType: TotoType) {
         // Load past drawings
@@ -71,7 +59,9 @@ class WebCrawler {
             }
 
             // Gets the individual numbers as a list of elements
-            val numbers: Elements = document.select(DOCUMENT_QUERY)
+            // Alternative css query: "span[class*=ball-white]"
+            val numbers: Elements =
+                document.select("div.tir_numbers > div.row > div.col-sm-6.text-right.nopadding > span.ball-white")
             if (numbers.isEmpty()) {
                 Logger.p("ERROR! Didn't select any elements")
                 break
@@ -109,9 +99,19 @@ class WebCrawler {
 
     private fun readPage(url: String): Document? {
         try {
-            val connection = Jsoup.connect(url).userAgent(USER_AGENT).apply {
-                execute()
-            }
+            val connection = Jsoup
+                .connect(url)
+                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
+                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+                .header("Accept-Language", "bg-BG,bg;q=0.9,en-US;q=0.8,en;q=0.7")
+                .cookies(cookies)
+                .followRedirects(true)
+                .timeout(15_000)
+                .apply {
+                    execute().also {
+                        cookies.putAll(it.cookies())
+                    }
+                }
 
             /* Crawler doesn't return a contentType
             if (!connection.response().contentType().contains("text/html")) {
@@ -122,7 +122,7 @@ class WebCrawler {
             return when (val statusCode = connection.response().statusCode()) {
                 0, 200 -> {
                     Logger.p("SUCCESS! Received web page at $url")
-                    connection.maxBodySize(MAX_BODY_SIZE).get()
+                    connection.maxBodySize(10048000).get() // Some big number
                 }
 
                 else -> {
