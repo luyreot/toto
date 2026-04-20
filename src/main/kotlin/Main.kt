@@ -33,7 +33,7 @@ object Main {
         println("Toto Type - ${totoType.name}")
 
         if (numberCorrelations) {
-            val allDrawings = Drawings(totoType, 0)
+            val allDrawings = Drawings(totoType, 2016)
 //            allDataClasses(totoType)
             predictViaNumberDistributionPerPosition(totoType, allDrawings, predictionsSize)
 
