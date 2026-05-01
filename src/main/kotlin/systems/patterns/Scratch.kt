@@ -35,9 +35,9 @@ fun allDataClasses(totoType: TotoType) {
 fun predictViaNumberDistributionPerPosition(totoType: TotoType, allDrawings: Drawings, predictionsSize: Int) {
     PredictViaNumberDistributionPerPosition(totoType, allDrawings).apply {
         val yearFilter = when (totoType) {
-            TotoType.T_6X49 -> Constants.PAGE_YEAR.toInt() - 20
-            TotoType.T_6X42 -> Constants.PAGE_YEAR.toInt() - 20 // Not tested
-            TotoType.T_5X35 -> Constants.PAGE_YEAR.toInt() - 20
+            TotoType.T_6X49 -> Constants.PAGE_YEAR.toInt() - 2
+            TotoType.T_6X42 -> Constants.PAGE_YEAR.toInt() - 2 // Not tested
+            TotoType.T_5X35 -> Constants.PAGE_YEAR.toInt() - 2
         }
         val filteredDrawings = allDrawings.drawings.filter { it.year >= yearFilter }
         val numbersToUse = getNumbersToUse(filteredDrawings)

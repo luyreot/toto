@@ -27,11 +27,10 @@ class PredictViaNumberDistributionPerPosition(
 
     fun getNumbersToUse(filteredDrawings: List<Drawing>): Array<List<Int>> {
         val numberDistributionPerPosition = NumberDistributionPerPosition(totoType, filteredDrawings)
-        val subsequentDrawingCombinations = SubsequentDrawingCombinations(filteredDrawings, size = 2)
+        val subsequentDrawingCombinations = SubsequentDrawingCombinations(filteredDrawings, size = 3)
         val lastDrawingNumbers: List<Int> = filteredDrawings
             .takeLast(if (totoType == TotoType.T_5X35) 2 else 1)
-            .map { it.numbers.toList() }
-            .flatten()
+            .flatMap { it.numbers.toList() }
         val numbersListToUse: Array<MutableList<Int>> = Array(totoType.size) { mutableListOf() }
 
         val subsequentDrawingCombinationNumbers = subsequentDrawingCombinations.combinationsByMean
@@ -63,7 +62,7 @@ class PredictViaNumberDistributionPerPosition(
         }
 
         println("-------")
-        val uniqueNumbersToUse = numbersListToUse.map { it }.flatten().toSet().sorted()
+        val uniqueNumbersToUse = numbersListToUse.flatMap { it }.toSet().sorted()
         val uniqueNumbersNotToUse = (1..totoType.totalNumbers).toMutableSet().apply { removeAll(uniqueNumbersToUse) }
         println("Using a total of ${uniqueNumbersToUse.size} number(s).")
         println(uniqueNumbersToUse)
