@@ -1,7 +1,7 @@
-package systems.patterns
+package systems.correlationsOld
 
-import systems.patterns.model.Drawing
 import model.TotoType
+import systems.correlationsOld.model.Drawing
 
 /**
  * Track how often each number has been drawn.

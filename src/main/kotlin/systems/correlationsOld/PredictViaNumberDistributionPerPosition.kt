@@ -1,9 +1,10 @@
-package systems.patterns
+package systems.correlationsOld
 
 import extension.clear
+import systems.correlationsOld.model.Drawings
 import model.TotoType
-import systems.patterns.model.Drawing
-import util.UniqueIntArray
+import systems.correlationsOld.model.Drawing
+import model.UniqueIntArray
 import kotlin.random.Random
 
 class PredictViaNumberDistributionPerPosition(

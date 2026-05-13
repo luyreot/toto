@@ -1,12 +1,12 @@
-package systems.patterns
+package systems.correlationsOld
 
-import systems.patterns.model.Drawing
-import util.UniqueIntArray
+import systems.correlationsOld.model.Drawing
+import model.UniqueIntArray
 
 /**
- * Track the intervals at which each group pattern has occurred.
+ * Track the intervals at which each low/high pattern has occurred.
  */
-class GroupPatternIntervals(
+class LowHighPatternIntervals(
     private val patterns: Set<UniqueIntArray>,
     private val drawings: List<Drawing>
 ) {
@@ -22,7 +22,7 @@ class GroupPatternIntervals(
     private fun setIntervals() {
         patterns.forEach { pattern ->
             val indexes = drawings.mapIndexed { index, drawing ->
-                if (drawing.groupPattern.contentEquals(pattern.array)) index else null
+                if (drawing.lowHighPattern.contentEquals(pattern.array)) index else null
             }.filterNotNull()
 
             _intervals[pattern] = mutableMapOf()

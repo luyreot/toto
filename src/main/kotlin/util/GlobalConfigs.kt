@@ -2,15 +2,16 @@ package util
 
 import model.TotoType
 
-var webCrawl: Boolean = true
+var webCrawl: Boolean = false
 
-val totoType = TotoType.T_5X35
-//val totoType = TotoType.T_6X49
+//val totoType = TotoType.T_5X35
+val totoType = TotoType.T_6X49
 //val totoType = TotoType.T_6X42
 
-var numberCorrelations: Boolean = true
+val numberCorrelations: Boolean = true
+val numberCorrelationsNew: Boolean = true
 
-var deepLearning: Boolean = false
-var showUiPicker: Boolean = false
+val deepLearning: Boolean = false
+val showUiPicker: Boolean = false
 
-var noName: Boolean = false
+val noName: Boolean = false

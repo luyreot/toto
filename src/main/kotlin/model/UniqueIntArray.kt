@@ -1,4 +1,4 @@
-package util
+package model
 
 data class UniqueIntArray(val array: IntArray) {
 

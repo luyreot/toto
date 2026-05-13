@@ -1,11 +1,12 @@
+
 import crawler.WebCrawler
 import model.TotoType
-import systems.deeplearning.analyzeNetwork
+import systems.correlationsOld.model.Drawings
+import systems.correlationsOld.predictViaNumberDistributionPerPosition
 import systems.deeplearning.generateCombinations
 import systems.deeplearning.predictNumbers
+import systems.deeplearning.trainNetwork
 import systems.noname.generate
-import systems.patterns.Drawings
-import systems.patterns.predictViaNumberDistributionPerPosition
 import util.*
 import visualizer.NumberViewer
 import javax.swing.SwingUtilities
@@ -36,13 +37,17 @@ object Main {
             val allDrawings = Drawings(totoType, 2016)
 //            allDataClasses(totoType)
             predictViaNumberDistributionPerPosition(totoType, allDrawings, predictionsSize)
+            return
+        }
+
+        if (numberCorrelations) {
 
             return
         }
 
         if (deepLearning) {
-//            trainNetwork(totoType)
-            analyzeNetwork(totoType)
+            trainNetwork(totoType)
+//            analyzeNetwork(totoType)
 
             val predictedNumbers = predictNumbers(totoType)
 
@@ -53,7 +58,6 @@ object Main {
                     NumberViewer(totoType, predictedNumbers, totoType.size, 1)
                 }
             }
-
             return
         }
 

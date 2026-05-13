@@ -1,7 +1,7 @@
-package systems.patterns
+package systems.correlationsOld
 
-import systems.patterns.model.Drawing
 import model.TotoType
+import systems.correlationsOld.model.Drawing
 
 /**
  * Calculate how often a number has occurred at different positions.

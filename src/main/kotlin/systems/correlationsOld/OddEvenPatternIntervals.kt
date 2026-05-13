@@ -1,7 +1,7 @@
-package systems.patterns
+package systems.correlationsOld
 
-import systems.patterns.model.Drawing
-import util.UniqueIntArray
+import systems.correlationsOld.model.Drawing
+import model.UniqueIntArray
 
 /**
  * Track the intervals at which each odd/even pattern has occurred.

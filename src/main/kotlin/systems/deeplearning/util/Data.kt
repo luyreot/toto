@@ -2,7 +2,7 @@ package systems.deeplearning.util
 
 import model.TotoType
 import util.Constants.PAGE_YEAR
-import util.Draw
+import model.Draw
 import kotlin.math.pow
 import kotlin.math.sqrt
 

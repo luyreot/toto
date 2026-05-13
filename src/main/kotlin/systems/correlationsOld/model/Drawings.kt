@@ -1,9 +1,9 @@
-package systems.patterns
+package systems.correlationsOld.model
 
 import model.TotoType
-import systems.patterns.model.Drawing
 import org.json.JSONArray
 import org.json.JSONObject
+import systems.correlationsOld.toUniqueDrawing
 import util.IO
 import util.Logger
 

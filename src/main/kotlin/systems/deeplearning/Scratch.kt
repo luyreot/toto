@@ -11,8 +11,8 @@ import systems.deeplearning.optimization.LRegularizationType
 import systems.deeplearning.util.*
 import systems.deeplearning.util.Util.generateRandomWeightsHe
 import systems.deeplearning.util.Util.generateRandomWeightsXavier
-import util.UniqueIntArray
-import util.loadDrawings
+import model.UniqueIntArray
+import model.loadDrawings
 import kotlin.random.Random
 
 private const val yearFilter = 2019
