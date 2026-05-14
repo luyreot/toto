@@ -1,6 +1,6 @@
-
 import crawler.WebCrawler
 import model.TotoType
+import systems.correlationsNew.dodo
 import systems.correlationsOld.model.Drawings
 import systems.correlationsOld.predictViaNumberDistributionPerPosition
 import systems.deeplearning.generateCombinations
@@ -33,15 +33,15 @@ object Main {
 
         println("Toto Type - ${totoType.name}")
 
-        if (numberCorrelations) {
+        if (numberCorrelationsOld) {
             val allDrawings = Drawings(totoType, 2016)
 //            allDataClasses(totoType)
             predictViaNumberDistributionPerPosition(totoType, allDrawings, predictionsSize)
             return
         }
 
-        if (numberCorrelations) {
-
+        if (numberCorrelationsNew) {
+            dodo(totoType, yearFilter = 2016, predictionsSize)
             return
         }
 
