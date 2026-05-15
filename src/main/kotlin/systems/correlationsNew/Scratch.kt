@@ -20,8 +20,8 @@ fun dodo(totoType: TotoType, yearFilter: Int, predictionsSize: Int) {
         config = GeneratorConfig() // use defaults or adjust
     )
 
-    tickets.forEachIndexed { index, ticket ->
-        println("Ticket ${index + 1}: ${ticket.joinToString()}")
+    tickets.forEach {
+        println(it.joinToString())
     }
 }
 

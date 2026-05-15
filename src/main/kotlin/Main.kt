@@ -31,8 +31,6 @@ object Main {
             TotoType.T_5X35 -> 4
         }
 
-        println("Toto Type - ${totoType.name}")
-
         if (numberCorrelationsOld) {
             val allDrawings = Drawings(totoType, 2016)
 //            allDataClasses(totoType)
@@ -41,7 +39,11 @@ object Main {
         }
 
         if (numberCorrelationsNew) {
-            dodo(totoType, yearFilter = 2016, predictionsSize)
+            totoTypes.forEach {
+                println("Toto Type - ${it.name}")
+                dodo(it, yearFilter = 2016, predictionsSize)
+                println()
+            }
             return
         }
 
