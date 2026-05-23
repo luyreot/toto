@@ -41,7 +41,7 @@ object Main {
         if (numberCorrelationsNew) {
             totoTypes.forEach {
                 println("Toto Type - ${it.name}")
-                dodo(it, yearFilter = 2016, predictionsSize)
+                dodo(it, yearFilter = 2016, predictionsSize, true)
                 println()
             }
             return

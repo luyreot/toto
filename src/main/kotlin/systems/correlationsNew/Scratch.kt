@@ -9,7 +9,7 @@ import kotlin.math.ln
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-fun dodo(totoType: TotoType, yearFilter: Int, predictionsSize: Int) {
+fun dodo(totoType: TotoType, yearFilter: Int, predictionsSize: Int, runTwiceExcludingFirst: Boolean = false) {
     val draws = loadDrawings(totoType)
         .filter { it.year >= yearFilter }
 
@@ -17,11 +17,28 @@ fun dodo(totoType: TotoType, yearFilter: Int, predictionsSize: Int) {
         requestedCount = predictionsSize,
         draws = draws,
         type = totoType,
-        config = GeneratorConfig() // use defaults or adjust
+        config = GeneratorConfig()
     )
 
+    println("First run:")
     tickets.forEach {
         println(it.joinToString())
+    }
+
+    if (runTwiceExcludingFirst) {
+        println("---")
+        println("Second run:")
+        tickets.forEach { initialTicket ->
+            val newTickets = generateCombinations(
+                requestedCount = 1,
+                draws = draws,
+                type = totoType,
+                config = GeneratorConfig(excludeNumbers = initialTicket.toSet())
+            )
+            newTickets.forEach {
+                println(it.joinToString())
+            }
+        }
     }
 }
 
@@ -363,7 +380,9 @@ data class GeneratorConfig(
     val lowPercentileLow: Double = 10.0,
     val lowPercentileHigh: Double = 90.0,
     // Oversampling factor
-    val oversampleFactor: Int = 5
+    val oversampleFactor: Int = 5,
+    // Exclusion set – numbers that must not appear in the generated combinations
+    val excludeNumbers: Set<Int> = emptySet()
 )
 
 // ---------------------------------------------------------------------------
@@ -381,26 +400,21 @@ fun generateCombinations(
     val totalDrawsAll = draws.size
 
     // ---- 1. Per‑number fitness components ----
-    // a) Long‑term average per year (over the whole dataset, or you can filter)
-    val avgPerYearAll = calculateAverageOccurrencePerYear(draws, type) // already returns DoubleArray
+    val avgPerYearAll = calculateAverageOccurrencePerYear(draws, type)
     val zLongAvg = doubleArrayToZScores(avgPerYearAll)
 
-    // b) Current year hotness
     val currentYearCounts = calculateCurrentYearOccurrences(draws, type)
     val zCurrentYear = intArrayToZScores(currentYearCounts)
 
-    // c) Recent weighted trend (last 2 years, half‑life 1 year)
-    val recentDraws = draws.filter { it.year >= currentYear - 1 } // 2 calendar years
+    val recentDraws = draws.filter { it.year >= currentYear - 1 }
     val weightedRecent = weightedFrequency(recentDraws, type, halfLifeYears = 1.0, currentYear)
-    val zRecentWeighted = doubleArrayToZScores(weightedRecent)   // z‑score the weighted values
+    val zRecentWeighted = doubleArrayToZScores(weightedRecent)
 
-    // d) Recency (draws since last appearance)
     val recency = drawsSinceLastAppearance(draws, type)
     val recencyScore = DoubleArray(type.totalNumbers) { i ->
         recency[i].toDouble() / totalDrawsAll.toDouble().coerceAtLeast(1.0)
     }
 
-    // Combine into single fitness array (higher = better)
     val fitness = DoubleArray(type.totalNumbers) { i ->
         config.wLongTermAvg * zLongAvg[i] +
                 config.wCurrentYear * zCurrentYear[i] +
@@ -412,7 +426,7 @@ fun generateCombinations(
     val posFreq = calculatePositionFrequencies(draws, type)
     val positionProb = normalizePositionFrequencies(posFreq)
 
-    // ---- 3. Pair matrix & pre‑compute top partners for every number ----
+    // ---- 3. Pair matrix & top partners ----
     val draws10y = draws.filter { it.year >= currentYear - 9 }
     val uniform10y = buildUniformCoOccurrenceMatrix(draws10y, type)
     val draws2y = draws.filter { it.year >= currentYear - 1 }
@@ -423,38 +437,48 @@ fun generateCombinations(
         alpha = 0.5
     )
 
-    // Pre‑compute top partners for every number from the blended matrix
     val topPartnersCache: Map<Int, List<Int>> = (1..type.totalNumbers).associateWith { number ->
         topPartners(number, pairMatrix, config.topPartnerCount).map { it.first }
     }
 
-    // ---- 4. Filters (sum, odd, low counts) ----
+    // ---- 4. Filters ----
     val (minSum, maxSum) = sumPercentileBounds(draws, type, config.sumPercentileLow, config.sumPercentileHigh)
     val (minOdd, maxOdd) = oddCountPercentileBounds(draws, type, config.oddPercentileLow, config.oddPercentileHigh)
     val (minLow, maxLow) = lowCountPercentileBounds(draws, type, config.lowPercentileLow, config.lowPercentileHigh)
 
-    // Convert fitness to positive sampling weights
+    // ---- 5. Prepare allowed numbers (exclude where specified) ----
+    val allowedNumbers = (1..type.totalNumbers).filter { it !in config.excludeNumbers }
+    if (allowedNumbers.size < type.size) {
+        // Not enough numbers to form a ticket; return empty or adjust config
+        return emptyList()
+    }
+
     val baseWeight = normalizeFitnessToPositiveWeights(fitness)
 
-    // ---- 5. Generate combinations ----
+    // ---- 6. Generate combinations ----
     val totalToGenerate = requestedCount * config.oversampleFactor
     val generated = mutableSetOf<UniqueIntArray>()
     val rng = Random
 
     while (generated.size < totalToGenerate) {
         val combo = generateOneCombination(
-            type, baseWeight, positionProb, pairMatrix, topPartnersCache,
-            config.weightFitness, config.weightPosition, config.weightPairBonus,
-            config.temperature, rng
+            allowedNumbers = allowedNumbers,
+            type = type,
+            baseWeight = baseWeight,
+            positionProb = positionProb,
+            topPartnersCache = topPartnersCache,
+            wFitness = config.weightFitness,
+            wPosition = config.weightPosition,
+            wPairBonus = config.weightPairBonus,
+            temperature = config.temperature,
+            rng = rng
         )
         if (passesFilters(combo, type, minSum, maxSum, minOdd, maxOdd, minLow, maxLow)) {
             generated.add(UniqueIntArray(combo))
         }
-        // Safety break to avoid infinite loop
         if (generated.isEmpty() && generated.size >= totalToGenerate * 0.5) break
     }
 
-    // ---- 6. Score and rank final combinations ----
     val scored = generated.map { combo ->
         combo to scoreCombination(combo.array, fitness, pairMatrix, topPartnersCache)
     }.sortedByDescending { it.second }
@@ -466,10 +490,10 @@ fun generateCombinations(
 // Generate one combination with top‑partner bonus
 // ---------------------------------------------------------------------------
 private fun generateOneCombination(
+    allowedNumbers: List<Int>,          // sorted ascending
     type: TotoType,
     baseWeight: DoubleArray,
     positionProb: Array<DoubleArray>,
-    pairMatrix: Array<DoubleArray>,
     topPartnersCache: Map<Int, List<Int>>,
     wFitness: Double,
     wPosition: Double,
@@ -477,47 +501,51 @@ private fun generateOneCombination(
     temperature: Double,
     rng: Random
 ): IntArray {
-    val nTotal = type.totalNumbers
-    val size = type.size
-    val picked = mutableListOf<Int>()
+    val totalAllowed = allowedNumbers.size
+    val ticketSize = type.size
+    // We'll pick indices into allowedNumbers, ensuring ascending order.
+    val pickedIndices = mutableListOf<Int>()
 
-    for (pos in 0 until size) {
-        val last = picked.lastOrNull() ?: 0
-        val minNum = last + 1
-        val maxNum = nTotal - (size - pos - 1)
-        val candidates = (minNum..maxNum).filter { it !in picked }
-        if (candidates.isEmpty()) break
+    for (pos in 0 until ticketSize) {
+        // Minimum index in allowedNumbers that is > last picked, and also leaves enough room
+        val lastIdx = pickedIndices.lastOrNull() ?: -1
+        val minIdx = lastIdx + 1
+        val maxIdx = totalAllowed - (ticketSize - pos)   // inclusive bound
+        if (minIdx > maxIdx) break
 
-        val scores = DoubleArray(candidates.size) { idx ->
-            val n = candidates[idx]
-            val idxN = n - 1
+        // Candidate indices -> actual numbers
+        val candidateIndices = (minIdx..maxIdx).toList()
+        val candidateNumbers = candidateIndices.map { allowedNumbers[it] }
 
-            val fitScore = baseWeight[idxN]
-            val posScore = positionProb[pos][idxN]
+        val scores = DoubleArray(candidateIndices.size) { i ->
+            val num = candidateNumbers[i]
+            val idxNum = num - 1
 
-            // Pair bonus: how many already picked numbers list 'n' as a top partner
-            val partnerBonus = if (picked.isEmpty()) 0.0 else {
+            val fitScore = baseWeight[idxNum]
+            val posScore = positionProb[pos][idxNum]
+
+            val partnerBonus = if (pickedIndices.isEmpty()) 0.0 else {
+                val pickedNums = pickedIndices.map { allowedNumbers[it] }
                 var count = 0.0
-                for (p in picked) {
-                    if (n in (topPartnersCache[p] ?: emptyList())) count++
+                for (p in pickedNums) {
+                    if (num in (topPartnersCache[p] ?: emptyList())) count++
                 }
-                count / picked.size   // normalise to 0–1
+                count / pickedNums.size
             }
 
             wFitness * fitScore + wPosition * posScore + wPairBonus * partnerBonus
         }
 
-        // Softmax selection
         val maxScore = scores.maxOrNull() ?: 0.0
         val expScores = DoubleArray(scores.size) { exp((scores[it] - maxScore) / temperature) }
         val sumExp = expScores.sum()
         val probs = expScores.map { it / sumExp }
 
-        val chosen = rouletteSelect(candidates, probs, rng)
-        picked.add(chosen)
+        val chosenIdx = rouletteSelect(candidateIndices, probs, rng)
+        pickedIndices.add(chosenIdx)
     }
 
-    return picked.sorted().toIntArray()
+    return pickedIndices.map { allowedNumbers[it] }.sorted().toIntArray()
 }
 
 // ---------------------------------------------------------------------------
