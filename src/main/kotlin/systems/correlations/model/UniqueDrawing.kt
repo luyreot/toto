@@ -1,4 +1,4 @@
-package systems.correlationsOld.model
+package systems.correlations.model
 
 class UniqueDrawing(
     year: Int,

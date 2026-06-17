@@ -1,12 +1,12 @@
 import crawler.WebCrawler
 import model.TotoType
-import systems.correlationsNew.dodo
-import systems.correlationsOld.model.Drawings
-import systems.correlationsOld.predictViaNumberDistributionPerPosition
+import systems.correlations.model.Drawings
+import systems.correlations.predictViaNumberDistributionPerPosition
 import systems.deeplearning.generateCombinations
 import systems.deeplearning.predictNumbers
 import systems.deeplearning.trainNetwork
 import systems.noname.generate
+import systems.vibecode.vibeCodeRun
 import util.*
 import visualizer.NumberViewer
 import javax.swing.SwingUtilities
@@ -28,20 +28,20 @@ object Main {
         val predictionsSize: Int = when (totoType) {
             TotoType.T_6X49 -> 4
             TotoType.T_6X42 -> 4
-            TotoType.T_5X35 -> 4
+            TotoType.T_5X35 -> 8
         }
 
-        if (numberCorrelationsOld) {
+        if (numberCorrelations) {
             val allDrawings = Drawings(totoType, 2016)
 //            allDataClasses(totoType)
             predictViaNumberDistributionPerPosition(totoType, allDrawings, predictionsSize)
             return
         }
 
-        if (numberCorrelationsNew) {
+        if (vibeCode) {
             totoTypes.forEach {
                 println("Toto Type - ${it.name}")
-                dodo(it, yearFilter = 2016, predictionsSize, true)
+                vibeCodeRun(it, yearFilter = 2016, predictionsSize)
                 println()
             }
             return

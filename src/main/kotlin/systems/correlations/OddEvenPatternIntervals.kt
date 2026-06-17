@@ -1,12 +1,12 @@
-package systems.correlationsOld
+package systems.correlations
 
-import systems.correlationsOld.model.Drawing
+import systems.correlations.model.Drawing
 import model.UniqueIntArray
 
 /**
- * Track the intervals at which each low/high pattern has occurred.
+ * Track the intervals at which each odd/even pattern has occurred.
  */
-class LowHighPatternIntervals(
+class OddEvenPatternIntervals(
     private val patterns: Set<UniqueIntArray>,
     private val drawings: List<Drawing>
 ) {
@@ -22,7 +22,7 @@ class LowHighPatternIntervals(
     private fun setIntervals() {
         patterns.forEach { pattern ->
             val indexes = drawings.mapIndexed { index, drawing ->
-                if (drawing.lowHighPattern.contentEquals(pattern.array)) index else null
+                if (drawing.oddEvenPattern.contentEquals(pattern.array)) index else null
             }.filterNotNull()
 
             _intervals[pattern] = mutableMapOf()

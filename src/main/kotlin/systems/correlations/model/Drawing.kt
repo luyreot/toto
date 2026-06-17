@@ -1,4 +1,4 @@
-package systems.correlationsOld.model
+package systems.correlations.model
 
 import extension.replaceBrackets
 import util.Logger

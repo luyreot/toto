@@ -1,9 +1,9 @@
-package systems.correlationsOld
+package systems.correlations
 
 import extension.clear
-import systems.correlationsOld.model.Drawings
+import systems.correlations.model.Drawings
 import model.TotoType
-import systems.correlationsOld.model.Drawing
+import systems.correlations.model.Drawing
 import model.UniqueIntArray
 import kotlin.random.Random
 

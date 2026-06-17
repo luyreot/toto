@@ -1,7 +1,7 @@
-package systems.correlationsOld
+package systems.correlations
 
-import systems.correlationsOld.model.Drawing
-import systems.correlationsOld.model.UniqueDrawing
+import systems.correlations.model.Drawing
+import systems.correlations.model.UniqueDrawing
 
 fun List<Drawing>.filterDrawingsAfterYear(year: Int): List<Drawing> = filter {
     it.year >= year

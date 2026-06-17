@@ -1,12 +1,12 @@
-package systems.correlationsOld
+package systems.correlations
 
-import systems.correlationsOld.model.Drawing
+import systems.correlations.model.Drawing
 import model.UniqueIntArray
 
 /**
- * Track how often each odd/even pattern has been drawn.
+ * Track how often each low/high pattern has been drawn.
  */
-class OddEvenPatterns(
+class LowHighPatterns(
     private val drawings: List<Drawing>
 ) {
 
@@ -15,16 +15,16 @@ class OddEvenPatterns(
     private val _patterns = mutableMapOf<UniqueIntArray, Int>()
 
     init {
-        setOddEvenPatternOccurrences()
+        setLowHighPatternOccurrences()
     }
 
-    private fun setOddEvenPatternOccurrences() {
+    private fun setLowHighPatternOccurrences() {
         drawings
-            .map { drawing -> UniqueIntArray(drawing.oddEvenPattern) }
+            .map { drawing -> UniqueIntArray(drawing.lowHighPattern) }
             .toSet()
             .forEach { pattern ->
                 _patterns[pattern] = drawings.count { drawing ->
-                    drawing.oddEvenPattern.contentEquals(pattern.array)
+                    drawing.lowHighPattern.contentEquals(pattern.array)
                 }
             }
     }

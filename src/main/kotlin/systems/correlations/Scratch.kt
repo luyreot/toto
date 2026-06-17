@@ -1,6 +1,6 @@
-package systems.correlationsOld
+package systems.correlations
 
-import systems.correlationsOld.model.Drawings
+import systems.correlations.model.Drawings
 import model.TotoType
 import util.Constants
 import util.Logger
