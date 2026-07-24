@@ -8,7 +8,7 @@ val totoType = TotoType.T_5X35
 //val totoType = TotoType.T_6X49
 //val totoType = TotoType.T_6X42
 
-val totoTypes = setOf(TotoType.T_5X35)
+val totoTypes = setOf(TotoType.T_5X35, TotoType.T_6X49)
 
 val numberCorrelations: Boolean = false
 val vibeCode: Boolean = true
