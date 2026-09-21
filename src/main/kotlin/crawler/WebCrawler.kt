@@ -4,6 +4,8 @@ import model.TotoType
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
+import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.chrome.ChromeOptions
 import util.Constants.PAGE_URL_5x35
 import util.Constants.PAGE_URL_6x42
 import util.Constants.PAGE_URL_6x49
@@ -99,16 +101,29 @@ class WebCrawler {
 
     private fun readPage(url: String): Document? {
         try {
+            val options = ChromeOptions().apply {
+                addArguments("--headless=new")
+                addArguments("--disable-blink-features=AutomationControlled")
+                addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
+            }
+            val driver = ChromeDriver(options)
+            driver.get(url)
+            Thread.sleep(4000) // let the reese84 sensor resolve
+
+            val seleniumCookies = driver.manage().cookies.associate { it.name to it.value }
+            driver.quit()
+
             val connection = Jsoup
                 .connect(url)
                 .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
                 .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
                 .header("Accept-Language", "bg-BG,bg;q=0.9,en-US;q=0.8,en;q=0.7")
-                .cookies(cookies)
+                .cookies(seleniumCookies)
                 .followRedirects(true)
                 .timeout(15_000)
                 .apply {
                     execute().also {
+                        // TODO maybe not needed
                         cookies.putAll(it.cookies())
                     }
                 }
