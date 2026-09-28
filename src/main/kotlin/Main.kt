@@ -41,7 +41,7 @@ object Main {
         if (vibeCode) {
             totoTypes.forEach {
                 println("Toto Type - ${it.name}")
-                vibeCodeRun(it, yearFilter = 2016, predictionsSize)
+                vibeCodeRun(it, yearFilter = 2018, predictionsSize)
                 println()
             }
             return

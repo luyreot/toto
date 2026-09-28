@@ -2,13 +2,13 @@ package util
 
 import model.TotoType
 
-var webCrawl: Boolean = true
+var webCrawl: Boolean = false
 
 val totoType = TotoType.T_5X35
 //val totoType = TotoType.T_6X49
 //val totoType = TotoType.T_6X42
 
-val totoTypes = setOf(TotoType.T_5X35, TotoType.T_6X49)
+val totoTypes = setOf(TotoType.T_5X35)
 
 val numberCorrelations: Boolean = false
 val vibeCode: Boolean = true
