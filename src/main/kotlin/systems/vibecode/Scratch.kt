@@ -75,22 +75,64 @@ fun vibeCodeRun(totoType: TotoType, yearFilter: Int, predictionsSize: Int) {
 
 data class GeneratorConfig(
     // Weights for the four fitness components (must sum to ~1.0)
-    val wLongTermAvg: Double = 0.25,      // avg appearances/year over full history
-    val wCurrentYear: Double = 0.20,      // raw count in the latest year
-    val wRecentWeighted: Double = 0.30,   // exp-decay weighted recent trend
-    val wRecency: Double = 0.25,          // draws since last appearance (due factor)
-    // Softmax temperature during candidate sampling.
-    // Lower = more peaked on high-fitness numbers; higher = more uniform.
+    // How to tune: If the model is too reactive (pool changes wildly week to week),
+    // shift weight from wRecentWeighted to wLongTermAvg. If it's too sluggish, do the opposite.
+    // I'd start by testing wRecency = 0.0 — due-ness has weak theoretical justification and might be adding noise.
+    /*
+    Weight on persistent bias — a number's historical avg appearances/year across the whole history.
+    Raising it favours numbers with a stable long-term edge; lowering it ignores long-term behaviour in favour of recent signals.
+     */
+    val wLongTermAvg: Double = 0.25,
+    /*
+    Weight on seasonal hotness — raw count in the latest year.
+    Raising it favours numbers currently on a hot streak within the year; lowering it smooths across seasons.
+     */
+    val wCurrentYear: Double = 0.20,
+    /*
+    Weight on momentum — exponentially decayed recent frequency.
+    Raising it makes the model react faster to recent draws; lowering it makes it more conservative.
+     */
+    val wRecentWeighted: Double = 0.30,
+    /*
+    Weight on due-ness — draws since last appearance.
+    Raising it favours "overdue" numbers; lowering it lets the model ignore the due concept entirely (set to 0.0 to disable).
+     */
+    val wRecency: Double = 0.25,
+
+    // How to tune: temperature is the single most impactful parameter. Start at 1.5, then try 0.8 and 2.5.
+    // Watch how pool size changes. oversampleFactor of 5 is usually fine; raise to 10 if you want better selection.
+    /*
+    Softmax sharpness during candidate sampling.
+    Low values (0.5–1.0) = strong preference for high-fitness numbers, less variety.
+    High values (2.5+) = near-uniform sampling, more variety but weaker signal exploitation.
+     */
     val temperature: Double = 1.5,
-    // Statistical filters (percentile bounds drawn from history)
+    /*
+    How many candidates to generate before picking the top requestedCount.
+    Higher = more candidates to choose from (better selection quality), slower. Lower = faster, but the top-N are picked from a smaller pool.
+     */
+    val oversampleFactor: Int = 50,
+
+    // How to tune: Leave these alone unless you have a specific reason.
+    // They're cheap rejections of pathological tickets and don't affect the model's edge.
+    // Only make them stricter if you're getting combinations that look "impossible".
+    /*
+    How extreme a ticket's sum can be before rejection.
+    Narrowing (e.g., 10–90) rejects more outliers. Widening (0–100) disables the filter.
+     */
     val sumPercentileLow: Double = 5.0,
     val sumPercentileHigh: Double = 95.0,
+    /*
+    How extreme the odd/even split can be.
+     */
     val oddPercentileLow: Double = 10.0,
     val oddPercentileHigh: Double = 90.0,
+    /*
+    How extreme the low/high split can be.
+     */
     val lowPercentileLow: Double = 10.0,
     val lowPercentileHigh: Double = 90.0,
-    // How many candidate tickets to generate before taking the top N
-    val oversampleFactor: Int = 5,
+
     // Optional exclusion set for restricting the allowed number pool
     val excludeNumbers: Set<Int> = emptySet()
 )
@@ -202,6 +244,10 @@ fun drawsSinceLastAppearance(
  *   4. Draws since last appearance       (due-ness)
  *
  * Higher = more likely to appear in an upcoming draw, per the model.
+ *
+ * How to tune: If you want to test a 6-month momentum window,
+ * change halfLifeYears to 0.5 and the recent window to it.year >= currentYear - 0 (i.e., only the current year).
+ * If you want smoother, use halfLifeYears = 2.0 and currentYear - 2.
  */
 fun calculateFitnessArray(
     draws: List<Draw>,
@@ -210,7 +256,7 @@ fun calculateFitnessArray(
 ): DoubleArray {
     if (draws.isEmpty()) return DoubleArray(type.totalNumbers)
 
-    val currentYear = draws.maxOf { it.year }
+    val currentYear = draws.maxOf { it.year } // Assumes the current year is the latest one in data.
     val totalDraws = draws.size
 
     val avgPerYear = calculateAverageOccurrencePerYear(draws, type)
@@ -219,7 +265,9 @@ fun calculateFitnessArray(
     val currentYearCounts = calculateCurrentYearOccurrences(draws, type)
     val zCurrentYear = intArrayToZScores(currentYearCounts)
 
+    // Length of the "recent" window for weighted frequency. Shorter = more reactive; longer = smoother.
     val recentDraws = draws.filter { it.year >= currentYear - 1 }
+    // How fast the momentum component forgets old draws. 1 year = fast reaction. 2 years = smoother.
     val weightedRecent = weightedFrequency(recentDraws, type, halfLifeYears = 1.0, currentYear)
     val zRecentWeighted = doubleArrayToZScores(weightedRecent)
 
@@ -401,6 +449,11 @@ private fun lowCountPercentileBounds(
  * Scoring for candidate selection:
  *   zScoredFitness - usagePenalty * timesUsed + jitter
  *
+ * How to tune: usagePenalty is the key knob.
+ * If your final tickets are collapsing to 12–15 unique numbers, raise to 1.2 or 1.5.
+ * If they're spreading across 25+ numbers and diluting the pool,
+ * lower to 0.5. jitter = 0.02 is roughly right — anything above 0.05 starts to override the fitness signal.
+ *
  * @param usagePenalty  how strongly to penalise numbers already used
  * @param jitter        small random perturbation for run-to-run variation
  * @param seed          pass a fixed seed for reproducible allocation
@@ -410,8 +463,20 @@ fun allocateTicketsFromPool(
     type: TotoType,
     numberPool: Set<Int>,
     ticketCount: Int,
+    /*
+    How strongly to discourage reusing the same number across tickets.
+    Higher = wider coverage, more unique numbers, less overlap between tickets.
+    Lower = allow concentration on top picks.
+     */
     usagePenalty: Double = 0.8,
+    /*
+    Small random perturbation to candidate scores during allocation.
+    Adds run-to-run variation. Set to 0.0 for deterministic output.
+     */
     jitter: Double = 0.02,
+    /*
+    Reproducibility. Pass a long to get identical output across runs; leave null for fresh randomness.
+     */
     seed: Long? = null
 ): List<IntArray> {
     if (numberPool.size < type.size) return emptyList()
