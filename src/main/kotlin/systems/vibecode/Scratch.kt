@@ -42,15 +42,33 @@ import kotlin.random.Random
 //   each run.
 // ===========================================================================
 
-fun vibeCodeRun(totoType: TotoType, yearFilter: Int, predictionsSize: Int) {
+fun vibeCodeRun(totoType: TotoType, yearFilter: Int, printTicketsCount: Int, generateTicketsFromPool: Boolean) {
     val draws = loadDrawings(totoType).filter { it.year >= yearFilter }
+
+    val generateTicketsCount = when (util.totoType) {
+        TotoType.T_6X49 -> 33
+        TotoType.T_6X42 -> 31
+        TotoType.T_5X35 -> 24
+    }
 
     // ---- Stage 1: candidate pool via fitness-weighted sampling ----
     val candidateTickets = generateCombinations(
-        requestedCount = predictionsSize,
+        requestedCount = generateTicketsCount,
         draws = draws,
         type = totoType
     )
+
+    if (!generateTicketsFromPool) {
+        if (generateTicketsCount < printTicketsCount) {
+            throw IllegalArgumentException("generateTicketsCount ($generateTicketsCount) must be greater than or equal to printTicketsCount ($printTicketsCount)")
+        }
+        println("Final Tickets:")
+        val finalTickets = candidateTickets.shuffled(Random.Default).take(printTicketsCount)
+        finalTickets.forEach { println(it.joinToString()) }
+        println()
+        return
+    }
+
     val candidatePool = candidateTickets.flatMap { it.toList() }.toSet()
 
     println("Candidate Pool: ${candidatePool.sorted().joinToString()}")
@@ -62,11 +80,12 @@ fun vibeCodeRun(totoType: TotoType, yearFilter: Int, predictionsSize: Int) {
         draws = draws,
         type = totoType,
         numberPool = candidatePool,
-        ticketCount = predictionsSize
-    )
+        ticketCount = generateTicketsCount
+    ).shuffled(Random.Default).take(printTicketsCount)
 
     println("Final Tickets:")
     finalTickets.forEach { println(it.joinToString()) }
+    println()
 }
 
 // ---------------------------------------------------------------------------

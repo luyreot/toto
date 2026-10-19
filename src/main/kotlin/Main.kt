@@ -28,7 +28,7 @@ object Main {
         val predictionsSize: Int = when (totoType) {
             TotoType.T_6X49 -> 4
             TotoType.T_6X42 -> 4
-            TotoType.T_5X35 -> 8
+            TotoType.T_5X35 -> 4
         }
 
         if (numberCorrelations) {
@@ -41,7 +41,12 @@ object Main {
         if (vibeCode) {
             totoTypes.forEach {
                 println("Toto Type - ${it.name}")
-                vibeCodeRun(it, yearFilter = 2018, predictionsSize)
+                vibeCodeRun(
+                    it,
+                    yearFilter = 2018,
+                    printTicketsCount = predictionsSize,
+                    generateTicketsFromPool = false
+                )
                 println()
             }
             return
